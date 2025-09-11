@@ -29,48 +29,111 @@ import {
   Palette,
   Car,
   Heart,
-  Gift
+  Gift,
+  Mic,
+  Sparkles,
+  User,
+  Cake,
+  Crown,
+  TrendingUp,
+  Zap,
+  Star,
+  Gem,
+  Building,
+  MapPin,
+  Upload,
+  X,
+  Image as ImageIcon
 } from "lucide-react"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import toast from "react-hot-toast"
 
 // Service Types Enum based on backend
 enum ServiceType {
-  PHOTOGRAPHY = "PHOTOGRAPHY",
-  VIDEOGRAPHY = "VIDEOGRAPHY", 
-  CATERING = "CATERING",
-  DECORATION = "DECORATION",
-  MUSIC_DJ = "MUSIC_DJ",
-  LIVE_BAND = "LIVE_BAND",
-  VENUE = "VENUE",
-  FLOWERS = "FLOWERS",
+  PHOTOGRAPHER = "PHOTOGRAPHER",
+  PHOTO_VIDEOGRAPHER = "PHOTO_VIDEOGRAPHER",
+  DECORATOR = "DECORATOR",
+  FLORIST = "FLORIST",
+  CATERS = "CATERS",
+  BAKERS = "BAKERS",
   TRANSPORTATION = "TRANSPORTATION",
-  ENTERTAINMENT = "ENTERTAINMENT",
-  PLANNING = "PLANNING",
-  OTHER = "OTHER"
+  BRIDE_GROOMING = "BRIDE_GROOMING",
+  WEDDING_BAND = "WEDDING_BAND",
+  DJ = "DJ",
+  SINGER = "SINGER",
+  ANCHOR = "ANCHOR",
+  MAGICIAN = "MAGICIAN",
+  VENUE = "VENUE",
+}
+
+// Event Types Enum based on backend
+enum EventType {
+  WEDDING = "WEDDING",
+  BIRTHDAY = "BIRTHDAY",
+  ANNIVERSARY = "ANNIVERSARY",
+  CORPORATE = "CORPORATE",
+  ENGAGEMENT = "ENGAGEMENT",
+  BABY_SHOWER = "BABY_SHOWER",
+  GRADUATION = "GRADUATION",
+  HOLIDAY_PARTY = "HOLIDAY_PARTY",
+  CONFERENCE = "CONFERENCE",
+  EXHIBITION = "EXHIBITION",
+}
+
+// Price Enum based on backend
+enum PriceEnum {
+  INEXPENSIVE = "INEXPENSIVE",
+  AFFORDABLE = "AFFORDABLE", 
+  MODERATE = "MODERATE",
+  LUXURY = "LUXURY",
 }
 
 const serviceTypeIcons = {
-  [ServiceType.PHOTOGRAPHY]: Camera,
-  [ServiceType.VIDEOGRAPHY]: Camera,
-  [ServiceType.CATERING]: Utensils,
-  [ServiceType.DECORATION]: Palette,
-  [ServiceType.MUSIC_DJ]: Music,
-  [ServiceType.LIVE_BAND]: Music,
-  [ServiceType.VENUE]: Heart,
-  [ServiceType.FLOWERS]: Gift,
+  [ServiceType.PHOTOGRAPHER]: Camera,
+  [ServiceType.PHOTO_VIDEOGRAPHER]: Camera,
+  [ServiceType.DECORATOR]: Palette,
+  [ServiceType.FLORIST]: Gift,
+  [ServiceType.CATERS]: Utensils,
+  [ServiceType.BAKERS]: Cake,
   [ServiceType.TRANSPORTATION]: Car,
-  [ServiceType.ENTERTAINMENT]: Heart,
-  [ServiceType.PLANNING]: Tag,
-  [ServiceType.OTHER]: Tag,
+  [ServiceType.BRIDE_GROOMING]: Crown,
+  [ServiceType.WEDDING_BAND]: Music,
+  [ServiceType.DJ]: Music,
+  [ServiceType.SINGER]: Mic,
+  [ServiceType.ANCHOR]: User,
+  [ServiceType.MAGICIAN]: Sparkles,
+  [ServiceType.VENUE]: Building,
+}
+
+const eventTypeIcons = {
+  [EventType.WEDDING]: Heart,
+  [EventType.BIRTHDAY]: Gift,
+  [EventType.ANNIVERSARY]: Heart,
+  [EventType.CORPORATE]: User,
+  [EventType.ENGAGEMENT]: Heart,
+  [EventType.BABY_SHOWER]: Gift,
+  [EventType.GRADUATION]: Sparkles,
+  [EventType.HOLIDAY_PARTY]: Gift,
+  [EventType.CONFERENCE]: User,
+  [EventType.EXHIBITION]: Tag,
+}
+
+const priceEnumIcons = {
+  [PriceEnum.INEXPENSIVE]: DollarSign,
+  [PriceEnum.AFFORDABLE]: TrendingUp,
+  [PriceEnum.MODERATE]: Zap,
+  [PriceEnum.LUXURY]: Gem,
 }
 
 const serviceSchema = z.object({
   name: z.string().min(2, "Service name must be at least 2 characters"),
   serviceType: z.nativeEnum(ServiceType),
-  isAvailable: z.boolean().default(true),
+  eventType: z.nativeEnum(EventType),
+  priceEnum: z.nativeEnum(PriceEnum),
+  availability: z.boolean().default(true),
   cost: z.number().min(0, "Cost must be a positive number"),
   metadata: z.string().optional(),
+  images: z.array(z.string()).optional(),
 })
 
 type ServiceForm = z.infer<typeof serviceSchema>
@@ -79,9 +142,12 @@ interface Service {
   id: number
   name: string
   serviceType: ServiceType
-  isAvailable: boolean
+  eventType: EventType
+  priceEnum: PriceEnum
+  availability: boolean
   cost: number
   metadata?: string
+  images?: string[]
   vendorId: number
 }
 
@@ -93,12 +159,20 @@ export default function VendorServices() {
   const [saving, setSaving] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingService, setEditingService] = useState<Service | null>(null)
+  const [imageUrls, setImageUrls] = useState<string[]>([])
+  const [newImageUrl, setNewImageUrl] = useState("")
 
   const form = useForm<ServiceForm>({
     resolver: zodResolver(serviceSchema),
     defaultValues: {
-      isAvailable: true,
+      name: "",
+      serviceType: ServiceType.PHOTOGRAPHER,
+      eventType: EventType.WEDDING,
+      priceEnum: PriceEnum.MODERATE,
+      availability: true,
       cost: 0,
+      metadata: "",
+      images: [],
     }
   })
 
@@ -157,6 +231,8 @@ export default function VendorServices() {
         setLoading(false)
         return
       }
+      console.log("Fetching services for vendorId:", session)
+
       const response = await fetch(`/api/vendors/services?vendorId=${vendorId}`, {
         headers,
       })
@@ -190,10 +266,40 @@ export default function VendorServices() {
       // Get authenticated headers
       const headers = getAuthHeaders()
       
+      // Get vendorId from session for new services
+      let requestData: any = { ...data }
+      
+      if (!editingService) {
+        // For new services, add vendorId
+        let vendorId = null
+        
+        // Debug log to see what we have in session
+        console.log("Session data for vendorId extraction:", {
+          session: session,
+          user: (session as any)?.user,
+          vendor: (session as any)?.user?.vendor
+        })
+        
+        if ((session as any)?.user?.vendor?.id) {
+          vendorId = Number((session as any).user.vendor.id)
+          console.log("Using vendor.id from session:", vendorId)
+        }
+        
+        if (!vendorId || isNaN(vendorId)) {
+          console.error("Invalid vendorId extracted:", vendorId)
+          toast.error("No valid vendorId found in session. Please re-login.")
+          setSaving(false)
+          return
+        }
+        
+        requestData = { ...data, vendorId }
+        console.log("Request data being sent:", requestData)
+      }
+      
       const response = await fetch(url, {
         method,
         headers,
-        body: JSON.stringify(data),
+        body: JSON.stringify(requestData),
       })
 
       if (response.ok) {
@@ -204,7 +310,8 @@ export default function VendorServices() {
         fetchServices()
       } else {
         const error = await response.json()
-        toast.error(error.message || "Failed to save service")
+        console.error("API Error Response:", error)
+        toast.error(error.message || error.error || "Failed to save service")
       }
     } catch (error) {
       console.error("Error saving service:", error)
@@ -240,14 +347,15 @@ export default function VendorServices() {
 
   const toggleAvailability = async (service: Service) => {
     try {
+      // Get authenticated headers
+      const headers = getAuthHeaders()
+      
       const response = await fetch(`/api/vendors/services/${service.id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify({
           ...service,
-          isAvailable: !service.isAvailable,
+          availability: !service.availability,
         }),
       })
 
@@ -263,26 +371,52 @@ export default function VendorServices() {
     }
   }
 
+  // Image management functions
+  const addImageUrl = () => {
+    if (newImageUrl.trim() && !imageUrls.includes(newImageUrl.trim())) {
+      const updatedUrls = [...imageUrls, newImageUrl.trim()]
+      setImageUrls(updatedUrls)
+      form.setValue("images", updatedUrls)
+      setNewImageUrl("")
+    }
+  }
+
+  const removeImageUrl = (index: number) => {
+    const updatedUrls = imageUrls.filter((_, i) => i !== index)
+    setImageUrls(updatedUrls)
+    form.setValue("images", updatedUrls)
+  }
+
   const openEditDialog = (service: Service) => {
     setEditingService(service)
+    const serviceImages = service.images || []
+    setImageUrls(serviceImages)
     form.reset({
       name: service.name,
       serviceType: service.serviceType,
-      isAvailable: service.isAvailable,
+      eventType: service.eventType,
+      priceEnum: service.priceEnum,
+      availability: service.availability,
       cost: service.cost,
       metadata: service.metadata || "",
+      images: serviceImages,
     })
     setDialogOpen(true)
   }
 
   const openAddDialog = () => {
     setEditingService(null)
+    setImageUrls([])
+    setNewImageUrl("")
     form.reset({
       name: "",
-      serviceType: ServiceType.OTHER,
-      isAvailable: true,
+      serviceType: ServiceType.PHOTOGRAPHER,
+      eventType: EventType.WEDDING,
+      priceEnum: PriceEnum.MODERATE,
+      availability: true,
       cost: 0,
       metadata: "",
+      images: [],
     })
     setDialogOpen(true)
   }
@@ -349,10 +483,60 @@ export default function VendorServices() {
                         {Object.values(ServiceType).map((type) => {
                           const IconComponent = serviceTypeIcons[type]
                           return (
-                            <SelectItem key={type} value={type || "OTHER"}>
+                            <SelectItem key={type} value={type}>
                               <div className="flex items-center gap-2">
                                 <IconComponent className="h-4 w-4" />
                                 {type.replace(/_/g, " ")}
+                              </div>
+                            </SelectItem>
+                          )
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="eventType">Event Type *</Label>
+                    <Select 
+                      value={form.watch("eventType")} 
+                      onValueChange={(value) => form.setValue("eventType", value as EventType)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select event type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.values(EventType).map((type) => {
+                          const IconComponent = eventTypeIcons[type]
+                          return (
+                            <SelectItem key={type} value={type}>
+                              <div className="flex items-center gap-2">
+                                <IconComponent className="h-4 w-4" />
+                                {type.replace(/_/g, " ")}
+                              </div>
+                            </SelectItem>
+                          )
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="priceEnum">Price Tier *</Label>
+                    <Select 
+                      value={form.watch("priceEnum")} 
+                      onValueChange={(value) => form.setValue("priceEnum", value as PriceEnum)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select price tier" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.values(PriceEnum).map((tier) => {
+                          const IconComponent = priceEnumIcons[tier]
+                          return (
+                            <SelectItem key={tier} value={tier}>
+                              <div className="flex items-center gap-2">
+                                <IconComponent className="h-4 w-4" />
+                                {tier.replace(/_/g, " ")}
                               </div>
                             </SelectItem>
                           )
@@ -393,17 +577,66 @@ export default function VendorServices() {
                   </p>
                 </div>
 
+                <div className="space-y-3">
+                  <Label>Service Images (Optional)</Label>
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Enter image URL"
+                        value={newImageUrl}
+                        onChange={(e) => setNewImageUrl(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addImageUrl())}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addImageUrl}
+                        disabled={!newImageUrl.trim()}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    {imageUrls.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">Added Images:</p>
+                        <div className="space-y-2 max-h-32 overflow-y-auto">
+                          {imageUrls.map((url, index) => (
+                            <div key={index} className="flex items-center gap-2 p-2 border rounded-lg bg-gray-50">
+                              <ImageIcon className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                              <span className="text-sm truncate flex-1">{url}</span>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeImageUrl(index)}
+                                className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <p className="text-xs text-muted-foreground">
+                      Add image URLs to showcase your service. Images help customers understand what you offer.
+                    </p>
+                  </div>
+                </div>
+
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="space-y-1">
-                    <Label htmlFor="isAvailable">Service Available</Label>
+                    <Label htmlFor="availability">Service Available</Label>
                     <p className="text-sm text-muted-foreground">
                       Toggle availability of this service
                     </p>
                   </div>
                   <Switch
-                    id="isAvailable"
-                    checked={form.watch("isAvailable")}
-                    onCheckedChange={(checked) => form.setValue("isAvailable", checked)}
+                    id="availability"
+                    checked={form.watch("availability")}
+                    onCheckedChange={(checked) => form.setValue("availability", checked)}
                   />
                 </div>
 
@@ -447,70 +680,143 @@ export default function VendorServices() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service) => {
-              // Fallback to 'OTHER' if serviceType is missing or invalid
-              const typeKey = service.serviceType && serviceTypeIcons[service.serviceType] ? service.serviceType : 'OTHER';
+              // Fallback to 'PHOTOGRAPHER' if serviceType is missing or invalid
+              const typeKey = service.serviceType && serviceTypeIcons[service.serviceType] ? service.serviceType : ServiceType.PHOTOGRAPHER;
               const IconComponent = serviceTypeIcons[typeKey] || Tag;
+              
+              // Get event type icon and fallback
+              const eventTypeKey = service.eventType && eventTypeIcons[service.eventType] ? service.eventType : EventType.WEDDING;
+              const EventIconComponent = eventTypeIcons[eventTypeKey] || Tag;
+              
+              // Get price tier icon and fallback
+              const priceKey = service.priceEnum && priceEnumIcons[service.priceEnum] ? service.priceEnum : PriceEnum.MODERATE;
+              const PriceIconComponent = priceEnumIcons[priceKey] || DollarSign;
+              
               return (
-                <Card key={service.id} className="group hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-4">
+                <Card key={service.id} className="group hover:shadow-lg transition-all duration-200 border-0 shadow-md">
+                  <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded-lg">
-                          <IconComponent className="h-5 w-5 text-primary" />
+                        <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl">
+                          <IconComponent className="h-6 w-6 text-primary" />
                         </div>
-                        <div>
-                          <CardTitle className="text-lg">{service.name}</CardTitle>
-                          <CardDescription>
-                            {(service.serviceType ? String(service.serviceType).replace(/_/g, " ") : 'Other')}
-                          </CardDescription>
+                        <div className="flex-1">
+                          <CardTitle className="text-xl font-semibold text-gray-900">{service.name}</CardTitle>
+                          <div className="mt-2 space-y-1.5">
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                              <span className="font-medium">Service:</span>
+                              <span>{typeKey.replace(/_/g, " ")}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <EventIconComponent className="h-3.5 w-3.5 text-gray-500" />
+                              <span className="font-medium">Event:</span>
+                              <span>{eventTypeKey.replace(/_/g, " ")}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <PriceIconComponent className="h-3.5 w-3.5 text-gray-500" />
+                              <span className="font-medium">Tier:</span>
+                              <Badge variant="outline" className="text-xs px-2 py-0.5 bg-gray-50">
+                                {priceKey.replace(/_/g, " ")}
+                              </Badge>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <Badge variant={service.isAvailable ? "default" : "secondary"}>
-                        {service.isAvailable ? "Available" : "Unavailable"}
-                      </Badge>
+                      <div className="flex flex-col items-end gap-2">
+                        <Badge 
+                          variant={service.availability ? "default" : "secondary"}
+                          className={service.availability ? "bg-green-100 text-green-800 border-green-200" : ""}
+                        >
+                          {service.availability ? "Available" : "Unavailable"}
+                        </Badge>
+                      </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-semibold">${service.cost.toFixed(2)}</span>
+                  <CardContent className="space-y-4 pt-0">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <div className="p-1.5 bg-green-100 rounded-lg">
+                          <DollarSign className="h-4 w-4 text-green-600" />
+                        </div>
+                        <div>
+                          <span className="text-lg font-bold text-gray-900">${service.cost.toFixed(2)}</span>
+                          <p className="text-xs text-gray-500">Starting price</p>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-600">Available:</span>
                         <Switch
-                          checked={service.isAvailable}
+                          checked={service.availability}
                           onCheckedChange={() => toggleAvailability(service)}
+                          className="data-[state=checked]:bg-green-500"
                         />
                       </div>
                     </div>
 
-                    {service.metadata && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {service.metadata}
-                      </p>
+                    {service.images && service.images.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                          <ImageIcon className="h-4 w-4" />
+                          Service Images ({service.images.length})
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          {service.images.slice(0, 4).map((imageUrl, index) => (
+                            <div key={index} className="relative group">
+                              <img
+                                src={imageUrl}
+                                alt={`${service.name} image ${index + 1}`}
+                                className="w-full h-20 object-cover rounded-lg border border-gray-200"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                }}
+                              />
+                              {index === 3 && service.images && service.images.length > 4 && (
+                                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                                  <span className="text-white text-sm font-medium">
+                                    +{service.images.length - 3} more
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     )}
 
-                    <Separator />
+                    {service.metadata && (
+                      <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                        <p className="text-sm text-blue-800 leading-relaxed">
+                          {service.metadata}
+                        </p>
+                      </div>
+                    )}
 
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openEditDialog(service)}
-                      >
-                        <Edit className="h-3 w-3 mr-1" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => deleteService(service.id)}
-                        className="text-red-600 hover:text-red-700 hover:border-red-300"
-                      >
-                        <Trash2 className="h-3 w-3 mr-1" />
-                        Delete
-                      </Button>
+                    <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                      <div className="text-xs text-gray-400">
+                        Service ID: {service.id}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700"
+                          onClick={() => openEditDialog(service)}
+                        >
+                          <Edit className="h-3 w-3 mr-1.5" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="hover:bg-red-50 hover:border-red-200 hover:text-red-700"
+                          onClick={() => deleteService(service.id)}
+                        >
+                          <Trash2 className="h-3 w-3 mr-1.5" />
+                          Delete
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

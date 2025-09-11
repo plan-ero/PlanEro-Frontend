@@ -8,6 +8,7 @@ declare module "next-auth" {
       email?: string | null
       image?: string | null
       role?: string
+      vendor?: any // Vendor data from backend
     }
     apiToken?: string
   }
@@ -19,6 +20,7 @@ declare module "next-auth" {
     image?: string | null
     role?: string
     token?: string
+    vendor?: any // Vendor data from backend
   }
 }
 
@@ -27,5 +29,6 @@ declare module "next-auth/jwt" {
     id: string
     role?: string
     apiToken?: string
+    vendor?: any // Vendor data from backend
   }
 }

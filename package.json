@@ -73,7 +73,6 @@
     "tailwind-merge": "^2.6.0",
     "tailwindcss": "^4.1.12",
     "tw-animate-css": "^1.3.7",
-    "typeorm": "^0.3.26",
     "vaul": "^0.9.9",
     "zod": "^3.25.76"
   },

@@ -63,16 +63,6 @@ export default function VendorLayout({
       {/* Sidebar */}
       <div className="w-64 bg-card border-r border-border">
         <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="p-6">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">P</span>
-              </div>
-              <span className="font-semibold text-lg">PlanEro</span>
-            </Link>
-          </div>
-
           <Separator />
 
           {/* Navigation */}

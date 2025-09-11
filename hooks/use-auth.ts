@@ -91,6 +91,7 @@ export function useAuth() {
           id: session.user.id || "",
           name: session.user.name || "",
           email: session.user.email || "",
+          vendor: session.user.vendor || null,
           avatar: session.user.image,
           role: session.user.role,
         }

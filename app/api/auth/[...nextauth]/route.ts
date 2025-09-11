@@ -26,11 +26,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           // Get user profile from the external API
           const profile = await authApi.getProfile(authResponse.token)
 
+          console.log("Authenticated user profile:", profile)
+
           return {
-            id: profile.email,
+            id: profile.username, // Use username as ID since there's no separate ID field
             email: profile.email,
             name: profile.username,
             image: profile.vendor?.profilePictureUrl || null,
+            vendor: profile.vendor || null,
             role: profile.role,
             token: authResponse.token,
           }
@@ -46,15 +49,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // On sign in, store user info and API token
       if (user) {
         token.id = user.id
-        token.role = (user as any).role
-        token.apiToken = (user as any).token
+        token.role = user.role
+        token.apiToken = user.token
+        token.vendor = user.vendor // Store vendor data in token
       }
       return token
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
-        ;(session.user as any).role = token.role as string
+        session.user.role = token.role as string
+        session.user.vendor = token.vendor // Include vendor data in session
         // Store API token in session for API calls
         ;(session as any).apiToken = token.apiToken
       }

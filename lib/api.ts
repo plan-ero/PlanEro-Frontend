@@ -21,25 +21,26 @@ export interface AuthResponse {
 }
 
 export interface Vendor {
-  id: number
-  businessName: string
-  location: string
-  bio: string
-  websiteUrl: string[]
-  profilePictureUrl: string
-  email: string
-  phoneNumber: string
-  addressId: number
-  approved: boolean
-  published: boolean
+  id: number,
+  businessName: string | null,
+  location: string | null,
+  bio: string | null,
+  websiteUrl: string | null,
+  profilePictureUrl: string | null,
+  email: string,
+  phoneNumber: string | null,
+  addressId: string | null,
+  priceEnum: "INEXPENSIVE" | "AFFORDABLE" | "MODERATE" | "LUXURY",
+  approved: boolean,
+  published: boolean, 
 }
 
 export interface Profile {
-  username: string
-  email: string
-  phone: string
-  role: 'USER' | 'VENDOR'
-  vendor?: Vendor
+  username: string,
+  email: string,
+  phone: number | null,
+  role: "VENDOR" | "USER",
+  vendor: Vendor | null,
 }
 
 export interface ErrorResponse {

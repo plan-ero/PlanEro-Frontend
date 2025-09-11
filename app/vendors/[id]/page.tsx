@@ -82,42 +82,6 @@ export default function VendorDetailPage() {
       setLoading(false)
     }
   }
-    if (vendorId) {
-      fetchVendor()
-    }
-  }, [vendorId])
-
-  const fetchVendor = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      const response = await fetch(`/api/vendors/${vendorId}`)
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('Vendor not found')
-        }
-        throw new Error('Failed to fetch vendor details')
-      }
-
-      const vendorData = await response.json()
-      setVendor(vendorData)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(word => word.charAt(0))
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
-  }
 
   if (loading) {
     return (
