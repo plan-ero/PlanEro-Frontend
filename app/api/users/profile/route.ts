@@ -1,83 +1,108 @@
 import { NextRequest, NextResponse } from "next/server"
-import { authApi, TokenManager, ApiError } from "@/lib/api"
+import { getToken } from "next-auth/jwt"
+
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8080'
 
 // Mark this route as dynamic
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    // Get token from Authorization header
-    const authHeader = request.headers.get('authorization')
-    const token = authHeader?.replace('Bearer ', '') || TokenManager.getToken()
+    // Get the token from NextAuth JWT
+    const token = await getToken({ 
+      req: request, 
+      secret: process.env.NEXTAUTH_SECRET 
+    })
     
-    if (!token) {
+    if (!token?.apiToken) {
       return NextResponse.json(
-        { error: "Unauthorized - No token provided" },
+        { error: "Unauthorized - Please sign in" },
         { status: 401 }
-      )
+      );
     }
 
-    try {
-      // Fetch profile from external API
-      const profile = await authApi.getProfile(token)
-      
-      return NextResponse.json({
-        name: profile.username,
-        email: profile.email,
-        phone: profile.phone,
-        role: profile.role,
-        vendor: profile.vendor,
-      })
-    } catch (apiError) {
-      console.error("External API error:", apiError)
-      if (apiError instanceof ApiError) {
-        return NextResponse.json(
-          { error: apiError.message },
-          { status: apiError.status }
-        )
-      }
-      
+    // Get user profile from backend
+    const backendResponse = await fetch(`${BACKEND_URL}/auth/profile`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token.apiToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!backendResponse.ok) {
+      const errorData = await backendResponse.text().catch(() => 'Unknown error');
+      console.error(`Backend error (${backendResponse.status}):`, errorData);
       return NextResponse.json(
-        { error: "Failed to fetch profile from external API" },
-        { status: 500 }
-      )
+        { error: "Failed to fetch user profile" },
+        { status: backendResponse.status }
+      );
     }
+
+    const profile = await backendResponse.json();
+    
+    return NextResponse.json({
+      name: profile.username,
+      email: profile.email,
+      phone: profile.phone,
+      role: profile.role,
+      vendor: profile.vendor,
+    }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching user profile:", error)
+    console.error("Error fetching user profile:", error);
     return NextResponse.json(
       { error: "Failed to fetch user profile" },
       { status: 500 }
-    )
+    );
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
-    // Get token from Authorization header
-    const authHeader = request.headers.get('authorization')
-    const token = authHeader?.replace('Bearer ', '') || TokenManager.getToken()
+    // Get the token from NextAuth JWT
+    const token = await getToken({ 
+      req: request, 
+      secret: process.env.NEXTAUTH_SECRET 
+    })
     
-    if (!token) {
+    if (!token?.apiToken) {
       return NextResponse.json(
-        { error: "Unauthorized - No token provided" },
+        { error: "Unauthorized - Please sign in" },
         { status: 401 }
-      )
+      );
     }
 
-    const body = await request.json()
+    const body = await request.json();
     
-    // For now, we'll just return the updated data
-    // In a full implementation, you might want to update the profile via the external API
+    // Update user profile through backend
+    const backendResponse = await fetch(`${BACKEND_URL}/auth/profile`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token.apiToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!backendResponse.ok) {
+      const errorData = await backendResponse.text().catch(() => 'Unknown error');
+      console.error(`Backend error (${backendResponse.status}):`, errorData);
+      return NextResponse.json(
+        { error: "Failed to update user profile" },
+        { status: backendResponse.status }
+      );
+    }
+
+    const updatedProfile = await backendResponse.json();
     return NextResponse.json({
       message: "Profile updated successfully",
-      user: body
-    })
-
+      user: updatedProfile
+    }, { status: 200 });
   } catch (error) {
-    console.error("Error updating user profile:", error)
+    console.error("Error updating user profile:", error);
     return NextResponse.json(
       { error: "Failed to update user profile" },
       { status: 500 }
-    )
+    );
   }
 }

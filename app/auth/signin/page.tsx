@@ -14,7 +14,7 @@ import { Github, Mail } from "lucide-react"
 import toast from "react-hot-toast"
 
 export default function SignInPage() {
-  const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -25,7 +25,7 @@ export default function SignInPage() {
 
     try {
       const result = await signIn("credentials", {
-        email,
+        username,
         password,
         redirect: false,
       })
@@ -75,8 +75,8 @@ export default function SignInPage() {
         <CardContent className="space-y-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Label htmlFor="username">Username</Label>
+              <Input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
             </div>
             <div>
               <Label htmlFor="password">Password</Label>

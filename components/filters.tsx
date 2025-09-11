@@ -128,7 +128,7 @@ export function Filters({ onFilterChange, className }: FiltersProps) {
               <SelectContent>
                 <SelectItem value="all_locations">All Locations</SelectItem>
                 {locations.map((location) => (
-                  <SelectItem key={location} value={location.toLowerCase()}>
+                  <SelectItem key={location} value={location.toLowerCase() || "all"}>
                     {location}
                   </SelectItem>
                 ))}
@@ -143,7 +143,7 @@ export function Filters({ onFilterChange, className }: FiltersProps) {
               <SelectContent>
                 <SelectItem value="all_categories">All Categories</SelectItem>
                 {getCategoriesForType().map((category) => (
-                  <SelectItem key={category} value={category}>
+                  <SelectItem key={category} value={category || "all"}>
                     {category.split("-").map(word => 
                       word.charAt(0).toUpperCase() + word.slice(1)
                     ).join(" ")}

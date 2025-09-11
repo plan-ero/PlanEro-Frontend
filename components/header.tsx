@@ -7,7 +7,7 @@ import { useSession, signIn, signOut } from "next-auth/react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
 import { 
   Search, 
@@ -75,21 +75,19 @@ export function Header() {
           : "bg-background border-b"
       }`}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+      <div className="container mx-auto px-2 sm:px-3 md:px-4">
+        <div className="flex h-12 sm:h-14 md:h-16 items-center justify-between">
           
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="flex items-center space-x-2 mr-7">
-              <div className="w-8 h-8 bg-gradient-to-r from-primary to-primary/80 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">PE</span>
-              </div>
-              <span className="font-bold text-xl text-foreground">Planero</span>
+          <Link href="/" className="flex items-center space-x-1 sm:space-x-2 mr-2 sm:mr-4 md:mr-7">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-gradient-to-r from-primary to-primary/80 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xs">PE</span>
             </div>
+            <span className="font-bold text-base sm:text-lg md:text-xl text-foreground">Planero</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
             <Link href="/venues" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Venues
             </Link>
@@ -105,7 +103,7 @@ export function Header() {
           </nav>
 
           {/* Enhanced Search Bar - Desktop */}
-          <div className="hidden lg:flex items-center flex-1 max-w-lg mx-8">
+          <div className="hidden lg:flex items-center flex-1 max-w-lg mx-4 lg:mx-8">
             <form onSubmit={handleSearch} className="relative w-full">
               <div className="relative flex items-center">
                 <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
@@ -133,7 +131,7 @@ export function Header() {
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 sm:space-x-2">
             
             {/* Mobile Search */}
             <Sheet>
@@ -142,7 +140,8 @@ export function Header() {
                   <Search className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="top" className="h-auto p-6">
+              <SheetContent side="top" className="h-auto p-4 sm:p-6">
+                <SheetTitle className="sr-only">Search</SheetTitle>
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Search</h3>
                   <form onSubmit={handleSearch} className="space-y-3">
@@ -273,7 +272,7 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="hidden md:flex items-center space-x-2">
                 <Button variant="ghost" size="sm" onClick={() => signIn()}>
                   <LogIn className="h-4 w-4 mr-2" />
                   Sign In
@@ -294,7 +293,8 @@ export function Header() {
                   <Menu className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-80">
+              <SheetContent side="right" className="w-72 sm:w-80">
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <div className="mt-6 space-y-6">
                   <div className="space-y-3">
                     <h3 className="text-lg font-semibold">Navigation</h3>

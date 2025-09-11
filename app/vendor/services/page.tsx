@@ -113,19 +113,61 @@ export default function VendorServices() {
     }
   }, [session, status, router])
 
+  // Helper function to create authenticated headers
+  const getAuthHeaders = (): HeadersInit => {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    }
+    
+    // Check all possible token locations
+    let token = null
+    
+    if ((session as any)?.apiToken) {
+      token = (session as any).apiToken
+    } else if ((session as any)?.user?.token) {
+      token = (session as any).user.token
+    } else if ((session as any)?.token) {
+      token = (session as any).token
+    }
+    
+    // Add authorization header if we have a token
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    
+    return headers
+  }
+  
   const fetchServices = async () => {
     try {
       setLoading(true)
-      
-      const response = await fetch(`/api/vendors/services`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      // Get authenticated headers
+      const headers = getAuthHeaders()
+      // Get vendorId from session (user.profile or user.vendorId)
+      let vendorId = null
+      // Prefer vendor.id (number) from session
+      if ((session as any)?.user?.vendor?.id && !isNaN(Number((session as any).user.vendor.id))) {
+        vendorId = (session as any).user.vendor.id
+      } else if ((session as any)?.user?.vendorId && !isNaN(Number((session as any).user.vendorId))) {
+        vendorId = (session as any).user.vendorId
+      }
+      if (!vendorId) {
+        toast.error("No valid numeric vendorId found in session. Please re-login as a vendor.")
+        console.log("Session user data:", session?.user)
+        setLoading(false)
+        return
+      }
+      const response = await fetch(`/api/vendors/services?vendorId=${vendorId}`, {
+        headers,
       })
-      
       if (response.ok) {
         const data = await response.json()
         setServices(data)
+      } else if (response.status === 401) {
+        toast.error("Authentication required. Please sign in again.")
+        router.push('/auth/signin')
+      } else {
+        toast.error("Failed to load services")
       }
     } catch (error) {
       console.error("Error fetching services:", error)
@@ -145,11 +187,12 @@ export default function VendorServices() {
       
       const method = editingService ? "PUT" : "POST"
       
+      // Get authenticated headers
+      const headers = getAuthHeaders()
+      
       const response = await fetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify(data),
       })
 
@@ -175,11 +218,12 @@ export default function VendorServices() {
     if (!confirm("Are you sure you want to delete this service?")) return
 
     try {
+      // Get authenticated headers
+      const headers = getAuthHeaders()
+      
       const response = await fetch(`/api/vendors/services/${serviceId}`, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
       })
 
       if (response.ok) {
@@ -305,7 +349,7 @@ export default function VendorServices() {
                         {Object.values(ServiceType).map((type) => {
                           const IconComponent = serviceTypeIcons[type]
                           return (
-                            <SelectItem key={type} value={type}>
+                            <SelectItem key={type} value={type || "OTHER"}>
                               <div className="flex items-center gap-2">
                                 <IconComponent className="h-4 w-4" />
                                 {type.replace(/_/g, " ")}
@@ -403,7 +447,9 @@ export default function VendorServices() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service) => {
-              const IconComponent = serviceTypeIcons[service.serviceType]
+              // Fallback to 'OTHER' if serviceType is missing or invalid
+              const typeKey = service.serviceType && serviceTypeIcons[service.serviceType] ? service.serviceType : 'OTHER';
+              const IconComponent = serviceTypeIcons[typeKey] || Tag;
               return (
                 <Card key={service.id} className="group hover:shadow-md transition-shadow">
                   <CardHeader className="pb-4">
@@ -415,7 +461,7 @@ export default function VendorServices() {
                         <div>
                           <CardTitle className="text-lg">{service.name}</CardTitle>
                           <CardDescription>
-                            {service.serviceType.replace(/_/g, " ")}
+                            {(service.serviceType ? String(service.serviceType).replace(/_/g, " ") : 'Other')}
                           </CardDescription>
                         </div>
                       </div>

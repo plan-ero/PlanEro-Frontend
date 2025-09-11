@@ -117,7 +117,7 @@ export default function ServicesPage() {
             </SelectTrigger>
             <SelectContent>
               {categories.map((category) => (
-                <SelectItem key={category.value} value={category.value}>
+                <SelectItem key={category.value} value={category.value || "All Categories"}>
                   {category.label}
                 </SelectItem>
               ))}

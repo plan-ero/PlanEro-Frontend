@@ -1,10 +1,11 @@
-// API utility functions for interacting with the external backend
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://16.170.172.178:8080'
+// API utility functions for interacting with the backend
+const API_BASE_URL: string = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
 
 // Types based on the OpenAPI specification
 export interface SignupRequest {
   role: 'USER' | 'VENDOR'
   username: string
+  email: string
   password: string
 }
 
@@ -41,14 +42,34 @@ export interface Profile {
   vendor?: Vendor
 }
 
+export interface ErrorResponse {
+  timestamp: string
+  status: number
+  error: string
+  path: string
+  fieldErrors?: Record<string, string>
+}
+
 export class ApiError extends Error {
   constructor(
     public status: number,
     message: string,
-    public code?: string
+    public code?: string,
+    public fieldErrors?: Record<string, string>,
+    public path?: string
   ) {
     super(message)
     this.name = 'ApiError'
+  }
+
+  static fromResponse(response: ErrorResponse): ApiError {
+    return new ApiError(
+      response.status,
+      response.error,
+      undefined,
+      response.fieldErrors,
+      response.path
+    )
   }
 }
 
@@ -132,31 +153,42 @@ async function apiCall<T>(
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
+      console.log(`API Call: ${options.method || 'GET'} ${url}`, { attempt: attempt + 1 })
+      
       const response = await fetch(url, requestOptions)
 
       if (!response.ok) {
-        let errorMessage = `HTTP ${response.status}: ${response.statusText}`
-        let errorCode = response.status.toString()
+        let errorResponse: ErrorResponse
         
         try {
-          const errorData = await response.json()
-          errorMessage = errorData.message || errorData.error || errorMessage
-          errorCode = errorData.code || errorCode
+          errorResponse = await response.json() as ErrorResponse
         } catch {
-          // If response is not JSON, use default error message
+          // If response is not JSON, create a fallback error response
+          errorResponse = {
+            timestamp: new Date().toISOString(),
+            status: response.status,
+            error: response.statusText || 'Unknown error',
+            path: endpoint
+          }
         }
         
-        throw new ApiError(response.status, errorMessage, errorCode)
+        console.error('API Error:', errorResponse)
+        throw ApiError.fromResponse(errorResponse)
       }
 
       // Handle empty responses
       const contentType = response.headers.get('content-type')
       if (contentType && contentType.includes('application/json')) {
-        return response.json()
+        const data = await response.json()
+        console.log(`API Success: ${options.method || 'GET'} ${url}`, data)
+        return data
       } else {
+        console.log(`API Success: ${options.method || 'GET'} ${url} (empty response)`)
         return {} as T
       }
     } catch (error) {
+      console.error(`API Error on attempt ${attempt + 1}:`, error)
+      
       if (error instanceof ApiError) {
         throw error
       }

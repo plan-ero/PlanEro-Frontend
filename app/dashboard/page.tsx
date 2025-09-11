@@ -32,8 +32,10 @@ export default function DashboardRedirect() {
         router.push("/vendor/dashboard")
       } else if (userRole === "ADMIN") {
         router.push("/admin/dashboard")
+      } else if (userRole === "USER") {
+        router.push("/dashboard/user") // Regular user dashboard
       } else {
-        router.push("/") // HOST or regular user
+        router.push("/") // Default fallback
       }
     }
   }, [session, status, router])

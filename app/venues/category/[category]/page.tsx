@@ -270,7 +270,7 @@ export default function CategoryPage() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={`absolute top-3 right-3 bg-white/90 backdrop-blur-sm hover:bg-white ${
+                    className={`absolute top-3 right-3 bg-white/90 hover:bg-white ${
                       isFavorite(venue.id) ? "text-red-500" : "text-gray-600"
                     }`}
                     onClick={() => handleToggleFavorite(venue)}

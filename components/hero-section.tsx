@@ -61,11 +61,11 @@ export function HeroSection() {
         >
           <Badge variant="outline" className="mb-4 sm:mb-6 px-4 py-2 bg-background/80 backdrop-blur-sm border-primary/30">
             <Sparkles className="h-4 w-4 mr-2" />
-            DISCOVER AMAZING VENUES & VENDORS
+            PLAN YOUR PERFECT WEDDING
           </Badge>
           
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-8 tracking-tight leading-none text-white">
-            Your Perfect Event{" "}
+            Your Dream Wedding{" "}
             <motion.span 
               className="block bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent"
               initial={{ opacity: 0, scale: 0.8 }}
@@ -77,8 +77,8 @@ export function HeroSection() {
           </h1>
           
           <p className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8 sm:mb-12">
-            Connect with trusted vendors, discover stunning venues, and create unforgettable experiences 
-            with our comprehensive event planning platform.
+            From intimate garden ceremonies to grand banquet celebrations, find everything you need to create
+            your perfect wedding day with our comprehensive planning platform.
           </p>
         </motion.div>
 
@@ -91,11 +91,11 @@ export function HeroSection() {
           {/* Enhanced Search Bar */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8 max-w-3xl mx-auto">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+              <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-foreground/70" />
               <Input
                 type="search"
                 placeholder="Search venues, vendors, or services..."
-                className="pl-10 sm:pl-12 h-12 sm:h-14 text-base sm:text-lg border-2 focus:border-primary bg-background/95 backdrop-blur-sm"
+                className="pl-10 sm:pl-12 h-12 sm:h-14 text-base sm:text-lg border-2 focus:border-primary bg-background/95 backdrop-blur-sm text-foreground placeholder:text-foreground/60"
               />
             </div>
             <Button

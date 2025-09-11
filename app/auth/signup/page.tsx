@@ -6,31 +6,61 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Github, Mail, Building2, User, Crown } from "lucide-react"
 import toast from "react-hot-toast"
 
+// Validation schema that matches backend requirements
+const signupSchema = z.object({
+  name: z.string()
+    .min(1, "Full name is required")
+    .max(50, "Name must be less than 50 characters"),
+  email: z.string()
+    .email("Please enter a valid email address"),
+  username: z.string()
+    .min(3, "Username must be at least 3 characters long")
+    .max(20, "Username must be less than 20 characters")
+    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
+  password: z.string()
+    .min(8, "Password must be at least 8 characters long")
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/, "Password must contain at least one lowercase letter, one uppercase letter, and one digit"),
+  confirmPassword: z.string()
+    .min(1, "Please confirm your password"),
+  role: z.enum(["USER", "VENDOR"], {
+    required_error: "Please select an account type",
+  })
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+})
+
+type SignupFormData = z.infer<typeof signupSchema>
+
 export default function SignUpPage() {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [role, setRole] = useState("HOST")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const form = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+      role: "USER",
+    },
+  })
 
-    if (password !== confirmPassword) {
-      toast.error("Passwords don't match")
-      return
-    }
-
+  const handleSubmit = async (data: SignupFormData) => {
     setLoading(true)
 
     try {
@@ -41,15 +71,28 @@ export default function SignUpPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
-          email,
-          password,
-          role,
+          name: data.name,
+          email: data.email,
+          username: data.username,
+          password: data.password,
+          role: data.role,
         }),
       })
 
       if (!registerResponse.ok) {
         const error = await registerResponse.json()
+        
+        // Handle field-specific errors from backend
+        if (error.fieldErrors) {
+          Object.entries(error.fieldErrors).forEach(([field, message]) => {
+            form.setError(field as keyof SignupFormData, {
+              type: "server",
+              message: message as string,
+            })
+          })
+          return
+        }
+        
         toast.error(error.error || "Registration failed")
         return
       }
@@ -58,9 +101,8 @@ export default function SignUpPage() {
 
       // After successful registration, sign in the user
       const result = await signIn("credentials", {
-        email,
-        password,
-        role,
+        username: data.username,
+        password: data.password,
         redirect: false,
       })
 
@@ -70,7 +112,7 @@ export default function SignUpPage() {
         toast.success("Account created successfully!")
         
         // Redirect based on role
-        if (role === "VENDOR") {
+        if (data.role === "VENDOR") {
           router.push("/vendor/onboarding")
         } else {
           router.push("/")
@@ -100,67 +142,121 @@ export default function SignUpPage() {
           <CardDescription>Join PlanEro to start planning your perfect event</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="name">Full Name</Label>
-              <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-            </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </div>
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="text" placeholder="Enter your full name" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
+              
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="email" placeholder="Enter your email" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <Label htmlFor="role">Account Type</Label>
-              <Select value={role} onValueChange={setRole}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select account type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="HOST">
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      <div>
-                        <p className="font-medium">Event Host</p>
-                        <p className="text-xs text-muted-foreground">Planning an event</p>
-                      </div>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="VENDOR">
-                    <div className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4" />
-                      <div>
-                        <p className="font-medium">Vendor</p>
-                        <p className="text-xs text-muted-foreground">Offering event services</p>
-                      </div>
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Creating Account..." : "Create Account"}
-            </Button>
-          </form>
+              
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="text" placeholder="Choose a username (letters, numbers, _ only)" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="password" placeholder="Must contain uppercase, lowercase, and digit" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="password" placeholder="Confirm your password" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Account Type</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select account type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="USER">
+                          <div className="flex items-center gap-2">
+                            <User className="h-4 w-4" />
+                            <div>
+                              <p className="font-medium">Event Host</p>
+                              <p className="text-xs text-muted-foreground">Planning an event</p>
+                            </div>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="VENDOR">
+                          <div className="flex items-center gap-2">
+                            <Building2 className="h-4 w-4" />
+                            <div>
+                              <p className="font-medium">Vendor</p>
+                              <p className="text-xs text-muted-foreground">Offering event services</p>
+                            </div>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Creating Account..." : "Create Account"}
+              </Button>
+            </form>
+          </Form>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">

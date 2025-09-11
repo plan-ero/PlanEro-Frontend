@@ -258,7 +258,7 @@ export default function AdvancedSearchPage() {
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((category) => (
-                        <SelectItem key={category.value} value={category.value}>
+                        <SelectItem key={category.value} value={category.value || "All Categories"}>
                           {category.label}
                         </SelectItem>
                       ))}
@@ -275,7 +275,7 @@ export default function AdvancedSearchPage() {
                     </SelectTrigger>
                     <SelectContent>
                       {locations.map((location) => (
-                        <SelectItem key={location.value} value={location.value}>
+                        <SelectItem key={location.value} value={location.value || "All Locations"}>
                           {location.label}
                         </SelectItem>
                       ))}
@@ -292,7 +292,7 @@ export default function AdvancedSearchPage() {
                     </SelectTrigger>
                     <SelectContent>
                       {sortOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
+                        <SelectItem key={option.value} value={option.value || "Most Relevant"}>
                           {option.label}
                         </SelectItem>
                       ))}
@@ -377,7 +377,7 @@ export default function AdvancedSearchPage() {
                   <Label className="text-sm font-medium mb-2 block">Availability</Label>
                   <Select value={filters.availability} onValueChange={(value) => handleFilterChange('availability', value)}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Default" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Any time</SelectItem>

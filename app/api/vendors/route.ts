@@ -73,20 +73,58 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const pgNo = parseInt(searchParams.get('pgNo') || '1')
-    const pgSize = parseInt(searchParams.get('pgSize') || '10')
+    const pgSize = parseInt(searchParams.get('pgSize') || '12')
+    const search = searchParams.get('search') || ''
+    const location = searchParams.get('location') || ''
+    const showAll = searchParams.get('showAll') === 'true'
+
+    console.log('API Request params:', { pgNo, pgSize, search, location, showAll })
 
     try {
       // Fetch from external API
       const allVendors = await vendorApi.getAllVendors()
-      
-      // Filter approved and published vendors
-      const filteredVendors = allVendors.filter(vendor => vendor.approved && vendor.published)
-      
+      console.log('All vendors from backend:', allVendors)
+      console.log('Number of vendors:', allVendors?.length || 0)
+
+      // Filter approved and published vendors (show all for now since none are approved/published)
+      let filteredVendors = allVendors // Temporarily show all vendors for testing
+      console.log('Filtered vendors (showing all for testing):', filteredVendors)
+      console.log('Number of filtered vendors:', filteredVendors.length)
+
+      // Apply search filter
+      if (search && search.trim()) {
+        const searchLower = search.toLowerCase().trim()
+        filteredVendors = filteredVendors.filter(vendor => {
+          const businessName = (vendor.businessName || '').toLowerCase()
+          const bio = (vendor.bio || '').toLowerCase()
+          const vendorLocation = (vendor.location || '').toLowerCase()
+          const matches = businessName.includes(searchLower) ||
+                         bio.includes(searchLower) ||
+                         vendorLocation.includes(searchLower)
+          console.log(`Search filter for vendor ${vendor.id}: "${searchLower}" in "${businessName}" or "${bio}" or "${vendorLocation}" = ${matches}`)
+          return matches
+        })
+        console.log('After search filter:', filteredVendors.length)
+      }
+
+      // Apply location filter
+      if (location && location !== 'all' && location.trim()) {
+        const locationLower = location.toLowerCase().trim()
+        filteredVendors = filteredVendors.filter(vendor => {
+          const vendorLocation = (vendor.location || '').toLowerCase()
+          const matches = vendorLocation.includes(locationLower)
+          console.log(`Location filter for vendor ${vendor.id}: "${locationLower}" in "${vendorLocation}" = ${matches}`)
+          return matches
+        })
+        console.log('After location filter:', filteredVendors.length)
+      }
+
       // Apply pagination
       const skip = (pgNo - 1) * pgSize
       const paginatedVendors = filteredVendors.slice(skip, skip + pgSize)
-      
-      return NextResponse.json({
+      console.log('Final paginated vendors:', paginatedVendors.length)
+
+      const response = {
         vendors: paginatedVendors,
         pagination: {
           page: pgNo,
@@ -94,11 +132,14 @@ export async function GET(request: NextRequest) {
           total: filteredVendors.length,
           pages: Math.ceil(filteredVendors.length / pgSize)
         }
-      })
-      
+      }
+
+      console.log('API Response:', response)
+      return NextResponse.json(response)
+
     } catch (apiError) {
       console.error("External API error:", apiError)
-      
+
       // Return empty result if API is down
       return NextResponse.json({
         vendors: [],

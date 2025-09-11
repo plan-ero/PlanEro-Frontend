@@ -10,17 +10,29 @@ export function useApiToken() {
   const [token, setToken] = useState<string | null>(null)
 
   useEffect(() => {
-    // Check session for API token
-    if (session?.apiToken) {
-      setToken(session.apiToken)
+    // Check session for API token (multiple possible locations based on NextAuth config)
+    if ((session as any)?.apiToken) {
+      setToken((session as any).apiToken)
+      return
+    }
+    
+    if ((session as any)?.user?.token) {
+      setToken((session as any).user.token)
+      return
+    }
+    
+    if ((session as any)?.token) {
+      setToken((session as any).token)
       return
     }
 
     // Check localStorage for token
-    const storedToken = localStorage.getItem('authToken')
-    if (storedToken) {
-      setToken(storedToken)
-      return
+    if (typeof window !== 'undefined') {
+      const storedToken = localStorage.getItem('authToken')
+      if (storedToken) {
+        setToken(storedToken)
+        return
+      }
     }
 
     setToken(null)

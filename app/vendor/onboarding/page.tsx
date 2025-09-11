@@ -62,12 +62,31 @@ export default function VendorOnboarding() {
     try {
       setLoading(true)
       
+      // Get the authentication token from session
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      }
+      
+      // Add authorization token if available
+      if ((session as any)?.apiToken) {
+        headers["Authorization"] = `Bearer ${(session as any).apiToken}`
+      }
+      
+      // Add user email to headers for backend reference
+      if (session?.user?.email) {
+        headers["x-user-email"] = session.user.email
+      }
+      
+      // Add email to the data payload as well
+      const payload = {
+        ...data,
+        email: session?.user?.email
+      }
+      
       const response = await fetch("/api/vendors/onboard", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+        headers,
+        body: JSON.stringify(payload),
       })
 
       if (response.ok) {
