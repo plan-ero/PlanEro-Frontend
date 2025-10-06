@@ -1,86 +1,80 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from 'next/server';
 
-// Mock data - replace with actual database queries
-const venues = [
-  {
-    id: "1",
-    name: "Elegant Garden Venue",
-    location: "Beverly Hills, CA",
-    price: 5000,
-    image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
-    category: "Wedding Venues",
-    capacity: 150,
-    description: "Beautiful outdoor garden venue perfect for intimate weddings",
-    rating: 4.8,
-    reviews: 124,
-    amenities: ["Outdoor ceremony space", "Bridal suite", "Catering kitchen", "Parking"],
-    images: [
-      "https://media.istockphoto.com/id/908077986/photo/wedding-ceremony.jpg?s=612x612&w=0&k=20&c=dkRXHQpOr4lkyHtE3RV4qpgp3QloHtkfYtQ6qzFN4xw=",
-      "https://media.istockphoto.com/id/908077986/photo/wedding-ceremony.jpg?s=612x612&w=0&k=20&c=dkRXHQpOr4lkyHtE3RV4qpgp3QloHtkfYtQ6qzFN4xw=",
-      "https://media.istockphoto.com/id/908077986/photo/wedding-ceremony.jpg?s=612x612&w=0&k=20&c=dkRXHQpOr4lkyHtE3RV4qpgp3QloHtkfYtQ6qzFN4xw=",
-    ],
-  },
-  {
-    id: "2",
-    name: "Modern Rooftop Space",
-    location: "Manhattan, NY",
-    price: 8000,
-    image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
-    category: "Corporate Events",
-    capacity: 200,
-    description: "Stunning rooftop venue with panoramic city views",
-    rating: 4.9,
-    reviews: 89,
-    amenities: ["City skyline views", "Climate controlled", "AV equipment", "Bar service"],
-    images: [
-      "https://media.istockphoto.com/id/908077986/photo/wedding-ceremony.jpg?s=612x612&w=0&k=20&c=dkRXHQpOr4lkyHtE3RV4qpgp3QloHtkfYtQ6qzFN4xw=",
-      "https://media.istockphoto.com/id/908077986/photo/wedding-ceremony.jpg?s=612x612&w=0&k=20&c=dkRXHQpOr4lkyHtE3RV4qpgp3QloHtkfYtQ6qzFN4xw=",
-      "https://media.istockphoto.com/id/908077986/photo/wedding-ceremony.jpg?s=612x612&w=0&k=20&c=dkRXHQpOr4lkyHtE3RV4qpgp3QloHtkfYtQ6qzFN4xw=",
-    ],
-  },
-]
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get('category');
+    const search = searchParams.get('search');
+    const sortBy = searchParams.get('sortBy');
+    const eventType = searchParams.get('eventType');
+    
+    // Build query parameters for backend
+    const params = new URLSearchParams();
+    params.append('serviceType', 'VENUE');
+    if (eventType) params.append('eventType', eventType);
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const category = searchParams.get("category")
-  const search = searchParams.get("search")
-  const sortBy = searchParams.get("sortBy")
+    const response = await fetch(
+      `${process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080'}/services/public?${params.toString()}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-store',
+      }
+    );
 
-  let filteredVenues = [...venues]
-
-  // Filter by category
-  if (category && category !== "all") {
-    filteredVenues = filteredVenues.filter((venue) => venue.category.toLowerCase().includes(category.toLowerCase()))
-  }
-
-  // Filter by search query
-  if (search) {
-    filteredVenues = filteredVenues.filter(
-      (venue) =>
-        venue.name.toLowerCase().includes(search.toLowerCase()) ||
-        venue.location.toLowerCase().includes(search.toLowerCase()) ||
-        venue.description.toLowerCase().includes(search.toLowerCase()),
-    )
-  }
-
-  // Sort venues
-  if (sortBy) {
-    switch (sortBy) {
-      case "price-low":
-        filteredVenues.sort((a, b) => a.price - b.price)
-        break
-      case "price-high":
-        filteredVenues.sort((a, b) => b.price - a.price)
-        break
-      case "rating":
-        filteredVenues.sort((a, b) => b.rating - a.rating)
-        break
-      default:
-        filteredVenues.sort((a, b) => a.name.localeCompare(b.name))
+    if (!response.ok) {
+      console.error('Backend response error:', response.status, response.statusText);
+      return NextResponse.json(
+        { error: 'Failed to fetch venues from backend' },
+        { status: response.status }
+      );
     }
-  }
 
-  return NextResponse.json(filteredVenues)
+    let venues = await response.json();
+
+    // Apply frontend filtering for backward compatibility
+    if (category && category !== "all") {
+      venues = venues.filter((venue: any) => 
+        venue.eventType?.toLowerCase().includes(category.toLowerCase()) ||
+        venue.serviceType?.toLowerCase().includes(category.toLowerCase())
+      );
+    }
+
+    if (search) {
+      venues = venues.filter((venue: any) =>
+        venue.name?.toLowerCase().includes(search.toLowerCase()) ||
+        venue.description?.toLowerCase().includes(search.toLowerCase()) ||
+        venue.metadata?.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Sort venues
+    if (sortBy) {
+      switch (sortBy) {
+        case "price-low":
+          venues.sort((a: any, b: any) => (a.cost || 0) - (b.cost || 0));
+          break;
+        case "price-high":
+          venues.sort((a: any, b: any) => (b.cost || 0) - (a.cost || 0));
+          break;
+        case "rating":
+          venues.sort((a: any, b: any) => (b.averageRating || 0) - (a.averageRating || 0));
+          break;
+        default:
+          venues.sort((a: any, b: any) => (a.name || '').localeCompare(b.name || ''));
+      }
+    }
+
+    return NextResponse.json(venues);
+  } catch (error) {
+    console.error('Error fetching venues:', error);
+    return NextResponse.json(
+      { error: 'Internal server error while fetching venues' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: Request) {

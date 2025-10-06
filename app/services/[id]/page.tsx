@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { StarRating } from "@/components/ui/star-rating"
 import { RatingsDisplay } from "@/components/ratings-display"
+import { InquiryDialog } from "@/components/inquiry-dialog"
 import { useFavorites } from "@/hooks/use-favorites"
 import { useCart } from "@/hooks/use-cart"
 import { useSession } from "next-auth/react"
@@ -511,14 +512,19 @@ export default function ServiceDetailPage() {
                 <CardTitle>Get in Touch</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full">
-                  Request Quote
-                </Button>
-                <Button variant="outline" className="w-full">
-                  Contact Vendor
-                </Button>
-                <Button variant="outline" className="w-full">
-                  Add to Favorites
+                <InquiryDialog 
+                  serviceId={service.id.toString()} 
+                  serviceName={service.name}
+                  serviceType={service.serviceType}
+                >
+                  <Button className="w-full">
+                    Inquire Vendor
+                  </Button>
+                </InquiryDialog>
+                <Button variant="outline" className="w-full" asChild>
+                  <Link href={vendor ? `/vendors/${vendor.id}` : '#'}>
+                    Contact Vendor
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
