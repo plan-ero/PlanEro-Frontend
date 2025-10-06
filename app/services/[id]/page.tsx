@@ -142,7 +142,7 @@ export default function ServiceDetailPage() {
   const { data: session } = useSession()
   const { favorites, addToFavorites, removeFromFavorites } = useFavorites()
   const { addItem } = useCart()
-  
+
   const [service, setService] = useState<Service | null>(null)
   const [vendor, setVendor] = useState<Vendor | null>(null)
   const [loading, setLoading] = useState(true)
@@ -361,7 +361,7 @@ export default function ServiceDetailPage() {
             <Card>
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Button 
+                  <Button
                     onClick={handleAddToFavorites}
                     variant={isFavorite ? "default" : "outline"}
                     className="flex items-center gap-2"
@@ -369,8 +369,8 @@ export default function ServiceDetailPage() {
                     <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
                     {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
                   </Button>
-                  
-                  <Button 
+
+                  <Button
                     onClick={handleAddToCart}
                     className="flex items-center gap-2"
                     disabled={!service?.availability}
@@ -378,8 +378,8 @@ export default function ServiceDetailPage() {
                     <ShoppingCart className="h-4 w-4" />
                     Add to Cart
                   </Button>
-                  
-                  <Button 
+
+                  <Button
                     asChild
                     variant="outline"
                     className="flex items-center gap-2"
@@ -512,8 +512,8 @@ export default function ServiceDetailPage() {
                 <CardTitle>Get in Touch</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <InquiryDialog 
-                  serviceId={service.id.toString()} 
+                <InquiryDialog
+                  serviceId={service.id.toString()}
                   serviceName={service.name}
                   serviceType={service.serviceType}
                 >

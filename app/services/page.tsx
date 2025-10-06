@@ -117,7 +117,7 @@ export default function ServicesPage() {
   const { data: session } = useSession()
   const { favorites, addToFavorites, removeFromFavorites } = useFavorites()
   const { addItem } = useCart()
-  
+
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -448,16 +448,16 @@ export default function ServicesPage() {
                           View Details
                         </Link>
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="icon"
                         onClick={() => handleAddToFavorites(service)}
                         className={favorites.some(fav => fav.id === service.id.toString() && fav.type === 'service') ? 'text-red-500' : ''}
                       >
                         <Heart className={`h-4 w-4 ${favorites.some(fav => fav.id === service.id.toString() && fav.type === 'service') ? 'fill-current' : ''}`} />
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="icon"
                         onClick={() => handleAddToCart(service)}
                         disabled={!service.availability}

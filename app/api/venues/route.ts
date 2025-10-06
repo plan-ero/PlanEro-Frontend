@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search');
     const sortBy = searchParams.get('sortBy');
     const eventType = searchParams.get('eventType');
-    
+
     // Build query parameters for backend
     const params = new URLSearchParams();
     params.append('serviceType', 'VENUE');
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
     // Apply frontend filtering for backward compatibility
     if (category && category !== "all") {
-      venues = venues.filter((venue: any) => 
+      venues = venues.filter((venue: any) =>
         venue.eventType?.toLowerCase().includes(category.toLowerCase()) ||
         venue.serviceType?.toLowerCase().includes(category.toLowerCase())
       );

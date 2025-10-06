@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -37,9 +37,27 @@ export function InquiryDialog({ serviceId, serviceName, serviceType, children }:
     eventVision: "",
   })
 
+  // Auto-fill form when user session is available
+  useEffect(() => {
+    if (session?.user && open) {
+      const user = session.user
+      // Try to get name from user.name or fallback to username
+      const fullName = user.name || (user as any).username || ""
+      const [firstName = "", lastName = ""] = fullName.split(" ", 2)
+
+      setFormData(prev => ({
+        ...prev,
+        firstName: firstName,
+        lastName: lastName || "", // If no last name, leave empty
+        email: user.email || "",
+        phoneNumber: (user as any).phone || "", // Phone might be in the user object
+      }))
+    }
+  }, [session, open])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!session) {
       toast.error("Please log in to submit an inquiry")
       return
@@ -75,7 +93,7 @@ export function InquiryDialog({ serviceId, serviceName, serviceType, children }:
 
       toast.success("Inquiry submitted successfully! The vendor will contact you soon.")
       setOpen(false)
-      
+
       // Reset form
       setFormData({
         firstName: "",
@@ -108,7 +126,7 @@ export function InquiryDialog({ serviceId, serviceName, serviceType, children }:
         <DialogHeader>
           <DialogTitle>Inquire about {serviceName}</DialogTitle>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>

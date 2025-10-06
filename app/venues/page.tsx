@@ -75,9 +75,9 @@ export default function VenuesPage() {
 
   // Frontend filtering for location (if needed)
   const filteredVenues = venues.filter(venue => {
-    const matchesLocation = !filters.location || 
+    const matchesLocation = !filters.location ||
       venue.metadata?.toLowerCase().includes(filters.location.toLowerCase())
-    
+
     return matchesLocation
   })
 
@@ -143,7 +143,7 @@ export default function VenuesPage() {
         </div>
 
         {/* Filters */}
-        <Filters 
+        <Filters
           onFilterChange={setFilters}
           className="mb-8"
         />
@@ -195,7 +195,7 @@ export default function VenuesPage() {
                     </div>
                   )}
                   <p className="text-sm text-muted-foreground mb-3">{venue.description}</p>
-                  
+
                   {/* Rating Display */}
                   {venue.averageRating && (
                     <div className="flex items-center text-sm text-muted-foreground mb-3">
@@ -212,9 +212,9 @@ export default function VenuesPage() {
                       <span className="text-lg font-bold">${venue.cost.toLocaleString()}</span>
                       <span className="text-sm text-muted-foreground ml-1">/ event</span>
                     </div>
-                    <Button 
-                      size="sm" 
-                      onClick={() => handleAddToCart(venue)} 
+                    <Button
+                      size="sm"
+                      onClick={() => handleAddToCart(venue)}
                       className="flex items-center gap-2"
                       disabled={!venue.availability}
                     >

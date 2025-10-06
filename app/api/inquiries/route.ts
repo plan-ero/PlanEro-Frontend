@@ -4,7 +4,7 @@ import { auth } from '../auth/[...nextauth]/route';
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    
+
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    
+
     // Validate required fields based on Inquiry entity
     const requiredFields = ['firstName', 'lastName', 'email', 'eventData', 'numberOfGuests', 'eventVision'];
     for (const field of requiredFields) {

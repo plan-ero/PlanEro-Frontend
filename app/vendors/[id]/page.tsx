@@ -127,7 +127,7 @@ export default function VendorDetailPage() {
 
       const vendorData = await response.json()
       setVendor(vendorData)
-      
+
       // Fetch vendor services
       await fetchVendorServices()
     } catch (err) {
@@ -141,7 +141,7 @@ export default function VendorDetailPage() {
     try {
       setServicesLoading(true)
       const response = await fetch(`/api/services?vendorId=${vendorId}`)
-      
+
       if (response.ok) {
         const servicesData = await response.json()
         setServices(Array.isArray(servicesData) ? servicesData : [])
@@ -424,7 +424,7 @@ export default function VendorDetailPage() {
                                   <Badge variant="outline" className="text-xs">
                                     {service.serviceType.replace(/_/g, " ")}
                                   </Badge>
-                                  <Badge 
+                                  <Badge
                                     variant={service.availability ? "default" : "secondary"}
                                     className={service.availability ? "bg-green-100 text-green-800 border-green-200 text-xs" : "text-xs"}
                                   >

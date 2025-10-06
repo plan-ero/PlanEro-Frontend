@@ -29,7 +29,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           console.log("Authenticated user profile:", profile)
 
           return {
-            id: profile.username, // Use username as ID since there's no separate ID field
+            id: profile.email, // Use email as ID for consistency with backend
             email: profile.email,
             name: profile.username,
             image: profile.vendor?.profilePictureUrl || null,

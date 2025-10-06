@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import React, { useState, useEffect, useRef } from "react"
+import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -16,17 +16,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { 
-  User, 
-  Building2, 
-  Globe, 
-  Camera, 
-  Save, 
-  Eye, 
+import {
+  User,
+  Building2,
+  Globe,
+  Camera,
+  Save,
+  Eye,
   EyeOff,
   CheckCircle,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  LogOut
 } from "lucide-react"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import toast from "react-hot-toast"
@@ -34,14 +35,16 @@ import toast from "react-hot-toast"
 const profileSchema = z.object({
   businessName: z.string().min(2, "Business name must be at least 2 characters"),
   location: z.string().min(2, "Location is required"),
-  bio: z.string().min(50, "Bio must be at least 50 characters").max(1000, "Bio must be less than 1000 characters"),
+  bio: z.string().min(10, "Bio must be at least 10 characters").max(1000, "Bio must be less than 1000 characters"),
   websiteUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
   profilePictureUrl: z.string().optional(),
+  phoneNumber: z.string().optional(),
 })
 
 const accountSchema = z.object({
-  fullName: z.string().min(2, "Full name must be at least 2 characters"),
+  username: z.string().min(2, "Username must be at least 2 characters"),
   email: z.string().email("Please enter a valid email"),
+  phone: z.string().optional(),
 })
 
 const settingsSchema = z.object({
@@ -59,17 +62,23 @@ interface Vendor {
   businessName: string
   location: string
   bio: string
-  websiteUrl?: string
+  websiteUrl?: string[] // Backend has List<String>
   profilePictureUrl?: string
-  userId: number
+  email: string
+  phoneNumber?: string
   isApproved: boolean
   isPublished: boolean
+  addressId?: number
+  priceEnum?: string
+  totalRating?: number
+  numberOfRatings?: number
 }
 
 interface User {
   id: number
-  fullName: string
+  username: string
   email: string
+  phone?: string
   role: string
 }
 
@@ -80,6 +89,13 @@ export default function VendorProfile() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [authIssue, setAuthIssue] = useState(false)
+  const [dataFetched, setDataFetched] = useState(false) // Prevent unnecessary re-fetching
+  const [lastSubmitTime, setLastSubmitTime] = useState<number>(0) // Track last submission time
+  const submissionInProgress = useRef(false) // More reliable submission tracking
+  const preventFetch = useRef(false) // Prevent fetchData after successful submissions
+
+
 
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
@@ -103,37 +119,70 @@ export default function VendorProfile() {
       return
     }
 
-    if (session?.user && status === "authenticated") {
+    if (session?.user && status === "authenticated" && !dataFetched && !preventFetch.current) {
       fetchData()
     }
-  }, [session, status, router])
+  }, [session, status, router, dataFetched]) // Keep session dependency but add preventFetch check
 
   const fetchData = async () => {
     try {
       setLoading(true)
-      
+
       // Fetch vendor profile
       const vendorResponse = await fetch(`/api/vendors/profile`, {
         headers: {
           'Content-Type': 'application/json',
         },
       })
-      
+
       if (vendorResponse.ok) {
         const vendorData = await vendorResponse.json()
+        console.log('✅ Vendor data received:', vendorData)
         setVendor(vendorData)
-        profileForm.reset({
-          businessName: vendorData.businessName,
-          location: vendorData.location,
-          bio: vendorData.bio,
-          websiteUrl: vendorData.websiteUrl || "",
+
+        const formData = {
+          businessName: vendorData.businessName || "",
+          location: vendorData.location || "",
+          bio: vendorData.bio || "",
+          websiteUrl: vendorData.websiteUrl?.[0] || "", // Take first URL from array
           profilePictureUrl: vendorData.profilePictureUrl || "",
-        })
+          phoneNumber: vendorData.phoneNumber || "",
+        }
+        console.log('🔧 Resetting form with data:', formData)
+        profileForm.reset(formData)
+
         settingsForm.reset({
           isPublished: vendorData.isPublished,
           emailNotifications: true,
           smsNotifications: false,
         })
+
+        // Verify form was updated correctly
+        setTimeout(() => {
+          console.log('✅ Form values after reset:', profileForm.getValues())
+        }, 100)
+      } else if (vendorResponse.status === 404) {
+        // Vendor profile doesn't exist yet - this is ok, we'll show creation form
+        const errorData = await vendorResponse.json().catch(() => ({}))
+        setVendor(null)
+        if (errorData.needsCreation) {
+          toast.success("Welcome! Please create your vendor profile to get started")
+        } else {
+          console.error('Vendor profile not found:', errorData)
+          toast.error(errorData.error || "Vendor profile not found. Please create one to continue.")
+        }
+      } else {
+        const errorData = await vendorResponse.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('Vendor profile fetch error:', errorData)
+
+        // Check if this is likely an authentication token mismatch
+        if (errorData.error && errorData.error.includes('email') && vendorResponse.status === 404) {
+          setAuthIssue(true)
+          toast.error("Authentication session mismatch detected. Please sign out and sign back in to refresh your session.")
+        } else {
+          toast.error(`Failed to load vendor profile: ${errorData.error || 'Unknown error'}`)
+        }
+        setVendor(null)
       }
 
       // Fetch user account info
@@ -142,54 +191,117 @@ export default function VendorProfile() {
           'Content-Type': 'application/json',
         },
       })
-      
+
       if (userResponse.ok) {
         const userData = await userResponse.json()
         setUser(userData)
         accountForm.reset({
-          fullName: userData.fullName,
-          email: userData.email,
+          username: userData.username || "",
+          email: userData.email || "",
+          phone: userData.phone || "",
         })
+      } else {
+        const errorData = await userResponse.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('User profile fetch error:', errorData)
+        toast.error(`Failed to load user profile: ${errorData.error || 'Unknown error'}`)
       }
     } catch (error) {
       console.error("Error fetching data:", error)
-      toast.error("Failed to load profile data")
+      toast.error("Network error: Failed to load profile data. Please check your connection.")
     } finally {
       setLoading(false)
+      setDataFetched(true) // Mark data as fetched
     }
   }
 
   const onProfileSubmit = async (data: ProfileForm) => {
+    const now = Date.now()
+    const timeDiff = now - lastSubmitTime
+
+    // Multiple layers of protection against double submission
+    if (submissionInProgress.current || saving || (timeDiff < 2000)) {
+      toast.error('Please wait, your previous submission is still processing...')
+      return
+    }
+
     try {
+      // Set all protection flags immediately
+      submissionInProgress.current = true
       setSaving(true)
-      
-      const response = await fetch(`/api/vendors/profile`, {
+      setLastSubmitTime(now)
+
+      // Validate required fields
+      const requiredFields = ['businessName', 'location', 'bio'] as const
+      const missingFields = requiredFields.filter(field => {
+        const value = data[field]
+        return !value || value.trim() === ''
+      })
+
+      if (missingFields.length > 0) {
+        toast.error(`Please fill in required fields: ${missingFields.join(', ')}`)
+        console.error('❌ Missing required fields:', missingFields)
+        return
+      }
+
+      // Validate bio length
+      if (data.bio && data.bio.length < 50) {
+        toast.error('Bio must be at least 10 characters long')
+        console.error('❌ Bio too short:', data.bio.length)
+        return
+      }
+
+      // Convert websiteUrl string to array for backend
+      const profileData = {
+        ...data,
+        websiteUrl: data.websiteUrl ? [data.websiteUrl] : []
+      }
+
+      // Always try PUT first to update existing vendor
+      let response = await fetch(`/api/vendors/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(profileData),
       })
 
+      // If PUT fails with 404 (vendor not found), try POST to create new vendor
+      if (response.status === 404) {
+        response = await fetch(`/api/vendors/profile`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(profileData),
+        })
+      }
+
       if (response.ok) {
-        toast.success("Profile updated successfully!")
-        fetchData() // Refresh data
+        const responseData = await response.json()
+        toast.success(vendor ? "Profile updated successfully!" : "Profile created successfully!")
+
+        // Update local state with the saved data instead of fetching
+        setVendor(responseData)
+
+        // Prevent any subsequent fetchData calls that might reset the form
+        preventFetch.current = true
       } else {
-        const error = await response.json()
-        toast.error(error.message || "Failed to update profile")
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }))
+        const errorMessage = errorData.error || errorData.message || `Failed to save profile (${response.status})`
+        toast.error(errorMessage)
       }
     } catch (error) {
-      console.error("Error updating profile:", error)
-      toast.error("Something went wrong. Please try again.")
+      toast.error("Network error: Please check your connection and try again.")
     } finally {
       setSaving(false)
+      submissionInProgress.current = false
     }
   }
 
   const onAccountSubmit = async (data: AccountForm) => {
     try {
       setSaving(true)
-      
+
       const response = await fetch(`/api/users/profile`, {
         method: "PUT",
         headers: {
@@ -199,15 +311,18 @@ export default function VendorProfile() {
       })
 
       if (response.ok) {
+        const responseData = await response.json()
+        setUser(responseData) // Update user state directly
         toast.success("Account updated successfully!")
-        fetchData() // Refresh data
       } else {
-        const error = await response.json()
-        toast.error(error.message || "Failed to update account")
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }))
+        const errorMessage = errorData.error || errorData.message || `Failed to update account (${response.status})`
+        console.error('Account update error:', errorData)
+        toast.error(errorMessage)
       }
     } catch (error) {
       console.error("Error updating account:", error)
-      toast.error("Something went wrong. Please try again.")
+      toast.error("Network error: Please check your connection and try again.")
     } finally {
       setSaving(false)
     }
@@ -216,7 +331,7 @@ export default function VendorProfile() {
   const onSettingsSubmit = async (data: SettingsForm) => {
     try {
       setSaving(true)
-      
+
       const response = await fetch(`/api/vendors/settings`, {
         method: "PUT",
         headers: {
@@ -226,15 +341,18 @@ export default function VendorProfile() {
       })
 
       if (response.ok) {
+        const responseData = await response.json()
+        setVendor(prev => prev ? { ...prev, ...responseData } : responseData) // Update vendor state directly
         toast.success("Settings updated successfully!")
-        fetchData() // Refresh data
       } else {
-        const error = await response.json()
-        toast.error(error.message || "Failed to update settings")
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }))
+        const errorMessage = errorData.error || errorData.message || `Failed to update settings (${response.status})`
+        console.error('Settings update error:', errorData)
+        toast.error(errorMessage)
       }
     } catch (error) {
       console.error("Error updating settings:", error)
-      toast.error("Something went wrong. Please try again.")
+      toast.error("Network error: Please check your connection and try again.")
     } finally {
       setSaving(false)
     }
@@ -242,26 +360,26 @@ export default function VendorProfile() {
 
   const getStatusInfo = () => {
     if (!vendor) return { icon: AlertCircle, text: "No Profile", variant: "secondary" as const }
-    
+
     if (!vendor.isApproved) {
-      return { 
-        icon: AlertCircle, 
-        text: "Pending Approval", 
+      return {
+        icon: AlertCircle,
+        text: "Pending Approval",
         variant: "secondary" as const,
         description: "Your profile is under review"
       }
     }
     if (!vendor.isPublished) {
-      return { 
-        icon: EyeOff, 
-        text: "Not Published", 
+      return {
+        icon: EyeOff,
+        text: "Not Published",
         variant: "outline" as const,
         description: "Your profile is approved but not visible to the public"
       }
     }
-    return { 
-      icon: CheckCircle, 
-      text: "Live", 
+    return {
+      icon: CheckCircle,
+      text: "Live",
       variant: "default" as const,
       description: "Your profile is live and visible to customers"
     }
@@ -292,6 +410,33 @@ export default function VendorProfile() {
             {statusInfo.text}
           </Badge>
         </div>
+
+        {/* Authentication Issue Alert */}
+        {authIssue && (
+          <Card className="border-yellow-200 bg-yellow-50">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <AlertCircle className="h-8 w-8 text-yellow-600" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-yellow-800">Authentication Session Issue Detected</h3>
+                  <p className="text-sm text-yellow-700 mt-1">
+                    Your authentication token appears to be outdated. This can happen after system updates.
+                    Please sign out and sign back in to refresh your session.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+                  className="flex items-center gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign Out & Refresh
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Status Card */}
         <Card>
@@ -341,12 +486,16 @@ export default function VendorProfile() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
+
+                <form onSubmit={(e) => {
+                  e.preventDefault() // Prevent default form submission
+                }} className={`space-y-6 ${saving ? 'opacity-75 pointer-events-none' : ''}`}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="businessName">Business Name *</Label>
                       <Input
                         id="businessName"
+                        disabled={saving}
                         {...profileForm.register("businessName")}
                         className={profileForm.formState.errors.businessName ? "border-red-500" : ""}
                       />
@@ -361,6 +510,7 @@ export default function VendorProfile() {
                       <Label htmlFor="location">Location *</Label>
                       <Input
                         id="location"
+                        disabled={saving}
                         {...profileForm.register("location")}
                         className={profileForm.formState.errors.location ? "border-red-500" : ""}
                       />
@@ -378,6 +528,7 @@ export default function VendorProfile() {
                       id="websiteUrl"
                       type="url"
                       placeholder="https://yourwebsite.com"
+                      disabled={saving}
                       {...profileForm.register("websiteUrl")}
                       className={profileForm.formState.errors.websiteUrl ? "border-red-500" : ""}
                     />
@@ -403,11 +554,29 @@ export default function VendorProfile() {
                   </div>
 
                   <div className="space-y-2">
+                    <Label htmlFor="phoneNumber">Phone Number</Label>
+                    <Input
+                      id="phoneNumber"
+                      type="tel"
+                      placeholder="+1 (555) 123-4567"
+                      disabled={saving}
+                      {...profileForm.register("phoneNumber")}
+                      className={profileForm.formState.errors.phoneNumber ? "border-red-500" : ""}
+                    />
+                    {profileForm.formState.errors.phoneNumber && (
+                      <p className="text-sm text-red-500">
+                        {profileForm.formState.errors.phoneNumber.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="bio">Business Description *</Label>
                     <Textarea
                       id="bio"
                       placeholder="Describe your business and services..."
                       className="min-h-32"
+                      disabled={saving}
                       {...profileForm.register("bio")}
                     />
                     {profileForm.formState.errors.bio && (
@@ -419,9 +588,26 @@ export default function VendorProfile() {
 
                   <Separator />
 
-                  <Button type="submit" disabled={saving}>
+                  <Button
+                    type="button"
+                    disabled={saving || submissionInProgress.current}
+                    onClick={async (e) => {
+                      e.preventDefault()
+                      if (!submissionInProgress.current && !saving) {
+                        const formData = profileForm.getValues()
+                        const isValid = await profileForm.trigger() // Validate form
+                        if (isValid) {
+                          await onProfileSubmit(formData)
+                        } else {
+                          toast.error('Please fix form errors before submitting')
+                        }
+                      } else {
+                        toast.error('Please wait, submission in progress...')
+                      }
+                    }}
+                  >
                     {saving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="h-4 w-4 mr-2" />}
-                    Save Profile
+                    {saving ? 'Saving...' : 'Save Profile'}
                   </Button>
                 </form>
               </CardContent>
@@ -439,15 +625,15 @@ export default function VendorProfile() {
               <CardContent>
                 <form onSubmit={accountForm.handleSubmit(onAccountSubmit)} className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name *</Label>
+                    <Label htmlFor="username">Username *</Label>
                     <Input
-                      id="fullName"
-                      {...accountForm.register("fullName")}
-                      className={accountForm.formState.errors.fullName ? "border-red-500" : ""}
+                      id="username"
+                      {...accountForm.register("username")}
+                      className={accountForm.formState.errors.username ? "border-red-500" : ""}
                     />
-                    {accountForm.formState.errors.fullName && (
+                    {accountForm.formState.errors.username && (
                       <p className="text-sm text-red-500">
-                        {accountForm.formState.errors.fullName.message}
+                        {accountForm.formState.errors.username.message}
                       </p>
                     )}
                   </div>
@@ -463,6 +649,22 @@ export default function VendorProfile() {
                     {accountForm.formState.errors.email && (
                       <p className="text-sm text-red-500">
                         {accountForm.formState.errors.email.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+1 (555) 123-4567"
+                      {...accountForm.register("phone")}
+                      className={accountForm.formState.errors.phone ? "border-red-500" : ""}
+                    />
+                    {accountForm.formState.errors.phone && (
+                      <p className="text-sm text-red-500">
+                        {accountForm.formState.errors.phone.message}
                       </p>
                     )}
                   </div>

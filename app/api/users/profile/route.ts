@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     const profile = await backendResponse.json();
 
     return NextResponse.json({
-      name: profile.username,
+      username: profile.username,
       email: profile.email,
       phone: profile.phone,
       role: profile.role,
