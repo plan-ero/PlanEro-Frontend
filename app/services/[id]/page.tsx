@@ -10,6 +10,10 @@ import { Separator } from "@/components/ui/separator"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { StarRating } from "@/components/ui/star-rating"
 import { RatingsDisplay } from "@/components/ratings-display"
+import { useFavorites } from "@/hooks/use-favorites"
+import { useCart } from "@/hooks/use-cart"
+import { useSession } from "next-auth/react"
+import { toast } from "react-hot-toast"
 import {
   ArrowLeft,
   Camera,
@@ -31,7 +35,8 @@ import {
   DollarSign,
   Tag,
   MapPin,
-  ImageIcon
+  ImageIcon,
+  ShoppingCart
 } from "lucide-react"
 
 enum ServiceType {
@@ -133,12 +138,61 @@ interface Vendor {
 export default function ServiceDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const { data: session } = useSession()
+  const { favorites, addToFavorites, removeFromFavorites } = useFavorites()
+  const { addItem } = useCart()
+  
   const [service, setService] = useState<Service | null>(null)
   const [vendor, setVendor] = useState<Vendor | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const serviceId = params.id as string
+
+  // Check if service is in favorites
+  const isFavorite = favorites.some(fav => fav.id === serviceId && fav.type === 'service')
+
+  const handleAddToFavorites = () => {
+    if (!session?.user) {
+      toast.error('Please sign in to add favorites')
+      return
+    }
+
+    if (!service) return
+
+    if (isFavorite) {
+      removeFromFavorites(serviceId)
+      toast.success('Removed from favorites')
+    } else {
+      addToFavorites({
+        id: serviceId,
+        name: service.name,
+        price: service.cost,
+        image: service.images?.[0] || '/placeholder.jpg',
+        type: 'service'
+      })
+      toast.success('Added to favorites')
+    }
+  }
+
+  const handleAddToCart = () => {
+    if (!session?.user) {
+      toast.error('Please sign in to add to cart')
+      return
+    }
+
+    if (!service) return
+
+    addItem({
+      id: serviceId,
+      name: service.name,
+      price: service.cost,
+      image: service.images?.[0] || '/placeholder.jpg',
+      type: 'service',
+      quantity: 1
+    })
+    toast.success('Added to cart')
+  }
 
   useEffect(() => {
     if (serviceId) {
@@ -298,6 +352,42 @@ export default function ServiceDetailPage() {
                       )}
                     </div>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Action Buttons */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button 
+                    onClick={handleAddToFavorites}
+                    variant={isFavorite ? "default" : "outline"}
+                    className="flex items-center gap-2"
+                  >
+                    <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
+                    {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+                  </Button>
+                  
+                  <Button 
+                    onClick={handleAddToCart}
+                    className="flex items-center gap-2"
+                    disabled={!service?.availability}
+                  >
+                    <ShoppingCart className="h-4 w-4" />
+                    Add to Cart
+                  </Button>
+                  
+                  <Button 
+                    asChild
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <Link href={vendor ? `/vendors/${vendor.id}` : '#'}>
+                      <User className="h-4 w-4" />
+                      View Vendor
+                    </Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>

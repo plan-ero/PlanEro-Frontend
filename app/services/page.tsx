@@ -9,6 +9,10 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { StarRating } from "@/components/ui/star-rating"
+import { useFavorites } from "@/hooks/use-favorites"
+import { useCart } from "@/hooks/use-cart"
+import { useSession } from "next-auth/react"
+import { toast } from "react-hot-toast"
 import {
   Search,
   Filter,
@@ -110,6 +114,10 @@ interface Service {
 }
 
 export default function ServicesPage() {
+  const { data: session } = useSession()
+  const { favorites, addToFavorites, removeFromFavorites } = useFavorites()
+  const { addItem } = useCart()
+  
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -140,26 +148,26 @@ export default function ServicesPage() {
       let filteredServices = allServices
 
       if (searchQuery && searchQuery.trim()) {
-        filteredServices = filteredServices.filter(service =>
+        filteredServices = filteredServices.filter((service: Service) =>
           service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           service.metadata?.toLowerCase().includes(searchQuery.toLowerCase())
         )
       }
 
       if (serviceTypeFilter && serviceTypeFilter !== 'all') {
-        filteredServices = filteredServices.filter(service =>
+        filteredServices = filteredServices.filter((service: Service) =>
           service.serviceType === serviceTypeFilter
         )
       }
 
       if (eventTypeFilter && eventTypeFilter !== 'all') {
-        filteredServices = filteredServices.filter(service =>
+        filteredServices = filteredServices.filter((service: Service) =>
           service.eventType === eventTypeFilter
         )
       }
 
       if (priceFilter && priceFilter !== 'all') {
-        filteredServices = filteredServices.filter(service =>
+        filteredServices = filteredServices.filter((service: Service) =>
           service.priceEnum === priceFilter
         )
       }
@@ -179,6 +187,52 @@ export default function ServicesPage() {
     setServiceTypeFilter("all")
     setEventTypeFilter("all")
     setPriceFilter("all")
+  }
+
+  const handleAddToFavorites = (service: Service) => {
+    if (!session?.user) {
+      toast.error('Please sign in to add favorites')
+      return
+    }
+
+    const serviceId = service.id.toString()
+    const isFavorite = favorites.some(fav => fav.id === serviceId && fav.type === 'service')
+
+    if (isFavorite) {
+      removeFromFavorites(serviceId)
+      toast.success('Removed from favorites')
+    } else {
+      addToFavorites({
+        id: serviceId,
+        name: service.name,
+        price: service.cost,
+        image: service.images?.[0] || '/placeholder.jpg',
+        type: 'service'
+      })
+      toast.success('Added to favorites')
+    }
+  }
+
+  const handleAddToCart = (service: Service) => {
+    if (!session?.user) {
+      toast.error('Please sign in to add to cart')
+      return
+    }
+
+    if (!service.availability) {
+      toast.error('This service is currently unavailable')
+      return
+    }
+
+    addItem({
+      id: service.id.toString(),
+      name: service.name,
+      price: service.cost,
+      image: service.images?.[0] || '/placeholder.jpg',
+      type: 'service',
+      quantity: 1
+    })
+    toast.success('Added to cart')
   }
 
   if (loading) {
@@ -394,10 +448,20 @@ export default function ServicesPage() {
                           View Details
                         </Link>
                       </Button>
-                      <Button variant="outline" size="icon">
-                        <Heart className="h-4 w-4" />
+                      <Button 
+                        variant="outline" 
+                        size="icon"
+                        onClick={() => handleAddToFavorites(service)}
+                        className={favorites.some(fav => fav.id === service.id.toString() && fav.type === 'service') ? 'text-red-500' : ''}
+                      >
+                        <Heart className={`h-4 w-4 ${favorites.some(fav => fav.id === service.id.toString() && fav.type === 'service') ? 'fill-current' : ''}`} />
                       </Button>
-                      <Button variant="outline" size="icon">
+                      <Button 
+                        variant="outline" 
+                        size="icon"
+                        onClick={() => handleAddToCart(service)}
+                        disabled={!service.availability}
+                      >
                         <ShoppingCart className="h-4 w-4" />
                       </Button>
                     </div>
