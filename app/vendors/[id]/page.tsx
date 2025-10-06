@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { LoadingSpinner } from "@/components/loading-spinner"
+import { StarRating } from "@/components/ui/star-rating"
+import { RatingsDisplay } from "@/components/ratings-display"
 import {
   MapPin,
   Globe,
@@ -34,6 +36,8 @@ interface Vendor {
   addressId: number
   approved: boolean
   published: boolean
+  totalRating?: number
+  numberOfRatings?: number
 }
 
 export default function VendorDetailPage() {
@@ -169,11 +173,17 @@ export default function VendorDetailPage() {
                     </div>
 
                     <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-medium">4.5</span>
-                        <span className="text-sm text-muted-foreground">(120 reviews)</span>
-                      </div>
+                      {(vendor?.totalRating !== undefined && vendor?.numberOfRatings !== undefined) ? (
+                        <div className="flex items-center gap-2">
+                          <StarRating rating={vendor.totalRating || 0} readonly size="md" />
+                          <span className="text-sm text-muted-foreground">({vendor.numberOfRatings} reviews)</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <StarRating rating={0} readonly size="md" />
+                          <span className="text-sm text-muted-foreground">(No reviews yet)</span>
+                        </div>
+                      )}
                       <Badge variant="secondary">
                         Professional Vendor
                       </Badge>
@@ -219,58 +229,12 @@ export default function VendorDetailPage() {
               </CardContent>
             </Card>
 
-            {/* Reviews Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Reviews</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    {
-                      name: "Sarah Johnson",
-                      rating: 5,
-                      comment: "Absolutely amazing service! They made our wedding day perfect.",
-                      date: "2 weeks ago"
-                    },
-                    {
-                      name: "Mike Chen",
-                      rating: 5,
-                      comment: "Professional, reliable, and creative. Highly recommended!",
-                      date: "1 month ago"
-                    },
-                    {
-                      name: "Emily Davis",
-                      rating: 4,
-                      comment: "Great attention to detail and excellent communication.",
-                      date: "2 months ago"
-                    }
-                  ].map((review, index) => (
-                    <div key={index} className="border-b last:border-b-0 pb-4 last:pb-0">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center space-x-2">
-                          <span className="font-medium">{review.name}</span>
-                          <div className="flex items-center">
-                            {Array.from({ length: 5 }, (_, i) => (
-                              <Star
-                                key={i}
-                                className={`h-3 w-3 ${
-                                  i < review.rating
-                                    ? "fill-yellow-400 text-yellow-400"
-                                    : "text-gray-300"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                        <span className="text-sm text-muted-foreground">{review.date}</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{review.comment}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            {/* Ratings & Reviews Section */}
+            <RatingsDisplay
+              vendorId={vendor.id}
+              title={`Reviews for ${vendor.businessName}`}
+              showAddRating={true}
+            />
           </div>
 
           {/* Sidebar */}

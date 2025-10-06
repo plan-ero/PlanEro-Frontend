@@ -16,12 +16,12 @@ import { Switch } from "@/components/ui/switch"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  DollarSign, 
-  Clock, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  DollarSign,
+  Clock,
   Tag,
   Camera,
   Music,
@@ -46,6 +46,7 @@ import {
   Image as ImageIcon
 } from "lucide-react"
 import { LoadingSpinner } from "@/components/loading-spinner"
+import { StarRating } from "@/components/ui/star-rating"
 import toast from "react-hot-toast"
 
 // Service Types Enum based on backend
@@ -83,7 +84,7 @@ enum EventType {
 // Price Enum based on backend
 enum PriceEnum {
   INEXPENSIVE = "INEXPENSIVE",
-  AFFORDABLE = "AFFORDABLE", 
+  AFFORDABLE = "AFFORDABLE",
   MODERATE = "MODERATE",
   LUXURY = "LUXURY",
 }
@@ -149,6 +150,8 @@ interface Service {
   metadata?: string
   images?: string[]
   vendorId: number
+  totalRating?: number
+  numberOfRatings?: number
 }
 
 export default function VendorServices() {
@@ -192,10 +195,10 @@ export default function VendorServices() {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     }
-    
+
     // Check all possible token locations
     let token = null
-    
+
     if ((session as any)?.apiToken) {
       token = (session as any).apiToken
     } else if ((session as any)?.user?.token) {
@@ -203,15 +206,15 @@ export default function VendorServices() {
     } else if ((session as any)?.token) {
       token = (session as any).token
     }
-    
+
     // Add authorization header if we have a token
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
-    
+
     return headers
   }
-  
+
   const fetchServices = async () => {
     try {
       setLoading(true)
@@ -256,46 +259,46 @@ export default function VendorServices() {
   const onSubmit = async (data: ServiceForm) => {
     try {
       setSaving(true)
-      
-      const url = editingService 
+
+      const url = editingService
         ? `/api/vendors/services/${editingService.id}`
         : `/api/vendors/services`
-      
+
       const method = editingService ? "PUT" : "POST"
-      
+
       // Get authenticated headers
       const headers = getAuthHeaders()
-      
+
       // Get vendorId from session for new services
       let requestData: any = { ...data }
-      
+
       if (!editingService) {
         // For new services, add vendorId
         let vendorId = null
-        
+
         // Debug log to see what we have in session
         console.log("Session data for vendorId extraction:", {
           session: session,
           user: (session as any)?.user,
           vendor: (session as any)?.user?.vendor
         })
-        
+
         if ((session as any)?.user?.vendor?.id) {
           vendorId = Number((session as any).user.vendor.id)
           console.log("Using vendor.id from session:", vendorId)
         }
-        
+
         if (!vendorId || isNaN(vendorId)) {
           console.error("Invalid vendorId extracted:", vendorId)
           toast.error("No valid vendorId found in session. Please re-login.")
           setSaving(false)
           return
         }
-        
+
         requestData = { ...data, vendorId }
         console.log("Request data being sent:", requestData)
       }
-      
+
       const response = await fetch(url, {
         method,
         headers,
@@ -327,7 +330,7 @@ export default function VendorServices() {
     try {
       // Get authenticated headers
       const headers = getAuthHeaders()
-      
+
       const response = await fetch(`/api/vendors/services/${serviceId}`, {
         method: "DELETE",
         headers,
@@ -349,7 +352,7 @@ export default function VendorServices() {
     try {
       // Get authenticated headers
       const headers = getAuthHeaders()
-      
+
       const response = await fetch(`/api/vendors/services/${service.id}`, {
         method: "PUT",
         headers,
@@ -454,7 +457,7 @@ export default function VendorServices() {
                   {editingService ? "Update your service details" : "Add a new service to your offerings"}
                 </DialogDescription>
               </DialogHeader>
-              
+
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -472,8 +475,8 @@ export default function VendorServices() {
 
                   <div className="space-y-2">
                     <Label htmlFor="serviceType">Service Type *</Label>
-                    <Select 
-                      value={form.watch("serviceType")} 
+                    <Select
+                      value={form.watch("serviceType")}
                       onValueChange={(value) => form.setValue("serviceType", value as ServiceType)}
                     >
                       <SelectTrigger>
@@ -497,8 +500,8 @@ export default function VendorServices() {
 
                   <div className="space-y-2">
                     <Label htmlFor="eventType">Event Type *</Label>
-                    <Select 
-                      value={form.watch("eventType")} 
+                    <Select
+                      value={form.watch("eventType")}
                       onValueChange={(value) => form.setValue("eventType", value as EventType)}
                     >
                       <SelectTrigger>
@@ -522,8 +525,8 @@ export default function VendorServices() {
 
                   <div className="space-y-2">
                     <Label htmlFor="priceEnum">Price Tier *</Label>
-                    <Select 
-                      value={form.watch("priceEnum")} 
+                    <Select
+                      value={form.watch("priceEnum")}
                       onValueChange={(value) => form.setValue("priceEnum", value as PriceEnum)}
                     >
                       <SelectTrigger>
@@ -596,7 +599,7 @@ export default function VendorServices() {
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
-                    
+
                     {imageUrls.length > 0 && (
                       <div className="space-y-2">
                         <p className="text-sm text-muted-foreground">Added Images:</p>
@@ -619,7 +622,7 @@ export default function VendorServices() {
                         </div>
                       </div>
                     )}
-                    
+
                     <p className="text-xs text-muted-foreground">
                       Add image URLs to showcase your service. Images help customers understand what you offer.
                     </p>
@@ -643,9 +646,9 @@ export default function VendorServices() {
                 <Separator />
 
                 <div className="flex justify-end gap-2">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => setDialogOpen(false)}
                   >
                     Cancel
@@ -683,15 +686,15 @@ export default function VendorServices() {
               // Fallback to 'PHOTOGRAPHER' if serviceType is missing or invalid
               const typeKey = service.serviceType && serviceTypeIcons[service.serviceType] ? service.serviceType : ServiceType.PHOTOGRAPHER;
               const IconComponent = serviceTypeIcons[typeKey] || Tag;
-              
+
               // Get event type icon and fallback
               const eventTypeKey = service.eventType && eventTypeIcons[service.eventType] ? service.eventType : EventType.WEDDING;
               const EventIconComponent = eventTypeIcons[eventTypeKey] || Tag;
-              
+
               // Get price tier icon and fallback
               const priceKey = service.priceEnum && priceEnumIcons[service.priceEnum] ? service.priceEnum : PriceEnum.MODERATE;
               const PriceIconComponent = priceEnumIcons[priceKey] || DollarSign;
-              
+
               return (
                 <Card key={service.id} className="group hover:shadow-lg transition-all duration-200 border-0 shadow-md">
                   <CardHeader className="pb-3">
@@ -720,11 +723,19 @@ export default function VendorServices() {
                                 {priceKey.replace(/_/g, " ")}
                               </Badge>
                             </div>
+                            {(service.totalRating !== undefined && service.numberOfRatings !== undefined) && (
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" />
+                                <span className="font-medium">Rating:</span>
+                                <StarRating rating={service.totalRating || 0} readonly size="sm" />
+                                <span className="text-xs text-gray-500">({service.numberOfRatings} reviews)</span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-2">
-                        <Badge 
+                        <Badge
                           variant={service.availability ? "default" : "secondary"}
                           className={service.availability ? "bg-green-100 text-green-800 border-green-200" : ""}
                         >

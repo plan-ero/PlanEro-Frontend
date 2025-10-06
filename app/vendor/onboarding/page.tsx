@@ -61,28 +61,28 @@ export default function VendorOnboarding() {
   const onSubmit = async (data: VendorOnboardingForm) => {
     try {
       setLoading(true)
-      
+
       // Get the authentication token from session
       const headers: HeadersInit = {
         "Content-Type": "application/json",
       }
-      
+
       // Add authorization token if available
       if ((session as any)?.apiToken) {
         headers["Authorization"] = `Bearer ${(session as any).apiToken}`
       }
-      
+
       // Add user email to headers for backend reference
       if (session?.user?.email) {
         headers["x-user-email"] = session.user.email
       }
-      
+
       // Add email to the data payload as well
       const payload = {
         ...data,
         email: session?.user?.email
       }
-      
+
       const response = await fetch("/api/vendors/onboard", {
         method: "POST",
         headers,
@@ -245,7 +245,7 @@ export default function VendorOnboarding() {
                   <Alert>
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                      Your business description helps potential clients understand your services and expertise. 
+                      Your business description helps potential clients understand your services and expertise.
                       Include your specialties, experience, and what sets you apart from competitors.
                     </AlertDescription>
                   </Alert>
@@ -270,7 +270,7 @@ export default function VendorOnboarding() {
                       </div>
                     )}
                   </div>
-                  
+
                   <div>
                     <Label className="font-medium">Business Description</Label>
                     <p className="text-sm text-muted-foreground mt-1">{watchedValues.bio}</p>
@@ -311,7 +311,7 @@ export default function VendorOnboarding() {
             >
               Previous
             </Button>
-            
+
             {step < totalSteps ? (
               <Button
                 type="button"

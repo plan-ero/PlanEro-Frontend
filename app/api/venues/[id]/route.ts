@@ -114,8 +114,9 @@ const venues = {
   },
 }
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const venue = venues[params.id as keyof typeof venues]
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const venue = venues[id as keyof typeof venues]
 
   if (!venue) {
     return NextResponse.json({ error: "Venue not found" }, { status: 404 })

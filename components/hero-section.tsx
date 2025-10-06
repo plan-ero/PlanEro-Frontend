@@ -31,12 +31,12 @@ export function HeroSection() {
           <motion.div
             key={i}
             className="absolute w-1 h-1 bg-primary/30 rounded-full"
-            initial={{ 
-              y: "100vh", 
+            initial={{
+              y: "100vh",
               x: `${(i * 50) % 100}vw`,
               opacity: 0
             }}
-            animate={{ 
+            animate={{
               y: "-100px",
               x: `${((i * 50) + 20) % 100}vw`,
               opacity: [0, 1, 0]
@@ -53,9 +53,9 @@ export function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }} 
-          animate={{ opacity: 1, y: 0 }} 
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
           className="mb-8 sm:mb-12"
         >
@@ -63,10 +63,10 @@ export function HeroSection() {
             <Sparkles className="h-4 w-4 mr-2" />
             PLAN YOUR PERFECT WEDDING
           </Badge>
-          
+
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-8 tracking-tight leading-none text-white">
             Your Dream Wedding{" "}
-            <motion.span 
+            <motion.span
               className="block bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -75,7 +75,7 @@ export function HeroSection() {
               Starts Here
             </motion.span>
           </h1>
-          
+
           <p className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8 sm:mb-12">
             From intimate garden ceremonies to grand banquet celebrations, find everything you need to create
             your perfect wedding day with our comprehensive planning platform.
@@ -146,7 +146,7 @@ export function HeroSection() {
           </div>
 
           {/* Stats Section */}
-          <motion.div 
+          <motion.div
             className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

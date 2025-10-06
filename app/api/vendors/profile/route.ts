@@ -7,11 +7,11 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8080'
 export async function GET(request: NextRequest) {
   try {
     // Get the token from NextAuth JWT
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET
     })
-    
+
     if (!token?.apiToken || !token?.id) {
       return NextResponse.json(
         { error: "Unauthorized - Please sign in" },
@@ -31,14 +31,14 @@ export async function GET(request: NextRequest) {
     if (!backendResponse.ok) {
       const errorData = await backendResponse.text().catch(() => 'Unknown error');
       console.error(`Backend error (${backendResponse.status}):`, errorData);
-      
+
       if (backendResponse.status === 404) {
         return NextResponse.json(
           { error: "Vendor profile not found" },
           { status: 404 }
         );
       }
-      
+
       return NextResponse.json(
         { error: "Failed to fetch vendor profile" },
         { status: backendResponse.status }
@@ -60,11 +60,11 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     // Get the token from NextAuth JWT
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET
     })
-    
+
     if (!token?.apiToken || !token?.id) {
       return NextResponse.json(
         { error: "Unauthorized - Please sign in" },

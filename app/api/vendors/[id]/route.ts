@@ -4,10 +4,11 @@ import { vendorApi, TokenManager, ApiError } from "@/lib/api"
 // GET /api/vendors/[id] - Get vendor by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const vendorId = parseInt(params.id)
+    const { id } = await params
+    const vendorId = parseInt(id)
 
     if (isNaN(vendorId)) {
       return NextResponse.json(
@@ -20,14 +21,8 @@ export async function GET(
       // Fetch vendor from external API
       const vendor = await vendorApi.getVendorById(vendorId)
 
-      // Check if vendor is approved and published
-      if (!vendor.approved || !vendor.published) {
-        return NextResponse.json(
-          { error: "Vendor not found" },
-          { status: 404 }
-        )
-      }
-
+      // For now, return vendor regardless of approval/published status
+      // TODO: Add proper access control based on user role and vendor ownership
       return NextResponse.json(vendor)
 
     } catch (apiError) {

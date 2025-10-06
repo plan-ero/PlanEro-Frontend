@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
 import { LoadingSpinner } from "@/components/loading-spinner"
+import { StarRating } from "@/components/ui/star-rating"
 import { MapPin, Globe, Phone, Star, Search, Filter, Mail } from "lucide-react"
 
 interface Vendor {
@@ -24,6 +25,8 @@ interface Vendor {
   addressId: number
   approved: boolean
   published: boolean
+  totalRating?: number
+  numberOfRatings?: number
 }
 
 interface VendorsResponse {
@@ -294,11 +297,17 @@ export default function VendorsPage() {
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-1">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="text-sm font-medium">4.5</span>
-                          <span className="text-xs text-muted-foreground">(120 reviews)</span>
-                        </div>
+                        {(vendor?.totalRating !== undefined && vendor?.numberOfRatings !== undefined) ? (
+                          <div className="flex items-center gap-2">
+                            <StarRating rating={vendor.totalRating || 0} readonly size="sm" />
+                            <span className="text-xs text-muted-foreground">({vendor.numberOfRatings} reviews)</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <StarRating rating={0} readonly size="sm" />
+                            <span className="text-xs text-muted-foreground">(No reviews yet)</span>
+                          </div>
+                        )}
 
                         <Badge variant={(vendor?.approved === true) ? "default" : "secondary"}>
                           {(vendor?.approved === true) ? "Verified" : "Pending"}

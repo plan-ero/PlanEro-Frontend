@@ -9,12 +9,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
-import { 
-  Search, 
-  Menu, 
-  User, 
-  Heart, 
-  ShoppingCart, 
+import {
+  Search,
+  Menu,
+  User,
+  Heart,
+  ShoppingCart,
   Bell,
   Settings,
   LogOut,
@@ -68,16 +68,16 @@ export function Header() {
   }
 
   return (
-    <header 
+    <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled 
-          ? "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b shadow-sm" 
+        isScrolled
+          ? "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b shadow-sm"
           : "bg-background border-b"
       }`}
     >
       <div className="container mx-auto px-2 sm:px-3 md:px-4">
         <div className="flex h-12 sm:h-14 md:h-16 items-center justify-between">
-          
+
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-1 sm:space-x-2 mr-2 sm:mr-4 md:mr-7">
             <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-gradient-to-r from-primary to-primary/80 rounded-lg flex items-center justify-center">
@@ -132,7 +132,7 @@ export function Header() {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-1 sm:space-x-2">
-            
+
             {/* Mobile Search */}
             <Sheet>
               <SheetTrigger asChild>
@@ -179,8 +179,8 @@ export function Header() {
               <Link href="/cart">
                 <ShoppingCart className="h-4 w-4" />
                 {items.length > 0 && (
-                  <Badge 
-                    variant="destructive" 
+                  <Badge
+                    variant="destructive"
                     className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
                   >
                     {items.length}
@@ -241,7 +241,7 @@ export function Header() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  
+
                   {/* Theme Toggle */}
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
@@ -263,7 +263,7 @@ export function Header() {
                       </DropdownMenuItem>
                     </DropdownMenuSubContent>
                   </DropdownMenuSub>
-                  
+
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => signOut()}>
                     <LogOut className="mr-2 h-4 w-4" />
@@ -299,33 +299,33 @@ export function Header() {
                   <div className="space-y-3">
                     <h3 className="text-lg font-semibold">Navigation</h3>
                     <nav className="space-y-2">
-                      <Link 
-                        href="/venues" 
+                      <Link
+                        href="/venues"
                         className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
                       >
                         Venues
                       </Link>
-                      <Link 
-                        href="/services" 
+                      <Link
+                        href="/services"
                         className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
                       >
                         Services
                       </Link>
-                      <Link 
-                        href="/vendors" 
+                      <Link
+                        href="/vendors"
                         className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
                       >
                         Vendors
                       </Link>
-                      <Link 
-                        href="/about" 
+                      <Link
+                        href="/about"
                         className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
                       >
                         About
                       </Link>
                     </nav>
                   </div>
-                  
+
                   <div className="space-y-3">
                     <h3 className="text-lg font-semibold">Quick Actions</h3>
                     <div className="space-y-2">
@@ -351,7 +351,7 @@ export function Header() {
                           </Button>
                         </>
                       )}
-                      
+
                       {/* Theme Toggle */}
                       <div className="pt-2">
                         <h4 className="text-sm font-medium mb-2">Theme</h4>
@@ -381,7 +381,7 @@ export function Header() {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Authentication for Mobile */}
                   {!session && (
                     <div className="space-y-3">
@@ -400,7 +400,7 @@ export function Header() {
                       </div>
                     </div>
                   )}
-                  
+
                   {session && (
                     <div className="space-y-3">
                       <h3 className="text-lg font-semibold">Account</h3>

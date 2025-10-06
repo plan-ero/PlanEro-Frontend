@@ -120,13 +120,13 @@ export function VendorTeamSection() {
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20 group-hover:opacity-40 transition-all duration-500"
                     style={{ backgroundImage: `url(${vendor.image})` }}
                   />
-                  
+
                   {/* Gradient Overlay */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${vendor.color} opacity-0 group-hover:opacity-30 transition-all duration-500`} />
-                  
+
                   {/* Backdrop Blur Overlay */}
                   <div className="absolute inset-0 bg-background/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                  
+
                   <CardContent className="p-8 text-center relative z-10">
                     {/* Icon Container */}
                     <div className="mb-6 relative">

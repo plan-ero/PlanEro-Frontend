@@ -9,11 +9,11 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: NextRequest) {
   try {
     // Get the token from NextAuth JWT
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET
     })
-    
+
     if (!token?.apiToken) {
       return NextResponse.json(
         { error: "Unauthorized - Please sign in" },
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     }
 
     const profile = await backendResponse.json();
-    
+
     return NextResponse.json({
       name: profile.username,
       email: profile.email,
@@ -60,11 +60,11 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     // Get the token from NextAuth JWT
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET
     })
-    
+
     if (!token?.apiToken) {
       return NextResponse.json(
         { error: "Unauthorized - Please sign in" },
@@ -73,7 +73,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    
+
     // Update user profile through backend
     const backendResponse = await fetch(`${BACKEND_URL}/auth/profile`, {
       method: 'PUT',

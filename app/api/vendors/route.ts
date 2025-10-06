@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     // Get token from Authorization header
     const authHeader = request.headers.get('authorization')
     const token = authHeader?.replace('Bearer ', '') || TokenManager.getToken()
-    
+
     if (!token) {
       return NextResponse.json(
         { error: "Unauthorized - No token provided" },
@@ -39,11 +39,11 @@ export async function POST(request: NextRequest) {
         approved: false,
         published: false,
       }
-      
+
       const vendor = await vendorApi.createVendor(vendorData, token)
 
       return NextResponse.json(vendor, { status: 201 })
-      
+
     } catch (apiError) {
       console.error("External API error:", apiError)
       if (apiError instanceof ApiError) {
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
           { status: apiError.status }
         )
       }
-      
+
       return NextResponse.json(
         { error: "Failed to create vendor" },
         { status: 500 }

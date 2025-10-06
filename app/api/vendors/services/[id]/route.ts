@@ -6,15 +6,17 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8080'
 // GET /api/vendors/services/:id - Get a specific service by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the token from NextAuth JWT
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET
     })
-    
+
+    const { id } = await params
+
     if (!token?.apiToken) {
       return NextResponse.json(
         { error: "Unauthorized - Please sign in" },
@@ -22,7 +24,7 @@ export async function GET(
       );
     }
 
-    const serviceId = params.id;
+    const serviceId = id;
 
     // Make request to backend
     const backendResponse = await fetch(`${BACKEND_URL}/services/${serviceId}`, {
@@ -36,14 +38,14 @@ export async function GET(
     if (!backendResponse.ok) {
       const errorData = await backendResponse.text().catch(() => 'Unknown error');
       console.error(`Backend error (${backendResponse.status}):`, errorData);
-      
+
       if (backendResponse.status === 404) {
         return NextResponse.json(
           { error: "Service not found" },
           { status: 404 }
         );
       }
-      
+
       return NextResponse.json(
         { error: "Failed to fetch service" },
         { status: backendResponse.status }
@@ -53,7 +55,7 @@ export async function GET(
     const service = await backendResponse.json();
     return NextResponse.json(service, { status: 200 });
   } catch (error) {
-    console.error(`Error in GET /api/vendors/services/${params.id}:`, error);
+    console.error(`Error in GET /api/vendors/services/[id]:`, error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -64,15 +66,15 @@ export async function GET(
 // PUT /api/vendors/services/:id - Update a specific service by ID
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the token from NextAuth JWT
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET
     })
-    
+
     if (!token?.apiToken) {
       return NextResponse.json(
         { error: "Unauthorized - Please sign in" },
@@ -80,7 +82,7 @@ export async function PUT(
       );
     }
 
-    const serviceId = params.id;
+    const { id: serviceId } = await params
     const serviceData = await request.json();
 
     // Make request to backend
@@ -96,14 +98,14 @@ export async function PUT(
     if (!backendResponse.ok) {
       const errorData = await backendResponse.text().catch(() => 'Unknown error');
       console.error(`Backend error (${backendResponse.status}):`, errorData);
-      
+
       if (backendResponse.status === 404) {
         return NextResponse.json(
           { error: "Service not found" },
           { status: 404 }
         );
       }
-      
+
       return NextResponse.json(
         { error: "Failed to update service" },
         { status: backendResponse.status }
@@ -113,7 +115,7 @@ export async function PUT(
     const updatedService = await backendResponse.json();
     return NextResponse.json(updatedService, { status: 200 });
   } catch (error) {
-    console.error(`Error in PUT /api/vendors/services/${params.id}:`, error);
+    console.error(`Error in PUT /api/vendors/services/[id]:`, error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -124,15 +126,15 @@ export async function PUT(
 // DELETE /api/vendors/services/:id - Delete a specific service by ID
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the token from NextAuth JWT
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET
     })
-    
+
     if (!token?.apiToken) {
       return NextResponse.json(
         { error: "Unauthorized - Please sign in" },
@@ -140,7 +142,7 @@ export async function DELETE(
       );
     }
 
-    const serviceId = params.id;
+    const { id: serviceId } = await params
 
     // Make request to backend
     const backendResponse = await fetch(`${BACKEND_URL}/services/${serviceId}`, {
@@ -154,14 +156,14 @@ export async function DELETE(
     if (!backendResponse.ok) {
       const errorData = await backendResponse.text().catch(() => 'Unknown error');
       console.error(`Backend error (${backendResponse.status}):`, errorData);
-      
+
       if (backendResponse.status === 404) {
         return NextResponse.json(
           { error: "Service not found" },
           { status: 404 }
         );
       }
-      
+
       return NextResponse.json(
         { error: "Failed to delete service" },
         { status: backendResponse.status }
@@ -170,7 +172,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: "Service deleted successfully" }, { status: 200 });
   } catch (error) {
-    console.error(`Error in DELETE /api/vendors/services/${params.id}:`, error);
+    console.error(`Error in DELETE /api/vendors/services/[id]:`, error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -1,200 +1,430 @@
 "use client"
 
-import { useState } from "react"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { Filters, FilterState } from "@/components/filters"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Heart, ShoppingCart, MapPin, Star } from "lucide-react"
-import { useCart } from "@/hooks/use-cart"
-import { useFavorites } from "@/hooks/use-favorites"
-import { useAuth } from "@/hooks/use-auth"
-import { motion } from "framer-motion"
-import toast from "react-hot-toast"
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { LoadingSpinner } from "@/components/loading-spinner"
+import { StarRating } from "@/components/ui/star-rating"
+import {
+  Search,
+  Filter,
+  Heart,
+  ShoppingCart,
+  Camera,
+  Music,
+  Utensils,
+  Palette,
+  Car,
+  Gift,
+  Mic,
+  Sparkles,
+  Cake,
+  Crown,
+  Building,
+  DollarSign,
+  TrendingUp,
+  Zap,
+  Gem,
+  Tag,
+  ImageIcon
+} from "lucide-react"
 
-// Mock data - replace with actual API calls
-const services = [
-  {
-    id: "1",
-    name: "Elite Wedding Photography",
-    category: "photographers",
-    location: "Los Angeles, CA",
-    price: 2500,
-    image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
-    description: "Award-winning wedding photography with artistic flair",
-    rating: 4.9,
-    reviews: 156,
-  },
-  {
-    id: "2",
-    name: "Gourmet Catering Co.",
-    category: "caterers",
-    location: "San Francisco, CA",
-    price: 85,
-    priceUnit: "per person",
-    image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
-    description: "Farm-to-table catering with seasonal menus",
-    rating: 4.8,
-    reviews: 203,
-  },
-]
+enum ServiceType {
+  PHOTOGRAPHER = "PHOTOGRAPHER",
+  PHOTO_VIDEOGRAPHER = "PHOTO_VIDEOGRAPHER",
+  DECORATOR = "DECORATOR",
+  FLORIST = "FLORIST",
+  CATERS = "CATERS",
+  BAKERS = "BAKERS",
+  TRANSPORTATION = "TRANSPORTATION",
+  BRIDE_GROOMING = "BRIDE_GROOMING",
+  WEDDING_BAND = "WEDDING_BAND",
+  DJ = "DJ",
+  SINGER = "SINGER",
+  ANCHOR = "ANCHOR",
+  MAGICIAN = "MAGICIAN",
+  VENUE = "VENUE",
+}
 
-const categories = [
-  { value: "all", label: "All Services" },
-  { value: "photographers", label: "Photographers" },
-  { value: "caterers", label: "Caterers" },
-  { value: "musicians", label: "Musicians & DJs" },
-  { value: "florists", label: "Florists" },
-  { value: "transportation", label: "Transportation" },
-  { value: "bakers", label: "Bakers" },
-]
+enum EventType {
+  WEDDING = "WEDDING",
+  BIRTHDAY = "BIRTHDAY",
+  ANNIVERSARY = "ANNIVERSARY",
+  CORPORATE = "CORPORATE",
+  ENGAGEMENT = "ENGAGEMENT",
+  BABY_SHOWER = "BABY_SHOWER",
+  GRADUATION = "GRADUATION",
+  HOLIDAY_PARTY = "HOLIDAY_PARTY",
+  CONFERENCE = "CONFERENCE",
+  EXHIBITION = "EXHIBITION",
+}
+
+enum PriceEnum {
+  INEXPENSIVE = "INEXPENSIVE",
+  AFFORDABLE = "AFFORDABLE",
+  MODERATE = "MODERATE",
+  LUXURY = "LUXURY",
+}
+
+const serviceTypeIcons = {
+  [ServiceType.PHOTOGRAPHER]: Camera,
+  [ServiceType.PHOTO_VIDEOGRAPHER]: Camera,
+  [ServiceType.DECORATOR]: Palette,
+  [ServiceType.FLORIST]: Gift,
+  [ServiceType.CATERS]: Utensils,
+  [ServiceType.BAKERS]: Cake,
+  [ServiceType.TRANSPORTATION]: Car,
+  [ServiceType.BRIDE_GROOMING]: Crown,
+  [ServiceType.WEDDING_BAND]: Music,
+  [ServiceType.DJ]: Music,
+  [ServiceType.SINGER]: Mic,
+  [ServiceType.ANCHOR]: Mic,
+  [ServiceType.MAGICIAN]: Sparkles,
+  [ServiceType.VENUE]: Building,
+}
+
+const priceEnumIcons = {
+  [PriceEnum.INEXPENSIVE]: DollarSign,
+  [PriceEnum.AFFORDABLE]: TrendingUp,
+  [PriceEnum.MODERATE]: Zap,
+  [PriceEnum.LUXURY]: Gem,
+}
+
+interface Service {
+  id: number
+  name: string
+  serviceType: ServiceType
+  eventType: EventType
+  priceEnum: PriceEnum
+  availability: boolean
+  cost: number
+  metadata?: string
+  images?: string[]
+  vendorId: number
+  totalRating?: number
+  numberOfRatings?: number
+}
 
 export default function ServicesPage() {
+  const [services, setServices] = useState<Service[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
-  const [sortBy, setSortBy] = useState("name")
-  const [filterCategory, setFilterCategory] = useState("all")
+  const [serviceTypeFilter, setServiceTypeFilter] = useState("all")
+  const [eventTypeFilter, setEventTypeFilter] = useState("all")
+  const [priceFilter, setPriceFilter] = useState("all")
 
-  const { addItem } = useCart()
-  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
-  const { user } = useAuth()
+  useEffect(() => {
+    fetchServices()
+  }, [searchQuery, serviceTypeFilter, eventTypeFilter, priceFilter])
 
-  const handleAddToCart = (service: (typeof services)[0]) => {
-    addItem({
-      id: service.id,
-      name: service.name,
-      price: service.price,
-      image: service.image,
-      type: "service",
-      quantity: 1,
-    })
-    toast.success("Added to cart!")
+  const fetchServices = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // Fetch all services from the public API
+      const servicesResponse = await fetch(`/api/services`)
+
+      if (!servicesResponse.ok) {
+        throw new Error(`Failed to fetch services: ${servicesResponse.status}`)
+      }
+
+      const allServices = await servicesResponse.json()
+
+      // Apply filters
+      let filteredServices = allServices
+
+      if (searchQuery && searchQuery.trim()) {
+        filteredServices = filteredServices.filter(service =>
+          service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          service.metadata?.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      }
+
+      if (serviceTypeFilter && serviceTypeFilter !== 'all') {
+        filteredServices = filteredServices.filter(service =>
+          service.serviceType === serviceTypeFilter
+        )
+      }
+
+      if (eventTypeFilter && eventTypeFilter !== 'all') {
+        filteredServices = filteredServices.filter(service =>
+          service.eventType === eventTypeFilter
+        )
+      }
+
+      if (priceFilter && priceFilter !== 'all') {
+        filteredServices = filteredServices.filter(service =>
+          service.priceEnum === priceFilter
+        )
+      }
+
+      setServices(filteredServices)
+    } catch (err) {
+      console.error('Error fetching services:', err)
+      setError(err instanceof Error ? err.message : 'An error occurred')
+      setServices([])
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleToggleFavorite = (service: (typeof services)[0]) => {
-    if (!user) {
-      toast.error("Please log in to add favorites")
-      return
-    }
+  const clearFilters = () => {
+    setSearchQuery("")
+    setServiceTypeFilter("all")
+    setEventTypeFilter("all")
+    setPriceFilter("all")
+  }
 
-    if (isFavorite(service.id)) {
-      removeFromFavorites(service.id)
-      toast.success("Removed from favorites")
-    } else {
-      addToFavorites({
-        id: service.id,
-        name: service.name,
-        price: service.price,
-        image: service.image,
-        type: "service",
-      })
-      toast.success("Added to favorites!")
-    }
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    )
   }
 
   return (
-      <main className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4">Professional Services</h1>
-          <p className="text-lg text-muted-foreground">
-            Connect with top-rated professionals to make your event perfect
+          <h1 className="text-3xl font-bold mb-2">Services</h1>
+          <p className="text-muted-foreground">
+            Discover amazing services for your events
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Input
-            placeholder="Search services..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Select value={filterCategory} onValueChange={setFilterCategory}>
-            <SelectTrigger>
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((category) => (
-                <SelectItem key={category.value} value={category.value || "All Categories"}>
-                  {category.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger>
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="name">Name</SelectItem>
-              <SelectItem value="price-low">Price: Low to High</SelectItem>
-              <SelectItem value="price-high">Price: High to Low</SelectItem>
-              <SelectItem value="rating">Rating</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline">Clear Filters</Button>
+        {/* Search and Filters */}
+        <div className="mb-6 space-y-4">
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Search services..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Select value={serviceTypeFilter} onValueChange={setServiceTypeFilter}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Service Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Services</SelectItem>
+                  {Object.values(ServiceType).map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type.replace(/_/g, " ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={eventTypeFilter} onValueChange={setEventTypeFilter}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Event Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Events</SelectItem>
+                  {Object.values(EventType).map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type.replace(/_/g, " ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={priceFilter} onValueChange={setPriceFilter}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Price Tier" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Prices</SelectItem>
+                  {Object.values(PriceEnum).map((tier) => (
+                    <SelectItem key={tier} value={tier}>
+                      {tier.replace(/_/g, " ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Button variant="outline" onClick={clearFilters}>
+                <Filter className="h-4 w-4 mr-2" />
+                Clear
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Results Count */}
+        <div className="mb-6">
+          <p className="text-sm text-muted-foreground">
+            Showing {services.length} services
+          </p>
         </div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service, index) => (
-            <motion.div
-              key={service.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-            >
-              <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="relative">
-                  <img
-                    src={service.image || "/placeholder.svg"}
-                    alt={service.name}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={`absolute top-2 right-2 bg-white/80 hover:bg-white ${
-                      isFavorite(service.id) ? "text-red-500" : "text-gray-600"
-                    }`}
-                    onClick={() => handleToggleFavorite(service)}
-                  >
-                    <Heart className={`h-4 w-4 ${isFavorite(service.id) ? "fill-current" : ""}`} />
-                  </Button>
-                </div>
-                <CardContent className="p-4">
-                  <div className="mb-2">
-                    <span className="text-xs text-muted-foreground uppercase tracking-wide">{service.category}</span>
-                  </div>
-                  <Link href={`/services/${service.id}`}>
-                    <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors">{service.name}</h3>
-                  </Link>
-                  <div className="flex items-center text-sm text-muted-foreground mb-2">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {service.location}
-                  </div>
-                  <div className="flex items-center text-sm text-muted-foreground mb-2">
-                    <Star className="h-4 w-4 mr-1 fill-current text-yellow-500" />
-                    {service.rating} ({service.reviews} reviews)
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">{service.description}</p>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-lg font-bold">${service.price.toLocaleString()}</span>
-                      <span className="text-sm text-muted-foreground ml-1">{service.priceUnit || "/ event"}</span>
+        {error ? (
+          <div className="text-center py-12">
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 max-w-md mx-auto">
+              <h3 className="text-lg font-semibold text-destructive mb-2">Error</h3>
+              <p className="text-muted-foreground mb-4">{error}</p>
+              <Button onClick={fetchServices}>Try Again</Button>
+            </div>
+          </div>
+        ) : services.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((service) => {
+              const ServiceIconComponent = serviceTypeIcons[service.serviceType] || Tag
+              const PriceIconComponent = priceEnumIcons[service.priceEnum] || DollarSign
+
+              return (
+                <Card key={service.id} className="group hover:shadow-lg transition-all duration-200">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl">
+                          <ServiceIconComponent className="h-6 w-6 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-lg font-semibold line-clamp-2">
+                            {service.name}
+                          </CardTitle>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge variant="outline" className="text-xs">
+                              {service.serviceType.replace(/_/g, " ")}
+                            </Badge>
+                            <PriceIconComponent className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">
+                              {service.priceEnum.replace(/_/g, " ")}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Badge
+                        variant={service.availability ? "default" : "secondary"}
+                        className={service.availability ? "bg-green-100 text-green-800 border-green-200" : ""}
+                      >
+                        {service.availability ? "Available" : "Unavailable"}
+                      </Badge>
                     </div>
-                    <Button size="sm" onClick={() => handleAddToCart(service)} className="flex items-center gap-2">
-                      <ShoppingCart className="h-4 w-4" />
-                      Add to Cart
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </main>
+                  </CardHeader>
+
+                  <CardContent className="space-y-4 pt-0">
+                    {/* Price */}
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <div className="p-1.5 bg-green-100 rounded-lg">
+                          <DollarSign className="h-4 w-4 text-green-600" />
+                        </div>
+                        <div>
+                          <span className="text-lg font-bold text-gray-900">${service.cost.toFixed(2)}</span>
+                          <p className="text-xs text-gray-500">Starting price</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Rating */}
+                    {(service.totalRating !== undefined && service.numberOfRatings !== undefined) ? (
+                      <div className="flex items-center justify-between">
+                        <StarRating rating={service.totalRating || 0} readonly size="sm" />
+                        <span className="text-xs text-muted-foreground">({service.numberOfRatings} reviews)</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between">
+                        <StarRating rating={0} readonly size="sm" />
+                        <span className="text-xs text-muted-foreground">(No reviews yet)</span>
+                      </div>
+                    )}
+
+                    {/* Images Preview */}
+                    {service.images && service.images.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                          <ImageIcon className="h-4 w-4" />
+                          Service Images ({service.images.length})
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          {service.images.slice(0, 3).map((imageUrl, index) => (
+                            <div key={index} className="relative group">
+                              <img
+                                src={imageUrl}
+                                alt={`${service.name} image ${index + 1}`}
+                                className="w-full h-16 object-cover rounded-lg border border-gray-200"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                }}
+                              />
+                              {index === 2 && service.images && service.images.length > 3 && (
+                                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                                  <span className="text-white text-xs font-medium">
+                                    +{service.images.length - 2} more
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Description */}
+                    {service.metadata && (
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {service.metadata}
+                      </p>
+                    )}
+
+                    {/* Actions */}
+                    <div className="flex gap-2 pt-2">
+                      <Button asChild className="flex-1">
+                        <Link href={`/services/${service.id}`}>
+                          View Details
+                        </Link>
+                      </Button>
+                      <Button variant="outline" size="icon">
+                        <Heart className="h-4 w-4" />
+                      </Button>
+                      <Button variant="outline" size="icon">
+                        <ShoppingCart className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        ) : (
+          !loading && (
+            <div className="text-center py-12">
+              <div className="max-w-md mx-auto">
+                <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">No services found</h3>
+                <p className="text-muted-foreground mb-4">
+                  Try adjusting your search criteria or browse all available services.
+                </p>
+                <Button onClick={clearFilters}>
+                  Clear Filters
+                </Button>
+              </div>
+            </div>
+          )
+        )}
+      </div>
+    </div>
   )
 }

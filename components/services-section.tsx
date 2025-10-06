@@ -112,24 +112,24 @@ export function ServicesSection() {
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20 group-hover:opacity-40 transition-all duration-500"
                     style={{ backgroundImage: `url(${service.image})` }}
                   />
-                  
+
                   {/* Gradient Overlay */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-30 transition-all duration-500`} />
-                  
+
                   {/* Backdrop Blur Overlay */}
                   <div className="absolute inset-0 bg-background/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                  
+
                   <CardContent className="p-8 text-center relative z-10">
                     {/* Icon Container */}
                     <div className="mb-6 relative">
                       <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg relative backdrop-blur-sm group-hover:backdrop-blur-xl">
                         <IconComponent className="h-10 w-10 text-primary group-hover:scale-110 transition-all duration-300" />
-                        
+
                         {/* Glow Effect */}
                         <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-30 transition-all duration-500`} />
                       </div>
                     </div>
-                    
+
                     <h3 className="text-lg sm:text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-300">
                       {service.name}
                     </h3>
@@ -140,10 +140,10 @@ export function ServicesSection() {
                       <div className="w-2 h-2 bg-primary rounded-full"></div>
                       <p className="text-sm text-primary font-semibold">{service.count}</p>
                     </div>
-                    
-                    <Button 
-                      variant="outline" 
-                      asChild 
+
+                    <Button
+                      variant="outline"
+                      asChild
                       className="w-full bg-transparent border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 py-3 font-semibold hover:backdrop-blur-xl"
                     >
                       <Link href={service.href}>
@@ -158,15 +158,15 @@ export function ServicesSection() {
           })}
         </div>
 
-        <motion.div 
+        <motion.div
           className="text-center mt-16"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             asChild
             className="px-8 py-4 text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
           >

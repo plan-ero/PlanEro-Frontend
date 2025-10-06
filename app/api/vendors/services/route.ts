@@ -7,11 +7,11 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8
 export async function GET(request: NextRequest) {
   try {
     // Get the token from NextAuth JWT
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET
     })
-    
+
     if (!token?.apiToken) {
       return NextResponse.json(
         { error: "Unauthorized - Please sign in" },
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
         'Content-Type': 'application/json',
       },
     })
-    
+
     if (!backendRes.ok) {
       const errorData = await backendRes.text().catch(() => 'Unknown error');
       console.error(`Backend error (${backendRes.status}):`, errorData);
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
         { status: backendRes.status }
       );
     }
-    
+
     const data = await backendRes.json()
     return NextResponse.json(data, { status: 200 })
   } catch (error) {
@@ -55,11 +55,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Get the token from NextAuth JWT
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET
     })
-    
+
     if (!token?.apiToken) {
       return NextResponse.json(
         { error: "Unauthorized - Please sign in" },
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify(serviceData),
     })
-    
+
     if (!backendRes.ok) {
       const errorData = await backendRes.text().catch(() => 'Unknown error');
       console.error(`Backend error (${backendRes.status}):`, errorData);
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
         { status: backendRes.status }
       );
     }
-    
+
     const data = await backendRes.json()
     return NextResponse.json(data, { status: 201 })
   } catch (error) {

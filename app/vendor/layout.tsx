@@ -6,11 +6,11 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { 
-  LayoutDashboard, 
-  Building2, 
-  Settings, 
-  Image, 
+import {
+  LayoutDashboard,
+  Building2,
+  Settings,
+  Image,
   TrendingUp,
   Package,
   Home,
@@ -26,7 +26,7 @@ const navigation = [
   },
   {
     name: "Profile",
-    href: "/vendor/profile", 
+    href: "/vendor/profile",
     icon: Building2,
   },
   {
@@ -35,13 +35,13 @@ const navigation = [
     icon: Package,
   },
   {
-    name: "Gallery", 
+    name: "Gallery",
     href: "/vendor/gallery",
     icon: Image,
   },
   {
     name: "Analytics",
-    href: "/vendor/analytics", 
+    href: "/vendor/analytics",
     icon: TrendingUp,
   },
 ]
@@ -71,7 +71,7 @@ export default function VendorLayout({
               {navigation.map((item) => {
                 const isActive = pathname === item.href
                 const Icon = item.icon
-                
+
                 return (
                   <Link key={item.name} href={item.href}>
                     <div
@@ -101,10 +101,10 @@ export default function VendorLayout({
                 Back to Site
               </Button>
             </Link>
-            
-            <Button 
-              variant="outline" 
-              className="w-full justify-start" 
+
+            <Button
+              variant="outline"
+              className="w-full justify-start"
               size="sm"
               onClick={handleSignOut}
             >

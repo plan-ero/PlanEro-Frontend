@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     // Get token from Authorization header
     const authHeader = request.headers.get('authorization')
     const token = authHeader?.replace('Bearer ', '') || TokenManager.getToken()
-    
+
     if (!token) {
       return NextResponse.json(
         { error: "Unauthorized - No token provided" },
@@ -47,9 +47,9 @@ export async function POST(request: NextRequest) {
         approved: false,
         published: false,
       }
-      
+
       console.log("Creating vendor with data:", vendorData) // Debug log
-      
+
       // Make direct POST request to backend vendors endpoint
       const backendResponse = await fetch(`${API_BASE_URL}/vendors`, {
         method: 'POST',
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
 
       const vendor = await backendResponse.json()
       return NextResponse.json(vendor, { status: 201 })
-      
+
     } catch (apiError) {
       console.error("External API error during onboarding:", apiError)
       return NextResponse.json(

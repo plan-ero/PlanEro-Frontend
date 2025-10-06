@@ -107,13 +107,13 @@ export function OrganizersSection() {
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20 group-hover:opacity-40 transition-all duration-500"
                     style={{ backgroundImage: `url(${organizer.image})` }}
                   />
-                  
+
                   {/* Gradient Overlay */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${organizer.color} opacity-0 group-hover:opacity-30 transition-all duration-500`} />
-                  
+
                   {/* Backdrop Blur Overlay */}
                   <div className="absolute inset-0 bg-background/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                  
+
                   <CardContent className="p-4 sm:p-6 md:p-8 relative z-10">
                     <div className="flex items-start space-x-3 sm:space-x-4">
                       {/* Icon Container */}
