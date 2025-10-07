@@ -3,8 +3,8 @@ import { TokenManager } from "@/lib/api"
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
 
-// POST /api/vendors/onboard - Create vendor profile during onboarding
-export async function POST(request: NextRequest) {
+// PUT /api/vendors/onboard - Update vendor profile during onboarding
+export async function PUT(request: NextRequest) {
   try {
     // Get token from Authorization header
     const authHeader = request.headers.get('authorization')
@@ -25,34 +25,54 @@ export async function POST(request: NextRequest) {
     const sessionEmail = request.headers.get('x-user-email') // We'll add this from frontend
     const userEmail = email || sessionEmail
 
-    if (!businessName || !location) {
+    if (!businessName || !location || !userEmail) {
       console.log("Missing required fields:", { businessName, location, userEmail })
       return NextResponse.json(
-        { error: "Missing required fields: businessName, location" },
+        { error: "Missing required fields: businessName, location, email" },
         { status: 400 }
       )
     }
 
     try {
-      // Create vendor through direct backend API call instead of using vendorApi
+      // First, fetch the existing vendor by email to get their ID
+      const vendorFetchResponse = await fetch(`${API_BASE_URL}/vendors/email/${encodeURIComponent(userEmail)}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!vendorFetchResponse.ok) {
+        console.error("Failed to fetch vendor by email:", await vendorFetchResponse.text())
+        return NextResponse.json(
+          { error: "Vendor not found. Please contact support." },
+          { status: 404 }
+        )
+      }
+
+      const existingVendor = await vendorFetchResponse.json()
+      const vendorId = existingVendor.id
+
+      // Prepare updated vendor data
       const vendorData = {
         businessName,
         location,
         bio: bio || "",
         websiteUrl: websiteUrl ? [websiteUrl] : [],
         profilePictureUrl: profilePictureUrl || "",
-        email: userEmail || "default@example.com", // Use extracted email
+        email: userEmail,
         phoneNumber: phoneNumber || "",
         addressId: addressId || 0,
         approved: false,
         published: false,
       }
 
-      console.log("Creating vendor with data:", vendorData) // Debug log
+      console.log("Updating vendor with ID:", vendorId, "data:", vendorData) // Debug log
 
-      // Make direct POST request to backend vendors endpoint
-      const backendResponse = await fetch(`${API_BASE_URL}/vendors`, {
-        method: 'POST',
+      // Make PUT request to backend vendors endpoint with ID
+      const backendResponse = await fetch(`${API_BASE_URL}/vendors/${vendorId}`, {
+        method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

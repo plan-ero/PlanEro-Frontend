@@ -47,6 +47,7 @@ import {
 } from "lucide-react"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { StarRating } from "@/components/ui/star-rating"
+import MultiImageUpload from "@/components/multi-image-upload"
 import toast from "react-hot-toast"
 
 // Service Types Enum based on backend
@@ -162,8 +163,6 @@ export default function VendorServices() {
   const [saving, setSaving] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingService, setEditingService] = useState<Service | null>(null)
-  const [imageUrls, setImageUrls] = useState<string[]>([])
-  const [newImageUrl, setNewImageUrl] = useState("")
 
   const form = useForm<ServiceForm>({
     resolver: zodResolver(serviceSchema),
@@ -374,26 +373,9 @@ export default function VendorServices() {
     }
   }
 
-  // Image management functions
-  const addImageUrl = () => {
-    if (newImageUrl.trim() && !imageUrls.includes(newImageUrl.trim())) {
-      const updatedUrls = [...imageUrls, newImageUrl.trim()]
-      setImageUrls(updatedUrls)
-      form.setValue("images", updatedUrls)
-      setNewImageUrl("")
-    }
-  }
-
-  const removeImageUrl = (index: number) => {
-    const updatedUrls = imageUrls.filter((_, i) => i !== index)
-    setImageUrls(updatedUrls)
-    form.setValue("images", updatedUrls)
-  }
-
   const openEditDialog = (service: Service) => {
     setEditingService(service)
     const serviceImages = service.images || []
-    setImageUrls(serviceImages)
     form.reset({
       name: service.name,
       serviceType: service.serviceType,
@@ -409,8 +391,6 @@ export default function VendorServices() {
 
   const openAddDialog = () => {
     setEditingService(null)
-    setImageUrls([])
-    setNewImageUrl("")
     form.reset({
       name: "",
       serviceType: ServiceType.PHOTOGRAPHER,
@@ -580,54 +560,14 @@ export default function VendorServices() {
                   </p>
                 </div>
 
-                <div className="space-y-3">
-                  <Label>Service Images (Optional)</Label>
-                  <div className="space-y-3">
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="Enter image URL"
-                        value={newImageUrl}
-                        onChange={(e) => setNewImageUrl(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addImageUrl())}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={addImageUrl}
-                        disabled={!newImageUrl.trim()}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-
-                    {imageUrls.length > 0 && (
-                      <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">Added Images:</p>
-                        <div className="space-y-2 max-h-32 overflow-y-auto">
-                          {imageUrls.map((url, index) => (
-                            <div key={index} className="flex items-center gap-2 p-2 border rounded-lg bg-gray-50">
-                              <ImageIcon className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                              <span className="text-sm truncate flex-1">{url}</span>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeImageUrl(index)}
-                                className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <p className="text-xs text-muted-foreground">
-                      Add image URLs to showcase your service. Images help customers understand what you offer.
-                    </p>
-                  </div>
-                </div>
+                <MultiImageUpload
+                  label="Service Images (Max 5)"
+                  currentImages={form.watch("images") || []}
+                  onImagesChange={(urls) => form.setValue("images", urls)}
+                  maxImages={5}
+                  folder="service-images"
+                  className="space-y-2"
+                />
 
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="space-y-1">

@@ -30,6 +30,7 @@ import {
   LogOut
 } from "lucide-react"
 import { LoadingSpinner } from "@/components/loading-spinner"
+import ImageUpload from "@/components/image-upload"
 import toast from "react-hot-toast"
 
 const profileSchema = z.object({
@@ -44,7 +45,6 @@ const profileSchema = z.object({
 const accountSchema = z.object({
   username: z.string().min(2, "Username must be at least 2 characters"),
   email: z.string().email("Please enter a valid email"),
-  phone: z.string().optional(),
 })
 
 const settingsSchema = z.object({
@@ -198,7 +198,6 @@ export default function VendorProfile() {
         accountForm.reset({
           username: userData.username || "",
           email: userData.email || "",
-          phone: userData.phone || "",
         })
       } else {
         const errorData = await userResponse.json().catch(() => ({ error: 'Unknown error' }))
@@ -212,6 +211,16 @@ export default function VendorProfile() {
       setLoading(false)
       setDataFetched(true) // Mark data as fetched
     }
+  }
+
+  const handleImageUploaded = (url: string) => {
+    profileForm.setValue("profilePictureUrl", url)
+    toast.success("Profile picture uploaded successfully!")
+  }
+
+  const handleImageDeleted = () => {
+    profileForm.setValue("profilePictureUrl", "")
+    toast.success("Profile picture removed successfully!")
   }
 
   const onProfileSubmit = async (data: ProfileForm) => {
@@ -295,36 +304,6 @@ export default function VendorProfile() {
     } finally {
       setSaving(false)
       submissionInProgress.current = false
-    }
-  }
-
-  const onAccountSubmit = async (data: AccountForm) => {
-    try {
-      setSaving(true)
-
-      const response = await fetch(`/api/users/profile`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-
-      if (response.ok) {
-        const responseData = await response.json()
-        setUser(responseData) // Update user state directly
-        toast.success("Account updated successfully!")
-      } else {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }))
-        const errorMessage = errorData.error || errorData.message || `Failed to update account (${response.status})`
-        console.error('Account update error:', errorData)
-        toast.error(errorMessage)
-      }
-    } catch (error) {
-      console.error("Error updating account:", error)
-      toast.error("Network error: Please check your connection and try again.")
-    } finally {
-      setSaving(false)
     }
   }
 
@@ -540,17 +519,13 @@ export default function VendorProfile() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="profilePictureUrl">Profile Picture URL</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="profilePictureUrl"
-                        placeholder="https://example.com/logo.jpg"
-                        {...profileForm.register("profilePictureUrl")}
-                      />
-                      <Button type="button" variant="outline" size="icon">
-                        <Camera className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    <ImageUpload
+                      label="Profile Picture"
+                      currentImageUrl={profileForm.watch("profilePictureUrl")}
+                      onImageUploaded={handleImageUploaded}
+                      onImageDeleted={handleImageDeleted}
+                      folder="profile-pictures"
+                    />
                   </div>
 
                   <div className="space-y-2">
@@ -619,63 +594,38 @@ export default function VendorProfile() {
               <CardHeader>
                 <CardTitle>Account Information</CardTitle>
                 <CardDescription>
-                  Manage your personal account details
+                  Your account details (read-only). Contact support to update.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={accountForm.handleSubmit(onAccountSubmit)} className="space-y-6">
+                <div className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="username">Username *</Label>
+                    <Label htmlFor="username">Username</Label>
                     <Input
                       id="username"
                       {...accountForm.register("username")}
-                      className={accountForm.formState.errors.username ? "border-red-500" : ""}
+                      disabled
+                      className="bg-muted cursor-not-allowed"
                     />
-                    {accountForm.formState.errors.username && (
-                      <p className="text-sm text-red-500">
-                        {accountForm.formState.errors.username.message}
-                      </p>
-                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email Address *</Label>
+                    <Label htmlFor="email">Email Address</Label>
                     <Input
                       id="email"
                       type="email"
                       {...accountForm.register("email")}
-                      className={accountForm.formState.errors.email ? "border-red-500" : ""}
+                      disabled
+                      className="bg-muted cursor-not-allowed"
                     />
-                    {accountForm.formState.errors.email && (
-                      <p className="text-sm text-red-500">
-                        {accountForm.formState.errors.email.message}
-                      </p>
-                    )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="+1 (555) 123-4567"
-                      {...accountForm.register("phone")}
-                      className={accountForm.formState.errors.phone ? "border-red-500" : ""}
-                    />
-                    {accountForm.formState.errors.phone && (
-                      <p className="text-sm text-red-500">
-                        {accountForm.formState.errors.phone.message}
-                      </p>
-                    )}
+                  <div className="p-4 bg-muted/50 rounded-lg border">
+                    <p className="text-sm text-muted-foreground">
+                      <strong>Note:</strong> Account information cannot be changed at this time. If you need to update your username or email, please contact support.
+                    </p>
                   </div>
-
-                  <Separator />
-
-                  <Button type="submit" disabled={saving}>
-                    {saving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="h-4 w-4 mr-2" />}
-                    Save Account
-                  </Button>
-                </form>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

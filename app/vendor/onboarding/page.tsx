@@ -13,9 +13,11 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Progress } from "@/components/ui/progress"
-import { AlertCircle, Upload, Building2 } from "lucide-react"
+import { AlertCircle, Upload, Building2, Mail, CheckCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { LoadingSpinner } from "@/components/loading-spinner"
+import EmailVerification from "@/components/email-verification"
+import ImageUpload from "@/components/image-upload"
 import toast from "react-hot-toast"
 
 const vendorOnboardingSchema = z.object({
@@ -24,6 +26,7 @@ const vendorOnboardingSchema = z.object({
   bio: z.string().min(50, "Bio must be at least 50 characters").max(1000, "Bio must be less than 1000 characters"),
   websiteUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
   profilePictureUrl: z.string().optional(),
+  phoneNumber: z.string().optional(),
   isPublished: z.boolean().default(false),
 })
 
@@ -34,7 +37,12 @@ export default function VendorOnboarding() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState(1)
-  const totalSteps = 3
+  // If user has a session, they're already verified (logged in)
+  const isUserVerified = !!session?.user?.email
+  const [emailVerified, setEmailVerified] = useState(isUserVerified)
+  const [verificationToken, setVerificationToken] = useState("")
+  // Only 3 steps if already verified (no email verification step)
+  const totalSteps = isUserVerified ? 3 : 4
 
   const {
     register,
@@ -47,6 +55,8 @@ export default function VendorOnboarding() {
     resolver: zodResolver(vendorOnboardingSchema),
     defaultValues: {
       isPublished: false,
+      profilePictureUrl: "",
+      phoneNumber: "",
     }
   })
 
@@ -56,35 +66,57 @@ export default function VendorOnboarding() {
     if (status === "unauthenticated") {
       router.push("/auth/signin")
     }
-  }, [status, router])
+    // If user is authenticated, mark as verified and use their session token
+    if (status === "authenticated" && session?.user?.email) {
+      setEmailVerified(true)
+      // Use the API token from session if available
+      if (session.apiToken) {
+        setVerificationToken(session.apiToken)
+      }
+    }
+  }, [status, router, session])
+
+  const handleEmailVerified = (token: string) => {
+    setEmailVerified(true)
+    setVerificationToken(token)
+    toast.success("Email verified! You can now proceed with registration.")
+    nextStep()
+  }
+
+  const handleImageUploaded = (url: string) => {
+    setValue("profilePictureUrl", url)
+    toast.success("Profile picture uploaded successfully!")
+  }
+
+  const handleImageDeleted = () => {
+    setValue("profilePictureUrl", "")
+  }
 
   const onSubmit = async (data: VendorOnboardingForm) => {
+    if (!emailVerified) {
+      toast.error("Please verify your email first")
+      return
+    }
+
     try {
       setLoading(true)
 
-      // Get the authentication token from session
+      // Use the verification token or session API token for API calls
+      const token = verificationToken || session?.apiToken || ""
       const headers: HeadersInit = {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
       }
 
-      // Add authorization token if available
-      if ((session as any)?.apiToken) {
-        headers["Authorization"] = `Bearer ${(session as any).apiToken}`
-      }
-
-      // Add user email to headers for backend reference
-      if (session?.user?.email) {
-        headers["x-user-email"] = session.user.email
-      }
-
-      // Add email to the data payload as well
+      // Add email to the data payload
       const payload = {
         ...data,
-        email: session?.user?.email
+        email: session?.user?.email,
+        phoneNumber: data.phoneNumber || "",
       }
 
       const response = await fetch("/api/vendors/onboard", {
-        method: "POST",
+        method: "PUT",
         headers,
         body: JSON.stringify(payload),
       })
@@ -148,22 +180,46 @@ export default function VendorOnboarding() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {step === 1 && "Business Information"}
-                {step === 2 && "About Your Business"}
-                {step === 3 && "Review & Submit"}
-              </CardTitle>
-              <CardDescription>
-                {step === 1 && "Tell us about your business"}
-                {step === 2 && "Help customers understand your services"}
-                {step === 3 && "Review your information before submitting"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {step === 1 && (
+        {step === 1 && !isUserVerified && !emailVerified ? (
+          // Step 1: Email Verification (only for non-logged-in users)
+          <EmailVerification
+            email={session?.user?.email || ""}
+            onVerificationComplete={handleEmailVerified}
+            showEmailInput={false}
+          />
+        ) : (
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  {/* Adjust step titles based on whether user is already verified */}
+                  {!isUserVerified && step === 1 && "Email Verified ✓"}
+                  {(isUserVerified && step === 1) || (!isUserVerified && step === 2) ? "Business Information" : ""}
+                  {(isUserVerified && step === 2) || (!isUserVerified && step === 3) ? "Profile & Images" : ""}
+                  {(isUserVerified && step === 3) || (!isUserVerified && step === 4) ? "Review & Submit" : ""}
+                </CardTitle>
+                <CardDescription>
+                  {!isUserVerified && step === 1 && "Your email has been verified successfully"}
+                  {(isUserVerified && step === 1) || (!isUserVerified && step === 2) ? "Tell us about your business" : ""}
+                  {(isUserVerified && step === 2) || (!isUserVerified && step === 3) ? "Upload your profile picture and add details" : ""}
+                  {(isUserVerified && step === 3) || (!isUserVerified && step === 4) ? "Review your information before submitting" : ""}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {!isUserVerified && step === 1 && emailVerified && (
+                  <div className="text-center space-y-4">
+                    <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
+                    <div>
+                      <h3 className="text-lg font-semibold">Email Verified!</h3>
+                      <p className="text-muted-foreground">
+                        Your email <strong>{session?.user?.email}</strong> has been verified.
+                        You can now continue with your vendor registration.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {((isUserVerified && step === 1) || (!isUserVerified && step === 2)) && (
                 <>
                   <div className="space-y-2">
                     <Label htmlFor="businessName">Business Name *</Label>
@@ -206,25 +262,18 @@ export default function VendorOnboarding() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="profilePicture">Profile Picture URL</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="profilePicture"
-                        placeholder="https://example.com/logo.jpg"
-                        {...register("profilePictureUrl")}
-                      />
-                      <Button type="button" variant="outline" size="icon">
-                        <Upload className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Add a professional logo or photo of your business
-                    </p>
+                    <Label htmlFor="phoneNumber">Phone Number</Label>
+                    <Input
+                      id="phoneNumber"
+                      type="tel"
+                      placeholder="+1 (555) 123-4567"
+                      {...register("phoneNumber")}
+                    />
                   </div>
                 </>
               )}
 
-              {step === 2 && (
+              {((isUserVerified && step === 2) || (!isUserVerified && step === 3)) && (
                 <>
                   <div className="space-y-2">
                     <Label htmlFor="bio">Business Description *</Label>
@@ -242,17 +291,26 @@ export default function VendorOnboarding() {
                     </p>
                   </div>
 
+                  <ImageUpload
+                    label="Profile Picture"
+                    currentImageUrl={watchedValues.profilePictureUrl}
+                    onImageUploaded={handleImageUploaded}
+                    onImageDeleted={handleImageDeleted}
+                    folder="profile-pictures"
+                    className="mt-4"
+                  />
+
                   <Alert>
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                      Your business description helps potential clients understand your services and expertise.
+                      Your business description and profile picture help potential clients understand your services and expertise.
                       Include your specialties, experience, and what sets you apart from competitors.
                     </AlertDescription>
                   </Alert>
                 </>
               )}
 
-              {step === 3 && (
+              {((isUserVerified && step === 3) || (!isUserVerified && step === 4)) && (
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -269,12 +327,31 @@ export default function VendorOnboarding() {
                         <p className="text-sm text-muted-foreground">{watchedValues.websiteUrl}</p>
                       </div>
                     )}
+                    {watchedValues.phoneNumber && (
+                      <div>
+                        <Label className="font-medium">Phone</Label>
+                        <p className="text-sm text-muted-foreground">{watchedValues.phoneNumber}</p>
+                      </div>
+                    )}
                   </div>
 
                   <div>
                     <Label className="font-medium">Business Description</Label>
                     <p className="text-sm text-muted-foreground mt-1">{watchedValues.bio}</p>
                   </div>
+
+                  {watchedValues.profilePictureUrl && (
+                    <div>
+                      <Label className="font-medium">Profile Picture</Label>
+                      <div className="mt-2 w-32 h-32 relative border rounded-lg overflow-hidden">
+                        <img 
+                          src={watchedValues.profilePictureUrl} 
+                          alt="Profile Preview" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="space-y-1">
@@ -307,7 +384,7 @@ export default function VendorOnboarding() {
               type="button"
               variant="outline"
               onClick={prevStep}
-              disabled={step === 1}
+              disabled={step === 1 || !emailVerified}
             >
               Previous
             </Button>
@@ -317,20 +394,24 @@ export default function VendorOnboarding() {
                 type="button"
                 onClick={nextStep}
                 disabled={
-                  (step === 1 && (!watchedValues.businessName || !watchedValues.location)) ||
-                  (step === 2 && (!watchedValues.bio || watchedValues.bio.length < 50))
+                  !emailVerified ||
+                  // For verified users: step 1 = business info, step 2 = profile
+                  // For unverified: step 2 = business info, step 3 = profile
+                  ((isUserVerified && step === 1) || (!isUserVerified && step === 2)) && (!watchedValues.businessName || !watchedValues.location) ||
+                  ((isUserVerified && step === 2) || (!isUserVerified && step === 3)) && (!watchedValues.bio || watchedValues.bio.length < 50)
                 }
               >
                 Next
               </Button>
             ) : (
-              <Button type="submit" disabled={loading}>
+              <Button type="submit" disabled={loading || !emailVerified}>
                 {loading ? <LoadingSpinner size="sm" className="mr-2" /> : null}
                 Submit for Review
               </Button>
             )}
           </div>
         </form>
+        )}
       </div>
     </div>
   )
