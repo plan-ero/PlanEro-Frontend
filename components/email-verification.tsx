@@ -17,11 +17,11 @@ interface EmailVerificationProps {
   showEmailInput?: boolean
 }
 
-export default function EmailVerification({ 
-  email, 
-  onVerificationComplete, 
+export default function EmailVerification({
+  email,
+  onVerificationComplete,
   onEmailChange,
-  showEmailInput = false 
+  showEmailInput = false
 }: EmailVerificationProps) {
   const [currentEmail, setCurrentEmail] = useState(email)
   const [otp, setOtp] = useState("")
@@ -82,8 +82,8 @@ export default function EmailVerification({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          contact: currentEmail, 
+        body: JSON.stringify({
+          contact: currentEmail,
           otp: otp,
           channelType: "EMAIL"
         }),
@@ -170,9 +170,9 @@ export default function EmailVerification({
                 </AlertDescription>
               </Alert>
             )}
-            
-            <Button 
-              onClick={sendVerificationEmail} 
+
+            <Button
+              onClick={sendVerificationEmail}
               disabled={loading || !currentEmail}
               className="w-full"
             >
@@ -191,7 +191,7 @@ export default function EmailVerification({
             <Alert>
               <Mail className="h-4 w-4" />
               <AlertDescription>
-                We've sent a 6-digit verification code to <strong>{currentEmail}</strong>. 
+                We've sent a 6-digit verification code to <strong>{currentEmail}</strong>.
                 Please check your inbox and enter the code below.
               </AlertDescription>
             </Alert>
@@ -211,8 +211,8 @@ export default function EmailVerification({
             </div>
 
             <div className="flex space-x-2">
-              <Button 
-                onClick={verifyOtp} 
+              <Button
+                onClick={verifyOtp}
                 disabled={loading || otp.length !== 6}
                 className="flex-1"
               >
@@ -226,8 +226,8 @@ export default function EmailVerification({
                 )}
               </Button>
 
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={sendVerificationEmail}
                 disabled={loading || resendCooldown > 0}
               >

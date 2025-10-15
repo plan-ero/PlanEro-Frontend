@@ -344,9 +344,9 @@ export default function VendorOnboarding() {
                     <div>
                       <Label className="font-medium">Profile Picture</Label>
                       <div className="mt-2 w-32 h-32 relative border rounded-lg overflow-hidden">
-                        <img 
-                          src={watchedValues.profilePictureUrl} 
-                          alt="Profile Preview" 
+                        <img
+                          src={watchedValues.profilePictureUrl}
+                          alt="Profile Preview"
                           className="w-full h-full object-cover"
                         />
                       </div>

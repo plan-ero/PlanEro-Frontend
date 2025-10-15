@@ -78,10 +78,10 @@ export default function MultiImageUpload({
   const uploadFile = async (file: File) => {
     try {
       setUploading(true)
-      
+
       const formData = new FormData()
       formData.append('file', file)
-      
+
       // Use specific endpoint based on folder
       let endpoint = '/api/upload/image'
       if (folder === 'profile-pictures') {
@@ -124,8 +124,8 @@ export default function MultiImageUpload({
 
       // Only attempt CDN deletion if the image appears to be from our CDN
       // (contains our CDN domain or was uploaded through our system)
-      const isCdnImage = imageUrl.includes(window.location.hostname) || 
-                         imageUrl.includes('cloudinary') || 
+      const isCdnImage = imageUrl.includes(window.location.hostname) ||
+                         imageUrl.includes('cloudinary') ||
                          imageUrl.includes('cdn') ||
                          imageUrl.startsWith('/uploads')
 
@@ -193,7 +193,7 @@ export default function MultiImageUpload({
     const newImages = [...images, imageUrl.trim()]
     setImages(newImages)
     onImagesChange(newImages)
-    
+
     // Reset URL input
     setImageUrl("")
     setShowUrlInput(false)

@@ -6,7 +6,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8
 export async function DELETE(request: NextRequest) {
   try {
     const session = await auth()
-    
+
     if (!session) {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -28,7 +28,7 @@ export async function DELETE(request: NextRequest) {
     const headers: HeadersInit = {
       'Content-Type': 'application/json'
     }
-    
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }

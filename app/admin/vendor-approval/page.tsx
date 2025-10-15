@@ -77,8 +77,8 @@ export default function VendorApproval() {
       if (response.ok) {
         toast.success('Vendor approved successfully')
         // Update local state
-        setVendors(vendors.map(vendor => 
-          vendor.id === vendorId 
+        setVendors(vendors.map(vendor =>
+          vendor.id === vendorId
             ? { ...vendor, isApproved: true }
             : vendor
         ))
@@ -108,8 +108,8 @@ export default function VendorApproval() {
       if (response.ok) {
         toast.success('Vendor rejected')
         // Update local state
-        setVendors(vendors.map(vendor => 
-          vendor.id === vendorId 
+        setVendors(vendors.map(vendor =>
+          vendor.id === vendorId
             ? { ...vendor, isApproved: false }
             : vendor
         ))
@@ -172,7 +172,7 @@ export default function VendorApproval() {
                               <User className="h-8 w-8" />
                             </AvatarFallback>
                           </Avatar>
-                          
+
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between">
                               <div>
@@ -194,7 +194,7 @@ export default function VendorApproval() {
                                   )}
                                 </div>
                               </div>
-                              
+
                               <div className="flex space-x-2">
                                 <Button
                                   size="sm"
@@ -220,11 +220,11 @@ export default function VendorApproval() {
                                 </Button>
                               </div>
                             </div>
-                            
+
                             <div className="mt-3">
                               <p className="text-sm">{vendor.bio}</p>
                             </div>
-                            
+
                             {vendor.websiteUrl && vendor.websiteUrl.length > 0 && (
                               <div className="mt-2">
                                 <a
@@ -273,12 +273,12 @@ export default function VendorApproval() {
                               <User className="h-6 w-6" />
                             </AvatarFallback>
                           </Avatar>
-                          
+
                           <div className="flex-1">
                             <h4 className="font-medium">{vendor.businessName}</h4>
                             <p className="text-sm text-muted-foreground">{vendor.location}</p>
                           </div>
-                          
+
                           <Badge variant="secondary" className="bg-green-100 text-green-800">
                             <CheckCircle className="h-3 w-3 mr-1" />
                             Approved

@@ -69,10 +69,10 @@ export default function ImageUpload({
   const uploadFile = async (file: File) => {
     try {
       setUploading(true)
-      
+
       const formData = new FormData()
       formData.append('file', file)
-      
+
       // Use specific endpoint based on folder
       let endpoint = '/api/upload/image'
       if (folder === 'profile-pictures') {
@@ -116,13 +116,13 @@ export default function ImageUpload({
 
     try {
       setDeleting(true)
-      
+
       const urlToDelete = preview || currentImageUrl
-      
+
       // Only attempt CDN deletion if the image appears to be from our CDN
       const isCdnImage = urlToDelete && (
-        urlToDelete.includes(window.location.hostname) || 
-        urlToDelete.includes('cloudinary') || 
+        urlToDelete.includes(window.location.hostname) ||
+        urlToDelete.includes('cloudinary') ||
         urlToDelete.includes('cdn') ||
         urlToDelete.startsWith('/uploads')
       )
@@ -177,7 +177,7 @@ export default function ImageUpload({
     // Set preview and notify parent
     setPreview(imageUrl.trim())
     onImageUploaded(imageUrl.trim())
-    
+
     // Reset URL input
     setImageUrl("")
     setShowUrlInput(false)
@@ -192,7 +192,7 @@ export default function ImageUpload({
   return (
     <div className={`space-y-2 ${className}`}>
       <Label>{label}</Label>
-      
+
       <input
         ref={fileInputRef}
         type="file"
@@ -214,7 +214,7 @@ export default function ImageUpload({
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
               </div>
-              
+
               <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
                 <Button
                   size="sm"
@@ -229,7 +229,7 @@ export default function ImageUpload({
                   )}
                   Replace
                 </Button>
-                
+
                 <Button
                   size="sm"
                   variant="destructive"
@@ -248,7 +248,7 @@ export default function ImageUpload({
           ) : (
             <>
               {!showUrlInput ? (
-                <div 
+                <div
                   className="h-48 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors cursor-pointer flex flex-col items-center justify-center space-y-3 p-6"
                   onClick={triggerFileSelect}
                 >

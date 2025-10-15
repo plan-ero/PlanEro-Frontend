@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
   User,
   Building2,
@@ -27,10 +28,13 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  LogOut
+  LogOut,
+  Mail,
+  ShieldCheck
 } from "lucide-react"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import ImageUpload from "@/components/image-upload"
+import EmailVerification from "@/components/email-verification"
 import toast from "react-hot-toast"
 
 const profileSchema = z.object({
@@ -68,6 +72,7 @@ interface Vendor {
   phoneNumber?: string
   isApproved: boolean
   isPublished: boolean
+  emailVerified: boolean
   addressId?: number
   priceEnum?: string
   totalRating?: number
@@ -94,6 +99,8 @@ export default function VendorProfile() {
   const [lastSubmitTime, setLastSubmitTime] = useState<number>(0) // Track last submission time
   const submissionInProgress = useRef(false) // More reliable submission tracking
   const preventFetch = useRef(false) // Prevent fetchData after successful submissions
+  const [showVerificationDialog, setShowVerificationDialog] = useState(false)
+  // emailVerified state is now derived from vendor data
 
 
 
@@ -335,6 +342,21 @@ export default function VendorProfile() {
     } finally {
       setSaving(false)
     }
+  }
+
+  const handleVerificationComplete = (token: string) => {
+    // Update the vendor state to reflect verified email
+    setVendor(prev => prev ? { ...prev, emailVerified: true } : null)
+    setShowVerificationDialog(false)
+    toast.success("Email verified successfully! Your account is now verified.")
+  }
+
+  const openVerificationDialog = () => {
+    if (!vendor?.email) {
+      toast.error("Email address not found")
+      return
+    }
+    setShowVerificationDialog(true)
   }
 
   const getStatusInfo = () => {
@@ -620,6 +642,49 @@ export default function VendorProfile() {
                     />
                   </div>
 
+                  {/* Email Verification Status */}
+                  {vendor?.emailVerified ? (
+                    <div className="p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-900">
+                      <div className="flex items-start gap-3">
+                        <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
+                        <div>
+                          <h4 className="font-semibold text-green-900 dark:text-green-100">
+                            Email Verified
+                          </h4>
+                          <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                            Your email address has been successfully verified. You'll receive all important notifications.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-900">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-3 flex-1">
+                          <Mail className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-blue-900 dark:text-blue-100">
+                              Email Verification Required
+                            </h4>
+                            <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                              Verify your email address to ensure you receive important notifications and updates about your vendor account.
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={openVerificationDialog}
+                          className="whitespace-nowrap"
+                        >
+                          <ShieldCheck className="h-4 w-4 mr-2" />
+                          Verify Email
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="p-4 bg-muted/50 rounded-lg border">
                     <p className="text-sm text-muted-foreground">
                       <strong>Note:</strong> Account information cannot be changed at this time. If you need to update your username or email, please contact support.
@@ -693,6 +758,23 @@ export default function VendorProfile() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Email Verification Dialog */}
+      <Dialog open={showVerificationDialog} onOpenChange={setShowVerificationDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Verify Your Email</DialogTitle>
+            <DialogDescription>
+              We'll send a verification code to your email address
+            </DialogDescription>
+          </DialogHeader>
+          <EmailVerification
+            email={vendor?.email || ""}
+            onVerificationComplete={handleVerificationComplete}
+            showEmailInput={false}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

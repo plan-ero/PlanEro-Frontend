@@ -6,7 +6,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8
 export async function POST(request: NextRequest, { params }: { params: { vendorId: string } }) {
   try {
     const session = await auth()
-    
+
     if (!session) {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -25,13 +25,13 @@ export async function POST(request: NextRequest, { params }: { params: { vendorI
     const vendorId = params.vendorId
     const body = await request.json()
     const { reason } = body
-    
+
     const token = (session as any)?.apiToken
-    
+
     const headers: HeadersInit = {
       "Content-Type": "application/json",
     }
-    
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`
     }
