@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { motion } from "framer-motion"
-import { useRouter } from "next/navigation"
-import { Search, MapPin, Users, Crown, Sparkles } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { Search, MapPin, Users, Crown, Sparkles } from "lucide-react";
 
 export function HeroSection() {
-  const router = useRouter()
+  const router = useRouter();
 
   return (
     <section className="relative min-h-screen sm:min-h-[90vh] lg:min-h-[95vh] flex items-center justify-center overflow-hidden">
@@ -34,18 +34,18 @@ export function HeroSection() {
             initial={{
               y: "100vh",
               x: `${(i * 50) % 100}vw`,
-              opacity: 0
+              opacity: 0,
             }}
             animate={{
               y: "-100px",
-              x: `${((i * 50) + 20) % 100}vw`,
-              opacity: [0, 1, 0]
+              x: `${(i * 50 + 20) % 100}vw`,
+              opacity: [0, 1, 0],
             }}
             transition={{
               duration: 15 + (i % 10),
               repeat: Infinity,
               ease: "linear",
-              delay: i * 0.2
+              delay: i * 0.2,
             }}
           />
         ))}
@@ -59,7 +59,10 @@ export function HeroSection() {
           transition={{ duration: 1, ease: "easeOut" }}
           className="mb-8 sm:mb-12"
         >
-          <Badge variant="outline" className="mb-4 sm:mb-6 px-4 py-2 bg-background/80 backdrop-blur-sm border-primary/30">
+          <Badge
+            variant="outline"
+            className="mb-4 sm:mb-6 px-4 py-2 bg-background/80 backdrop-blur-sm border-primary/30"
+          >
             <Sparkles className="h-4 w-4 mr-2" />
             PLAN YOUR PERFECT WEDDING
           </Badge>
@@ -77,8 +80,9 @@ export function HeroSection() {
           </h1>
 
           <p className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8 sm:mb-12">
-            From intimate garden ceremonies to grand banquet celebrations, find everything you need to create
-            your perfect wedding day with our comprehensive planning platform.
+            From intimate garden ceremonies to grand banquet celebrations, find
+            everything you need to create your perfect wedding day with our
+            comprehensive planning platform.
           </p>
         </motion.div>
 
@@ -132,7 +136,11 @@ export function HeroSection() {
                 Find Vendors
               </Button>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="sm:col-span-2 lg:col-span-1">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="sm:col-span-2 lg:col-span-1"
+            >
               <Button
                 variant="outline"
                 size="lg"
@@ -156,16 +164,23 @@ export function HeroSection() {
               { number: "10K+", label: "Venues" },
               { number: "5K+", label: "Vendors" },
               { number: "50K+", label: "Events" },
-              { number: "4.9★", label: "Rating" }
+              { number: "4.9★", label: "Rating" },
             ].map((stat, index) => (
-              <div key={index} className="text-center p-4 rounded-lg bg-background/20 backdrop-blur-sm border border-border/50">
-                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-1 sm:mb-2">{stat.number}</div>
-                <div className="text-xs sm:text-sm lg:text-base text-white/80 font-medium">{stat.label}</div>
+              <div
+                key={index}
+                className="text-center p-4 rounded-lg bg-background/20 backdrop-blur-sm border border-border/50"
+              >
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-1 sm:mb-2">
+                  {stat.number}
+                </div>
+                <div className="text-xs sm:text-sm lg:text-base text-white/80 font-medium">
+                  {stat.label}
+                </div>
               </div>
             ))}
           </motion.div>
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

@@ -1,140 +1,162 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { LoadingSpinner } from "@/components/loading-spinner"
-import { CheckCircle, XCircle, User, MapPin, Globe, Phone, Mail } from "lucide-react"
-import toast from "react-hot-toast"
+import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { LoadingSpinner } from "@/components/loading-spinner";
+import {
+  CheckCircle,
+  XCircle,
+  User,
+  MapPin,
+  Globe,
+  Phone,
+  Mail,
+} from "lucide-react";
+import toast from "react-hot-toast";
 
 interface Vendor {
-  id: number
-  businessName: string
-  location: string
-  bio: string
-  websiteUrl?: string[]
-  profilePictureUrl?: string
-  email: string
-  phoneNumber?: string
-  isApproved: boolean
-  isPublished: boolean
-  createdAt: string
-  updatedAt: string
+  id: number;
+  businessName: string;
+  location: string;
+  bio: string;
+  websiteUrl?: string[];
+  profilePictureUrl?: string;
+  email: string;
+  phoneNumber?: string;
+  isApproved: boolean;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export default function VendorApproval() {
-  const { data: session } = useSession()
-  const router = useRouter()
-  const [vendors, setVendors] = useState<Vendor[]>([])
-  const [loading, setLoading] = useState(true)
-  const [processing, setProcessing] = useState<number | null>(null)
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState<number | null>(null);
 
   useEffect(() => {
-    if (session?.user?.role !== 'ADMIN') {
-      router.push('/auth/signin')
-      return
+    if (session?.user?.role !== "ADMIN") {
+      router.push("/auth/signin");
+      return;
     }
-    fetchVendors()
-  }, [session, router])
+    fetchVendors();
+  }, [session, router]);
 
   const fetchVendors = async () => {
     try {
-      setLoading(true)
-      const response = await fetch('/api/vendors', {
+      setLoading(true);
+      const response = await fetch("/api/vendors", {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-      })
+      });
 
       if (response.ok) {
-        const data = await response.json()
-        setVendors(data)
+        const data = await response.json();
+        setVendors(data);
       } else {
-        toast.error('Failed to fetch vendors')
+        toast.error("Failed to fetch vendors");
       }
     } catch (error) {
-      console.error('Error fetching vendors:', error)
-      toast.error('Network error')
+      console.error("Error fetching vendors:", error);
+      toast.error("Network error");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleApprove = async (vendorId: number) => {
     try {
-      setProcessing(vendorId)
-      const response = await fetch(`/api/vendor-verification/approve/${vendorId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      setProcessing(vendorId);
+      const response = await fetch(
+        `/api/vendor-verification/approve/${vendorId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      })
+      );
 
       if (response.ok) {
-        toast.success('Vendor approved successfully')
+        toast.success("Vendor approved successfully");
         // Update local state
-        setVendors(vendors.map(vendor =>
-          vendor.id === vendorId
-            ? { ...vendor, isApproved: true }
-            : vendor
-        ))
+        setVendors(
+          vendors.map((vendor) =>
+            vendor.id === vendorId ? { ...vendor, isApproved: true } : vendor,
+          ),
+        );
       } else {
-        const error = await response.json()
-        toast.error(error.error || 'Failed to approve vendor')
+        const error = await response.json();
+        toast.error(error.error || "Failed to approve vendor");
       }
     } catch (error) {
-      console.error('Error approving vendor:', error)
-      toast.error('Network error')
+      console.error("Error approving vendor:", error);
+      toast.error("Network error");
     } finally {
-      setProcessing(null)
+      setProcessing(null);
     }
-  }
+  };
 
   const handleReject = async (vendorId: number) => {
     try {
-      setProcessing(vendorId)
-      const response = await fetch(`/api/vendor-verification/reject/${vendorId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      setProcessing(vendorId);
+      const response = await fetch(
+        `/api/vendor-verification/reject/${vendorId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            reason: "Profile does not meet our requirements",
+          }),
         },
-        body: JSON.stringify({ reason: 'Profile does not meet our requirements' }),
-      })
+      );
 
       if (response.ok) {
-        toast.success('Vendor rejected')
+        toast.success("Vendor rejected");
         // Update local state
-        setVendors(vendors.map(vendor =>
-          vendor.id === vendorId
-            ? { ...vendor, isApproved: false }
-            : vendor
-        ))
+        setVendors(
+          vendors.map((vendor) =>
+            vendor.id === vendorId ? { ...vendor, isApproved: false } : vendor,
+          ),
+        );
       } else {
-        const error = await response.json()
-        toast.error(error.error || 'Failed to reject vendor')
+        const error = await response.json();
+        toast.error(error.error || "Failed to reject vendor");
       }
     } catch (error) {
-      console.error('Error rejecting vendor:', error)
-      toast.error('Network error')
+      console.error("Error rejecting vendor:", error);
+      toast.error("Network error");
     } finally {
-      setProcessing(null)
+      setProcessing(null);
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <LoadingSpinner size="lg" />
       </div>
-    )
+    );
   }
 
-  const pendingVendors = vendors.filter(v => !v.isApproved)
-  const approvedVendors = vendors.filter(v => v.isApproved)
+  const pendingVendors = vendors.filter((v) => !v.isApproved);
+  const approvedVendors = vendors.filter((v) => v.isApproved);
 
   return (
     <div className="container mx-auto py-8 max-w-6xl">
@@ -151,9 +173,7 @@ export default function VendorApproval() {
           <Card>
             <CardHeader>
               <CardTitle>Pending Approvals ({pendingVendors.length})</CardTitle>
-              <CardDescription>
-                Vendors waiting for approval
-              </CardDescription>
+              <CardDescription>Vendors waiting for approval</CardDescription>
             </CardHeader>
             <CardContent>
               {pendingVendors.length === 0 ? (
@@ -176,7 +196,9 @@ export default function VendorApproval() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between">
                               <div>
-                                <h3 className="text-lg font-semibold">{vendor.businessName}</h3>
+                                <h3 className="text-lg font-semibold">
+                                  {vendor.businessName}
+                                </h3>
                                 <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
                                   <div className="flex items-center">
                                     <MapPin className="h-4 w-4 mr-1" />
@@ -203,7 +225,10 @@ export default function VendorApproval() {
                                   className="bg-green-600 hover:bg-green-700"
                                 >
                                   {processing === vendor.id ? (
-                                    <LoadingSpinner size="sm" className="mr-2" />
+                                    <LoadingSpinner
+                                      size="sm"
+                                      className="mr-2"
+                                    />
                                   ) : (
                                     <CheckCircle className="h-4 w-4 mr-2" />
                                   )}
@@ -225,19 +250,20 @@ export default function VendorApproval() {
                               <p className="text-sm">{vendor.bio}</p>
                             </div>
 
-                            {vendor.websiteUrl && vendor.websiteUrl.length > 0 && (
-                              <div className="mt-2">
-                                <a
-                                  href={vendor.websiteUrl[0]}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-sm text-blue-600 hover:underline flex items-center"
-                                >
-                                  <Globe className="h-4 w-4 mr-1" />
-                                  {vendor.websiteUrl[0]}
-                                </a>
-                              </div>
-                            )}
+                            {vendor.websiteUrl &&
+                              vendor.websiteUrl.length > 0 && (
+                                <div className="mt-2">
+                                  <a
+                                    href={vendor.websiteUrl[0]}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-blue-600 hover:underline flex items-center"
+                                  >
+                                    <Globe className="h-4 w-4 mr-1" />
+                                    {vendor.websiteUrl[0]}
+                                  </a>
+                                </div>
+                              )}
                           </div>
                         </div>
                       </CardContent>
@@ -252,9 +278,7 @@ export default function VendorApproval() {
           <Card>
             <CardHeader>
               <CardTitle>Approved Vendors ({approvedVendors.length})</CardTitle>
-              <CardDescription>
-                Recently approved vendors
-              </CardDescription>
+              <CardDescription>Recently approved vendors</CardDescription>
             </CardHeader>
             <CardContent>
               {approvedVendors.length === 0 ? (
@@ -275,11 +299,18 @@ export default function VendorApproval() {
                           </Avatar>
 
                           <div className="flex-1">
-                            <h4 className="font-medium">{vendor.businessName}</h4>
-                            <p className="text-sm text-muted-foreground">{vendor.location}</p>
+                            <h4 className="font-medium">
+                              {vendor.businessName}
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                              {vendor.location}
+                            </p>
                           </div>
 
-                          <Badge variant="secondary" className="bg-green-100 text-green-800">
+                          <Badge
+                            variant="secondary"
+                            className="bg-green-100 text-green-800"
+                          >
                             <CheckCircle className="h-3 w-3 mr-1" />
                             Approved
                           </Badge>
@@ -294,5 +325,5 @@ export default function VendorApproval() {
         </div>
       </div>
     </div>
-  )
+  );
 }

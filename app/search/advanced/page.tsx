@@ -1,49 +1,49 @@
-"use client"
+"use client";
 
-import React, { useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { motion } from "framer-motion"
-import { 
-  Search, 
-  MapPin, 
-  Calendar, 
-  Star, 
-  DollarSign, 
-  Users, 
+import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
+import {
+  Search,
+  MapPin,
+  Calendar,
+  Star,
+  DollarSign,
+  Users,
   Filter,
   X,
   ChevronDown,
   Sliders,
-  Clock
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { 
+  Clock,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Slider } from "@/components/ui/slider"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Slider } from "@/components/ui/slider";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface AdvancedFilters {
-  query: string
-  category: string
-  location: string
-  priceRange: [number, number]
-  rating: number
-  availability: string
-  capacity: [number, number]
-  amenities: string[]
-  sortBy: string
-  searchType: 'all' | 'venues' | 'services' | 'vendors'
+  query: string;
+  category: string;
+  location: string;
+  priceRange: [number, number];
+  rating: number;
+  availability: string;
+  capacity: [number, number];
+  amenities: string[];
+  sortBy: string;
+  searchType: "all" | "venues" | "services" | "vendors";
 }
 
 const categories = [
@@ -54,7 +54,7 @@ const categories = [
   { value: "conference", label: "Conferences" },
   { value: "exhibition", label: "Exhibitions" },
   { value: "social", label: "Social Events" },
-]
+];
 
 const locations = [
   { value: "all", label: "All Locations" },
@@ -64,12 +64,22 @@ const locations = [
   { value: "pune", label: "Pune" },
   { value: "hyderabad", label: "Hyderabad" },
   { value: "chennai", label: "Chennai" },
-]
+];
 
 const amenities = [
-  "WiFi", "Parking", "AC", "Audio/Visual", "Catering", "Photography",
-  "Security", "Decoration", "Live Streaming", "Stage", "Dance Floor", "Bar"
-]
+  "WiFi",
+  "Parking",
+  "AC",
+  "Audio/Visual",
+  "Catering",
+  "Photography",
+  "Security",
+  "Decoration",
+  "Live Streaming",
+  "Stage",
+  "Dance Floor",
+  "Bar",
+];
 
 const sortOptions = [
   { value: "relevance", label: "Most Relevant" },
@@ -78,88 +88,90 @@ const sortOptions = [
   { value: "rating", label: "Highest Rated" },
   { value: "distance", label: "Nearest First" },
   { value: "popularity", label: "Most Popular" },
-]
+];
 
 export default function AdvancedSearchPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [filters, setFilters] = useState<AdvancedFilters>({
-    query: searchParams?.get('q') || '',
-    category: 'all',
-    location: 'all',
+    query: searchParams?.get("q") || "",
+    category: "all",
+    location: "all",
     priceRange: [0, 100000],
     rating: 0,
-    availability: 'all',
+    availability: "all",
     capacity: [10, 1000],
     amenities: [],
-    sortBy: 'relevance',
-    searchType: 'all'
-  })
+    sortBy: "relevance",
+    searchType: "all",
+  });
 
-  const [activeFilters, setActiveFilters] = useState<string[]>([])
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   const handleFilterChange = (key: keyof AdvancedFilters, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value }))
-  }
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
 
   const handleAmenityChange = (amenity: string, checked: boolean) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      amenities: checked 
+      amenities: checked
         ? [...prev.amenities, amenity]
-        : prev.amenities.filter(a => a !== amenity)
-    }))
-  }
+        : prev.amenities.filter((a) => a !== amenity),
+    }));
+  };
 
   const clearAllFilters = () => {
     setFilters({
-      query: '',
-      category: 'all',
-      location: 'all',
+      query: "",
+      category: "all",
+      location: "all",
       priceRange: [0, 100000],
       rating: 0,
-      availability: 'all',
+      availability: "all",
       capacity: [10, 1000],
       amenities: [],
-      sortBy: 'relevance',
-      searchType: 'all'
-    })
-    setActiveFilters([])
-  }
+      sortBy: "relevance",
+      searchType: "all",
+    });
+    setActiveFilters([]);
+  };
 
   const handleSearch = () => {
-    const params = new URLSearchParams()
-    
-    if (filters.query) params.set('q', filters.query)
-    if (filters.category !== 'all') params.set('category', filters.category)
-    if (filters.location !== 'all') params.set('location', filters.location)
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 100000) {
-      params.set('price_min', filters.priceRange[0].toString())
-      params.set('price_max', filters.priceRange[1].toString())
-    }
-    if (filters.rating > 0) params.set('rating', filters.rating.toString())
-    if (filters.availability !== 'all') params.set('availability', filters.availability)
-    if (filters.amenities.length > 0) params.set('amenities', filters.amenities.join(','))
-    if (filters.sortBy !== 'relevance') params.set('sort', filters.sortBy)
-    if (filters.searchType !== 'all') params.set('type', filters.searchType)
+    const params = new URLSearchParams();
 
-    router.push(`/search?${params.toString()}`)
-  }
+    if (filters.query) params.set("q", filters.query);
+    if (filters.category !== "all") params.set("category", filters.category);
+    if (filters.location !== "all") params.set("location", filters.location);
+    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 100000) {
+      params.set("price_min", filters.priceRange[0].toString());
+      params.set("price_max", filters.priceRange[1].toString());
+    }
+    if (filters.rating > 0) params.set("rating", filters.rating.toString());
+    if (filters.availability !== "all")
+      params.set("availability", filters.availability);
+    if (filters.amenities.length > 0)
+      params.set("amenities", filters.amenities.join(","));
+    if (filters.sortBy !== "relevance") params.set("sort", filters.sortBy);
+    if (filters.searchType !== "all") params.set("type", filters.searchType);
+
+    router.push(`/search?${params.toString()}`);
+  };
 
   const getActiveFiltersCount = () => {
-    let count = 0
-    if (filters.category !== 'all') count++
-    if (filters.location !== 'all') count++
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 100000) count++
-    if (filters.rating > 0) count++
-    if (filters.availability !== 'all') count++
-    if (filters.amenities.length > 0) count++
-    return count
-  }
+    let count = 0;
+    if (filters.category !== "all") count++;
+    if (filters.location !== "all") count++;
+    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 100000) count++;
+    if (filters.rating > 0) count++;
+    if (filters.availability !== "all") count++;
+    if (filters.amenities.length > 0) count++;
+    return count;
+  };
 
   return (
-        <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 pt-24 pb-12">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 pt-24 pb-12">
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div
@@ -171,7 +183,8 @@ export default function AdvancedSearchPage() {
             Advanced Search
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Find exactly what you're looking for with our comprehensive search filters
+            Find exactly what you're looking for with our comprehensive search
+            filters
           </p>
         </motion.div>
 
@@ -187,7 +200,10 @@ export default function AdvancedSearchPage() {
             <CardContent className="p-6">
               <div className="flex flex-col lg:flex-row gap-4 items-end">
                 <div className="flex-1">
-                  <Label htmlFor="search-query" className="text-sm font-medium mb-2 block">
+                  <Label
+                    htmlFor="search-query"
+                    className="text-sm font-medium mb-2 block"
+                  >
                     What are you looking for?
                   </Label>
                   <div className="relative">
@@ -197,12 +213,14 @@ export default function AdvancedSearchPage() {
                       type="search"
                       placeholder="Enter keywords, venue names, or services..."
                       value={filters.query}
-                      onChange={(e) => handleFilterChange('query', e.target.value)}
+                      onChange={(e) =>
+                        handleFilterChange("query", e.target.value)
+                      }
                       className="pl-10 h-12 text-base"
                     />
                   </div>
                 </div>
-                
+
                 <div className="flex gap-3">
                   <Button
                     variant="outline"
@@ -225,9 +243,11 @@ export default function AdvancedSearchPage() {
           </Card>
 
           {/* Search Type Tabs */}
-          <Tabs 
-            value={filters.searchType} 
-            onValueChange={(value) => handleFilterChange('searchType', value as any)}
+          <Tabs
+            value={filters.searchType}
+            onValueChange={(value) =>
+              handleFilterChange("searchType", value as any)
+            }
             className="mb-8"
           >
             <TabsList className="grid w-full grid-cols-4 lg:w-96 mx-auto">
@@ -251,14 +271,24 @@ export default function AdvancedSearchPage() {
               <CardContent className="space-y-6">
                 {/* Category */}
                 <div>
-                  <Label className="text-sm font-medium mb-2 block">Category</Label>
-                  <Select value={filters.category} onValueChange={(value) => handleFilterChange('category', value)}>
+                  <Label className="text-sm font-medium mb-2 block">
+                    Category
+                  </Label>
+                  <Select
+                    value={filters.category}
+                    onValueChange={(value) =>
+                      handleFilterChange("category", value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((category) => (
-                        <SelectItem key={category.value} value={category.value || "All Categories"}>
+                        <SelectItem
+                          key={category.value}
+                          value={category.value || "All Categories"}
+                        >
                           {category.label}
                         </SelectItem>
                       ))}
@@ -268,14 +298,24 @@ export default function AdvancedSearchPage() {
 
                 {/* Location */}
                 <div>
-                  <Label className="text-sm font-medium mb-2 block">Location</Label>
-                  <Select value={filters.location} onValueChange={(value) => handleFilterChange('location', value)}>
+                  <Label className="text-sm font-medium mb-2 block">
+                    Location
+                  </Label>
+                  <Select
+                    value={filters.location}
+                    onValueChange={(value) =>
+                      handleFilterChange("location", value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select location" />
                     </SelectTrigger>
                     <SelectContent>
                       {locations.map((location) => (
-                        <SelectItem key={location.value} value={location.value || "All Locations"}>
+                        <SelectItem
+                          key={location.value}
+                          value={location.value || "All Locations"}
+                        >
                           {location.label}
                         </SelectItem>
                       ))}
@@ -285,14 +325,24 @@ export default function AdvancedSearchPage() {
 
                 {/* Sort By */}
                 <div>
-                  <Label className="text-sm font-medium mb-2 block">Sort By</Label>
-                  <Select value={filters.sortBy} onValueChange={(value) => handleFilterChange('sortBy', value)}>
+                  <Label className="text-sm font-medium mb-2 block">
+                    Sort By
+                  </Label>
+                  <Select
+                    value={filters.sortBy}
+                    onValueChange={(value) =>
+                      handleFilterChange("sortBy", value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {sortOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value || "Most Relevant"}>
+                        <SelectItem
+                          key={option.value}
+                          value={option.value || "Most Relevant"}
+                        >
                           {option.label}
                         </SelectItem>
                       ))}
@@ -314,11 +364,14 @@ export default function AdvancedSearchPage() {
                 {/* Price Range */}
                 <div>
                   <Label className="text-sm font-medium mb-3 block">
-                    Price Range: ₹{filters.priceRange[0].toLocaleString()} - ₹{filters.priceRange[1].toLocaleString()}
+                    Price Range: ₹{filters.priceRange[0].toLocaleString()} - ₹
+                    {filters.priceRange[1].toLocaleString()}
                   </Label>
                   <Slider
                     value={filters.priceRange}
-                    onValueChange={(value) => handleFilterChange('priceRange', value)}
+                    onValueChange={(value) =>
+                      handleFilterChange("priceRange", value)
+                    }
                     max={100000}
                     min={0}
                     step={1000}
@@ -329,18 +382,30 @@ export default function AdvancedSearchPage() {
                 {/* Minimum Rating */}
                 <div>
                   <Label className="text-sm font-medium mb-3 block">
-                    Minimum Rating: {filters.rating > 0 ? `${filters.rating}+ stars` : 'Any rating'}
+                    Minimum Rating:{" "}
+                    {filters.rating > 0
+                      ? `${filters.rating}+ stars`
+                      : "Any rating"}
                   </Label>
                   <div className="flex items-center space-x-2">
                     {[1, 2, 3, 4, 5].map((rating) => (
                       <Button
                         key={rating}
-                        variant={filters.rating >= rating ? "default" : "outline"}
+                        variant={
+                          filters.rating >= rating ? "default" : "outline"
+                        }
                         size="sm"
-                        onClick={() => handleFilterChange('rating', rating === filters.rating ? 0 : rating)}
+                        onClick={() =>
+                          handleFilterChange(
+                            "rating",
+                            rating === filters.rating ? 0 : rating,
+                          )
+                        }
                         className="p-2"
                       >
-                        <Star className={`h-4 w-4 ${filters.rating >= rating ? 'fill-current' : ''}`} />
+                        <Star
+                          className={`h-4 w-4 ${filters.rating >= rating ? "fill-current" : ""}`}
+                        />
                       </Button>
                     ))}
                   </div>
@@ -349,11 +414,14 @@ export default function AdvancedSearchPage() {
                 {/* Capacity Range */}
                 <div>
                   <Label className="text-sm font-medium mb-3 block">
-                    Capacity: {filters.capacity[0]} - {filters.capacity[1]} people
+                    Capacity: {filters.capacity[0]} - {filters.capacity[1]}{" "}
+                    people
                   </Label>
                   <Slider
                     value={filters.capacity}
-                    onValueChange={(value) => handleFilterChange('capacity', value)}
+                    onValueChange={(value) =>
+                      handleFilterChange("capacity", value)
+                    }
                     max={1000}
                     min={10}
                     step={10}
@@ -374,8 +442,15 @@ export default function AdvancedSearchPage() {
               <CardContent className="space-y-6">
                 {/* Availability */}
                 <div>
-                  <Label className="text-sm font-medium mb-2 block">Availability</Label>
-                  <Select value={filters.availability} onValueChange={(value) => handleFilterChange('availability', value)}>
+                  <Label className="text-sm font-medium mb-2 block">
+                    Availability
+                  </Label>
+                  <Select
+                    value={filters.availability}
+                    onValueChange={(value) =>
+                      handleFilterChange("availability", value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Default" />
                     </SelectTrigger>
@@ -396,13 +471,21 @@ export default function AdvancedSearchPage() {
                   </Label>
                   <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
                     {amenities.map((amenity) => (
-                      <div key={amenity} className="flex items-center space-x-2">
+                      <div
+                        key={amenity}
+                        className="flex items-center space-x-2"
+                      >
                         <Checkbox
                           id={amenity}
                           checked={filters.amenities.includes(amenity)}
-                          onCheckedChange={(checked) => handleAmenityChange(amenity, checked as boolean)}
+                          onCheckedChange={(checked) =>
+                            handleAmenityChange(amenity, checked as boolean)
+                          }
                         />
-                        <Label htmlFor={amenity} className="text-sm cursor-pointer">
+                        <Label
+                          htmlFor={amenity}
+                          className="text-sm cursor-pointer"
+                        >
                           {amenity}
                         </Label>
                       </div>
@@ -426,33 +509,63 @@ export default function AdvancedSearchPage() {
                     <h3 className="font-medium text-sm text-foreground">
                       Active Filters ({getActiveFiltersCount()})
                     </h3>
-                    <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-muted-foreground hover:text-foreground">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearAllFilters}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
                       Clear All
                     </Button>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {filters.category !== 'all' && (
-                      <Badge variant="secondary" className="bg-primary/10 text-primary">
-                        Category: {categories.find(c => c.value === filters.category)?.label}
+                    {filters.category !== "all" && (
+                      <Badge
+                        variant="secondary"
+                        className="bg-primary/10 text-primary"
+                      >
+                        Category:{" "}
+                        {
+                          categories.find((c) => c.value === filters.category)
+                            ?.label
+                        }
                       </Badge>
                     )}
-                    {filters.location !== 'all' && (
-                      <Badge variant="secondary" className="bg-primary/10 text-primary">
-                        Location: {locations.find(l => l.value === filters.location)?.label}
+                    {filters.location !== "all" && (
+                      <Badge
+                        variant="secondary"
+                        className="bg-primary/10 text-primary"
+                      >
+                        Location:{" "}
+                        {
+                          locations.find((l) => l.value === filters.location)
+                            ?.label
+                        }
                       </Badge>
                     )}
-                    {(filters.priceRange[0] > 0 || filters.priceRange[1] < 100000) && (
-                      <Badge variant="secondary" className="bg-primary/10 text-primary">
-                        Price: ₹{filters.priceRange[0].toLocaleString()} - ₹{filters.priceRange[1].toLocaleString()}
+                    {(filters.priceRange[0] > 0 ||
+                      filters.priceRange[1] < 100000) && (
+                      <Badge
+                        variant="secondary"
+                        className="bg-primary/10 text-primary"
+                      >
+                        Price: ₹{filters.priceRange[0].toLocaleString()} - ₹
+                        {filters.priceRange[1].toLocaleString()}
                       </Badge>
                     )}
                     {filters.rating > 0 && (
-                      <Badge variant="secondary" className="bg-primary/10 text-primary">
+                      <Badge
+                        variant="secondary"
+                        className="bg-primary/10 text-primary"
+                      >
                         Rating: {filters.rating}+ stars
                       </Badge>
                     )}
                     {filters.amenities.length > 0 && (
-                      <Badge variant="secondary" className="bg-primary/10 text-primary">
+                      <Badge
+                        variant="secondary"
+                        className="bg-primary/10 text-primary"
+                      >
                         Amenities: {filters.amenities.length} selected
                       </Badge>
                     )}
@@ -478,11 +591,11 @@ export default function AdvancedSearchPage() {
                 <Search className="h-5 w-5 mr-2" />
                 Search with Filters
               </Button>
-              
+
               <Button
                 variant="outline"
                 size="lg"
-                onClick={() => router.push('/search')}
+                onClick={() => router.push("/search")}
                 className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary hover:text-background transition-all duration-200"
               >
                 Basic Search
@@ -492,5 +605,5 @@ export default function AdvancedSearchPage() {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }

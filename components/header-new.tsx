@@ -1,60 +1,72 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Search, Heart, ShoppingCart, User, Menu, X, Sun, Moon, Filter } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { useTheme } from "next-themes"
-import { useCart } from "@/hooks/use-cart"
-import { useAuth } from "@/hooks/use-auth"
-import { motion, AnimatePresence } from "framer-motion"
-import { 
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  Search,
+  Heart,
+  ShoppingCart,
+  User,
+  Menu,
+  X,
+  Sun,
+  Moon,
+  Filter,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { useTheme } from "next-themes";
+import { useCart } from "@/hooks/use-cart";
+import { useAuth } from "@/hooks/use-auth";
+import { motion, AnimatePresence } from "framer-motion";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isSearchFocused, setIsSearchFocused] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
-  const { theme, setTheme } = useTheme()
-  const { items } = useCart()
-  const { user, signOut } = useAuth()
-  const router = useRouter()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const { items } = useCart();
+  const { user, signOut } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery)}`)
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
-  }
+  };
 
-  const cartItemsCount = items.reduce((sum, item) => sum + item.quantity, 0)
+  const cartItemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-300 ${
-      isScrolled 
-        ? 'bg-background/95 backdrop-blur-md shadow-lg border-b border-border/50' 
-        : 'bg-background/80 backdrop-blur-sm border-b border-border/30'
-    }`}>
+    <header
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? "bg-background/95 backdrop-blur-md shadow-lg border-b border-border/50"
+          : "bg-background/80 backdrop-blur-sm border-b border-border/30"
+      }`}
+    >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 lg:h-18">
           {/* Logo */}
@@ -79,7 +91,7 @@ export function Header() {
               { href: "/venues", label: "Venues" },
               { href: "/services", label: "Services" },
               { href: "/vendors", label: "Vendors" },
-              { href: "/about", label: "About" }
+              { href: "/about", label: "About" },
             ].map((item) => (
               <Link
                 key={item.href}
@@ -93,15 +105,17 @@ export function Header() {
 
           {/* Enhanced Search Bar */}
           <div className="hidden md:flex items-center flex-1 max-w-xl mx-8">
-            <motion.form 
-              onSubmit={handleSearch} 
+            <motion.form
+              onSubmit={handleSearch}
               className="relative w-full group"
               animate={{ scale: isSearchFocused ? 1.02 : 1 }}
               transition={{ duration: 0.2 }}
             >
-              <div className={`relative transition-all duration-300 ${
-                isSearchFocused ? 'shadow-lg' : 'shadow-sm'
-              }`}>
+              <div
+                className={`relative transition-all duration-300 ${
+                  isSearchFocused ? "shadow-lg" : "shadow-sm"
+                }`}
+              >
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 transition-colors" />
                 <Input
                   type="search"
@@ -116,7 +130,7 @@ export function Header() {
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => router.push('/search/advanced')}
+                  onClick={() => router.push("/search/advanced")}
                   className="absolute right-1 top-1/2 transform -translate-y-1/2 h-9 w-9 rounded-full hover:bg-primary/10"
                 >
                   <Filter className="h-3 w-3" />
@@ -171,14 +185,19 @@ export function Header() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="hidden md:flex items-center space-x-2 h-9 px-3 rounded-full hover:bg-muted/80">
+                  <Button
+                    variant="ghost"
+                    className="hidden md:flex items-center space-x-2 h-9 px-3 rounded-full hover:bg-muted/80"
+                  >
                     <Avatar className="h-6 w-6">
                       <AvatarImage src={user?.avatar || undefined} />
                       <AvatarFallback className="text-xs bg-primary text-primary-foreground">
                         {user?.name?.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium truncate max-w-20">{user?.name}</span>
+                    <span className="text-sm font-medium truncate max-w-20">
+                      {user?.name}
+                    </span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -190,22 +209,25 @@ export function Header() {
                     Profile Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={signOut} className="text-destructive">
+                  <DropdownMenuItem
+                    onClick={signOut}
+                    className="text-destructive"
+                  >
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <div className="hidden md:flex items-center space-x-2">
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => router.push("/auth/signin")}
                   className="h-9 px-4 rounded-full hover:bg-muted/80"
                 >
                   Sign In
                 </Button>
-                <Button 
+                <Button
                   size="sm"
                   onClick={() => router.push("/auth/signup")}
                   className="h-9 px-4 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
@@ -216,10 +238,10 @@ export function Header() {
             )}
 
             {/* Mobile Menu Button */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="md:hidden w-9 h-9 rounded-full hover:bg-muted/80" 
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden w-9 h-9 rounded-full hover:bg-muted/80"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               <AnimatePresence mode="wait">
@@ -271,7 +293,7 @@ export function Header() {
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => router.push('/search/advanced')}
+                  onClick={() => router.push("/search/advanced")}
                   className="absolute right-1 top-1/2 transform -translate-y-1/2 h-9 w-9 rounded-full"
                 >
                   <Filter className="h-3 w-3" />
@@ -299,7 +321,7 @@ export function Header() {
                   { href: "/venues", label: "Venues" },
                   { href: "/services", label: "Services" },
                   { href: "/vendors", label: "Vendors" },
-                  { href: "/about", label: "About" }
+                  { href: "/about", label: "About" },
                 ].map((item) => (
                   <Link
                     key={item.href}
@@ -315,12 +337,16 @@ export function Header() {
               {/* Mobile Actions */}
               <div className="flex flex-col space-y-4 pt-4 border-t border-border/50">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-muted-foreground">Settings</span>
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Settings
+                  </span>
                   <div className="flex items-center space-x-2">
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                      onClick={() =>
+                        setTheme(theme === "dark" ? "light" : "dark")
+                      }
                       className="w-9 h-9 rounded-full"
                     >
                       <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -349,8 +375,12 @@ export function Header() {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{user?.name}</p>
-                        <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                        <p className="text-sm font-medium truncate">
+                          {user?.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {user?.email}
+                        </p>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -358,8 +388,8 @@ export function Header() {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          router.push("/dashboard")
-                          setIsMenuOpen(false)
+                          router.push("/dashboard");
+                          setIsMenuOpen(false);
                         }}
                         className="justify-start"
                       >
@@ -370,8 +400,8 @@ export function Header() {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          signOut()
-                          setIsMenuOpen(false)
+                          signOut();
+                          setIsMenuOpen(false);
                         }}
                         className="justify-start text-destructive hover:text-destructive"
                       >
@@ -384,8 +414,8 @@ export function Header() {
                     <Button
                       variant="outline"
                       onClick={() => {
-                        router.push("/auth/signin")
-                        setIsMenuOpen(false)
+                        router.push("/auth/signin");
+                        setIsMenuOpen(false);
                       }}
                       className="h-11"
                     >
@@ -393,8 +423,8 @@ export function Header() {
                     </Button>
                     <Button
                       onClick={() => {
-                        router.push("/auth/signup")
-                        setIsMenuOpen(false)
+                        router.push("/auth/signup");
+                        setIsMenuOpen(false);
                       }}
                       className="h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                     >
@@ -408,5 +438,5 @@ export function Header() {
         )}
       </AnimatePresence>
     </header>
-  )
+  );
 }

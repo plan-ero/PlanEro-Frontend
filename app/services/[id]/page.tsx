@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
-import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { LoadingSpinner } from "@/components/loading-spinner"
-import { StarRating } from "@/components/ui/star-rating"
-import { RatingsDisplay } from "@/components/ratings-display"
-import { InquiryDialog } from "@/components/inquiry-dialog"
-import { useFavorites } from "@/hooks/use-favorites"
-import { useCart } from "@/hooks/use-cart"
-import { useSession } from "next-auth/react"
-import { toast } from "react-hot-toast"
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { LoadingSpinner } from "@/components/loading-spinner";
+import { StarRating } from "@/components/ui/star-rating";
+import { RatingsDisplay } from "@/components/ratings-display";
+import { InquiryDialog } from "@/components/inquiry-dialog";
+import { useFavorites } from "@/hooks/use-favorites";
+import { useCart } from "@/hooks/use-cart";
+import { useSession } from "next-auth/react";
+import { toast } from "react-hot-toast";
 import {
   ArrowLeft,
   Camera,
@@ -37,8 +37,8 @@ import {
   Tag,
   MapPin,
   ImageIcon,
-  ShoppingCart
-} from "lucide-react"
+  ShoppingCart,
+} from "lucide-react";
 
 enum ServiceType {
   PHOTOGRAPHER = "PHOTOGRAPHER",
@@ -92,7 +92,7 @@ const serviceTypeIcons = {
   [ServiceType.ANCHOR]: Mic,
   [ServiceType.MAGICIAN]: Sparkles,
   [ServiceType.VENUE]: Building,
-}
+};
 
 const eventTypeIcons = {
   [EventType.WEDDING]: Heart,
@@ -105,141 +105,145 @@ const eventTypeIcons = {
   [EventType.HOLIDAY_PARTY]: Gift,
   [EventType.CONFERENCE]: User,
   [EventType.EXHIBITION]: Tag,
-}
+};
 
 const priceEnumIcons = {
   [PriceEnum.INEXPENSIVE]: DollarSign,
   [PriceEnum.AFFORDABLE]: TrendingUp,
   [PriceEnum.MODERATE]: Zap,
   [PriceEnum.LUXURY]: Gem,
-}
+};
 
 interface Service {
-  id: number
-  name: string
-  serviceType: ServiceType
-  eventType: EventType
-  priceEnum: PriceEnum
-  availability: boolean
-  cost: number
-  metadata?: string
-  images?: string[]
-  vendorId: number
-  totalRating?: number
-  numberOfRatings?: number
+  id: number;
+  name: string;
+  serviceType: ServiceType;
+  eventType: EventType;
+  priceEnum: PriceEnum;
+  availability: boolean;
+  cost: number;
+  metadata?: string;
+  images?: string[];
+  vendorId: number;
+  totalRating?: number;
+  numberOfRatings?: number;
 }
 
 interface Vendor {
-  id: number
-  businessName: string
-  location: string
-  profilePictureUrl?: string
+  id: number;
+  businessName: string;
+  location: string;
+  profilePictureUrl?: string;
 }
 
 export default function ServiceDetailPage() {
-  const params = useParams()
-  const router = useRouter()
-  const { data: session } = useSession()
-  const { favorites, addToFavorites, removeFromFavorites } = useFavorites()
-  const { addItem } = useCart()
+  const params = useParams();
+  const router = useRouter();
+  const { data: session } = useSession();
+  const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
+  const { addItem } = useCart();
 
-  const [service, setService] = useState<Service | null>(null)
-  const [vendor, setVendor] = useState<Vendor | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [service, setService] = useState<Service | null>(null);
+  const [vendor, setVendor] = useState<Vendor | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const serviceId = params.id as string
+  const serviceId = params.id as string;
 
   // Check if service is in favorites
-  const isFavorite = favorites.some(fav => fav.id === serviceId && fav.type === 'service')
+  const isFavorite = favorites.some(
+    (fav) => fav.id === serviceId && fav.type === "service",
+  );
 
   const handleAddToFavorites = () => {
     if (!session?.user) {
-      toast.error('Please sign in to add favorites')
-      return
+      toast.error("Please sign in to add favorites");
+      return;
     }
 
-    if (!service) return
+    if (!service) return;
 
     if (isFavorite) {
-      removeFromFavorites(serviceId)
-      toast.success('Removed from favorites')
+      removeFromFavorites(serviceId);
+      toast.success("Removed from favorites");
     } else {
       addToFavorites({
         id: serviceId,
         name: service.name,
         price: service.cost,
-        image: service.images?.[0] || '/placeholder.jpg',
-        type: 'service'
-      })
-      toast.success('Added to favorites')
+        image: service.images?.[0] || "/placeholder.jpg",
+        type: "service",
+      });
+      toast.success("Added to favorites");
     }
-  }
+  };
 
   const handleAddToCart = () => {
     if (!session?.user) {
-      toast.error('Please sign in to add to cart')
-      return
+      toast.error("Please sign in to add to cart");
+      return;
     }
 
-    if (!service) return
+    if (!service) return;
 
     addItem({
       id: serviceId,
       name: service.name,
       price: service.cost,
-      image: service.images?.[0] || '/placeholder.jpg',
-      type: 'service',
-      quantity: 1
-    })
-    toast.success('Added to cart')
-  }
+      image: service.images?.[0] || "/placeholder.jpg",
+      type: "service",
+      quantity: 1,
+    });
+    toast.success("Added to cart");
+  };
 
   useEffect(() => {
     if (serviceId) {
-      fetchService()
+      fetchService();
     }
-  }, [serviceId])
+  }, [serviceId]);
 
   const fetchService = async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       // Fetch service details from public API
-      const serviceResponse = await fetch(`/api/services/${serviceId}`)
+      const serviceResponse = await fetch(`/api/services/${serviceId}`);
 
       if (!serviceResponse.ok) {
         if (serviceResponse.status === 404) {
-          throw new Error('Service not found')
+          throw new Error("Service not found");
         }
-        throw new Error('Failed to fetch service details')
+        throw new Error("Failed to fetch service details");
       }
 
-      const serviceData = await serviceResponse.json()
-      setService(serviceData)
+      const serviceData = await serviceResponse.json();
+      setService(serviceData);
 
       // Fetch vendor details
       if (serviceData.vendorId) {
-        const vendorResponse = await fetch(`/api/vendors/${serviceData.vendorId}`)
+        const vendorResponse = await fetch(
+          `/api/vendors/${serviceData.vendorId}`,
+        );
         if (vendorResponse.ok) {
-          const vendorData = await vendorResponse.json()
-          setVendor(vendorData)
+          const vendorData = await vendorResponse.json();
+          setVendor(vendorData);
         }
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner />
       </div>
-    )
+    );
   }
 
   if (error || !service) {
@@ -249,35 +253,29 @@ export default function ServiceDetailPage() {
           <div className="text-center py-12">
             <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 max-w-md mx-auto">
               <h2 className="text-xl font-semibold text-destructive mb-2">
-                {error || 'Service not found'}
+                {error || "Service not found"}
               </h2>
               <p className="text-muted-foreground mb-4">
                 The service you're looking for could not be found.
               </p>
-              <Button onClick={() => router.back()}>
-                Go Back
-              </Button>
+              <Button onClick={() => router.back()}>Go Back</Button>
             </div>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
-  const ServiceIconComponent = serviceTypeIcons[service.serviceType] || Tag
-  const EventIconComponent = eventTypeIcons[service.eventType] || Tag
-  const PriceIconComponent = priceEnumIcons[service.priceEnum] || DollarSign
+  const ServiceIconComponent = serviceTypeIcons[service.serviceType] || Tag;
+  const EventIconComponent = eventTypeIcons[service.eventType] || Tag;
+  const PriceIconComponent = priceEnumIcons[service.priceEnum] || DollarSign;
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-card border-b">
         <div className="container mx-auto px-4 py-4">
-          <Button
-            variant="ghost"
-            asChild
-            className="mb-4"
-          >
+          <Button variant="ghost" asChild className="mb-4">
             <Link href="/services">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Services
@@ -304,7 +302,9 @@ export default function ServiceDetailPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                       <div className="flex items-center gap-2">
                         <ServiceIconComponent className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Service Type:</span>
+                        <span className="text-sm text-muted-foreground">
+                          Service Type:
+                        </span>
                         <Badge variant="outline">
                           {service.serviceType.replace(/_/g, " ")}
                         </Badge>
@@ -312,7 +312,9 @@ export default function ServiceDetailPage() {
 
                       <div className="flex items-center gap-2">
                         <EventIconComponent className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Event Type:</span>
+                        <span className="text-sm text-muted-foreground">
+                          Event Type:
+                        </span>
                         <Badge variant="outline">
                           {service.eventType.replace(/_/g, " ")}
                         </Badge>
@@ -320,7 +322,9 @@ export default function ServiceDetailPage() {
 
                       <div className="flex items-center gap-2">
                         <PriceIconComponent className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Price Tier:</span>
+                        <span className="text-sm text-muted-foreground">
+                          Price Tier:
+                        </span>
                         <Badge variant="outline">
                           {service.priceEnum.replace(/_/g, " ")}
                         </Badge>
@@ -333,22 +337,37 @@ export default function ServiceDetailPage() {
                           ${service.cost.toFixed(2)}
                         </div>
                         <Badge
-                          variant={service.availability ? "default" : "secondary"}
-                          className={service.availability ? "bg-green-100 text-green-800 border-green-200" : ""}
+                          variant={
+                            service.availability ? "default" : "secondary"
+                          }
+                          className={
+                            service.availability
+                              ? "bg-green-100 text-green-800 border-green-200"
+                              : ""
+                          }
                         >
                           {service.availability ? "Available" : "Unavailable"}
                         </Badge>
                       </div>
 
-                      {(service.totalRating !== undefined && service.numberOfRatings !== undefined) ? (
+                      {service.totalRating !== undefined &&
+                      service.numberOfRatings !== undefined ? (
                         <div className="flex items-center gap-2">
-                          <StarRating rating={service.totalRating || 0} readonly size="md" />
-                          <span className="text-sm text-muted-foreground">({service.numberOfRatings} reviews)</span>
+                          <StarRating
+                            rating={service.totalRating || 0}
+                            readonly
+                            size="md"
+                          />
+                          <span className="text-sm text-muted-foreground">
+                            ({service.numberOfRatings} reviews)
+                          </span>
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
                           <StarRating rating={0} readonly size="md" />
-                          <span className="text-sm text-muted-foreground">(No reviews yet)</span>
+                          <span className="text-sm text-muted-foreground">
+                            (No reviews yet)
+                          </span>
                         </div>
                       )}
                     </div>
@@ -366,8 +385,10 @@ export default function ServiceDetailPage() {
                     variant={isFavorite ? "default" : "outline"}
                     className="flex items-center gap-2"
                   >
-                    <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
-                    {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+                    <Heart
+                      className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`}
+                    />
+                    {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
                   </Button>
 
                   <Button
@@ -384,7 +405,7 @@ export default function ServiceDetailPage() {
                     variant="outline"
                     className="flex items-center gap-2"
                   >
-                    <Link href={vendor ? `/vendors/${vendor.id}` : '#'}>
+                    <Link href={vendor ? `/vendors/${vendor.id}` : "#"}>
                       <User className="h-4 w-4" />
                       View Vendor
                     </Link>
@@ -412,7 +433,7 @@ export default function ServiceDetailPage() {
                           className="w-full h-48 object-cover rounded-lg border border-gray-200 group-hover:shadow-lg transition-shadow"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
+                            target.style.display = "none";
                           }}
                         />
                       </div>
@@ -484,24 +505,42 @@ export default function ServiceDetailPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Service ID</span>
+                  <span className="text-sm text-muted-foreground">
+                    Service ID
+                  </span>
                   <span className="text-sm font-medium">#{service.id}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Category</span>
-                  <span className="text-sm font-medium">{service.serviceType.replace(/_/g, " ")}</span>
+                  <span className="text-sm text-muted-foreground">
+                    Category
+                  </span>
+                  <span className="text-sm font-medium">
+                    {service.serviceType.replace(/_/g, " ")}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Event Type</span>
-                  <span className="text-sm font-medium">{service.eventType.replace(/_/g, " ")}</span>
+                  <span className="text-sm text-muted-foreground">
+                    Event Type
+                  </span>
+                  <span className="text-sm font-medium">
+                    {service.eventType.replace(/_/g, " ")}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Price Tier</span>
-                  <span className="text-sm font-medium">{service.priceEnum.replace(/_/g, " ")}</span>
+                  <span className="text-sm text-muted-foreground">
+                    Price Tier
+                  </span>
+                  <span className="text-sm font-medium">
+                    {service.priceEnum.replace(/_/g, " ")}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Starting Price</span>
-                  <span className="text-sm font-medium">${service.cost.toFixed(2)}</span>
+                  <span className="text-sm text-muted-foreground">
+                    Starting Price
+                  </span>
+                  <span className="text-sm font-medium">
+                    ${service.cost.toFixed(2)}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -517,12 +556,10 @@ export default function ServiceDetailPage() {
                   serviceName={service.name}
                   serviceType={service.serviceType}
                 >
-                  <Button className="w-full">
-                    Inquire Vendor
-                  </Button>
+                  <Button className="w-full">Inquire Vendor</Button>
                 </InquiryDialog>
                 <Button variant="outline" className="w-full" asChild>
-                  <Link href={vendor ? `/vendors/${vendor.id}` : '#'}>
+                  <Link href={vendor ? `/vendors/${vendor.id}` : "#"}>
                     Contact Vendor
                   </Link>
                 </Button>
@@ -532,5 +569,5 @@ export default function ServiceDetailPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

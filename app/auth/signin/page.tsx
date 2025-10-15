@@ -1,69 +1,75 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Github, Mail } from "lucide-react"
-import toast from "react-hot-toast"
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Github, Mail } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function SignInPage() {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     try {
       const result = await signIn("credentials", {
         username,
         password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        toast.error("Invalid credentials")
+        toast.error("Invalid credentials");
       } else {
-        toast.success("Welcome back!")
-        
+        toast.success("Welcome back!");
+
         // Redirect based on user role
         // The role will be available in the session after successful sign-in
-        const response = await fetch("/api/users/profile")
+        const response = await fetch("/api/users/profile");
         if (response.ok) {
-          const profile = await response.json()
+          const profile = await response.json();
           if (profile.role === "VENDOR") {
-            router.push("/vendor/dashboard")
+            router.push("/vendor/dashboard");
           } else {
-            router.push("/")
+            router.push("/");
           }
         } else {
-          router.push("/")
+          router.push("/");
         }
       }
     } catch (error) {
-      console.error("Sign in error:", error)
-      toast.error("Something went wrong")
+      console.error("Sign in error:", error);
+      toast.error("Something went wrong");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleGoogleSignIn = () => {
-    signIn("google", { callbackUrl: "/auth/select-role" })
-  }
+    signIn("google", { callbackUrl: "/auth/select-role" });
+  };
 
   const handleGitHubSignIn = () => {
-    signIn("github", { callbackUrl: "/auth/select-role" })
-  }
+    signIn("github", { callbackUrl: "/auth/select-role" });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
@@ -76,7 +82,13 @@ export default function SignInPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="username">Username</Label>
-              <Input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+              <Input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
             </div>
             <div>
               <Label htmlFor="password">Password</Label>
@@ -98,7 +110,9 @@ export default function SignInPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
             </div>
           </div>
 
@@ -122,5 +136,5 @@ export default function SignInPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

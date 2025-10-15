@@ -1,52 +1,80 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Github, Mail, Building2, User, Crown } from "lucide-react"
-import toast from "react-hot-toast"
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Github, Mail, Building2, User, Crown } from "lucide-react";
+import toast from "react-hot-toast";
 
 // Validation schema that matches backend requirements
-const signupSchema = z.object({
-  name: z.string()
-    .min(1, "Full name is required")
-    .max(50, "Name must be less than 50 characters"),
-  email: z.string()
-    .email("Please enter a valid email address"),
-  username: z.string()
-    .min(3, "Username must be at least 3 characters long")
-    .max(20, "Username must be less than 20 characters")
-    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
-  password: z.string()
-    .min(8, "Password must be at least 8 characters long")
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/, "Password must contain at least one lowercase letter, one uppercase letter, and one digit"),
-  confirmPassword: z.string()
-    .min(1, "Please confirm your password"),
-  role: z.enum(["USER", "VENDOR"], {
-    required_error: "Please select an account type",
+const signupSchema = z
+  .object({
+    name: z
+      .string()
+      .min(1, "Full name is required")
+      .max(50, "Name must be less than 50 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    username: z
+      .string()
+      .min(3, "Username must be at least 3 characters long")
+      .max(20, "Username must be less than 20 characters")
+      .regex(
+        /^[a-zA-Z0-9_]+$/,
+        "Username can only contain letters, numbers, and underscores",
+      ),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters long")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
+        "Password must contain at least one lowercase letter, one uppercase letter, and one digit",
+      ),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+    role: z.enum(["USER", "VENDOR"], {
+      required_error: "Please select an account type",
+    }),
   })
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
-type SignupFormData = z.infer<typeof signupSchema>
+type SignupFormData = z.infer<typeof signupSchema>;
 
 export default function SignUpPage() {
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -58,10 +86,10 @@ export default function SignUpPage() {
       confirmPassword: "",
       role: "USER",
     },
-  })
+  });
 
   const handleSubmit = async (data: SignupFormData) => {
-    setLoading(true)
+    setLoading(true);
 
     try {
       // Register the user using the new API
@@ -77,73 +105,80 @@ export default function SignUpPage() {
           password: data.password,
           role: data.role,
         }),
-      })
+      });
 
       if (!registerResponse.ok) {
-        const error = await registerResponse.json()
-        
+        const error = await registerResponse.json();
+
         // Handle field-specific errors from backend
         if (error.fieldErrors) {
           Object.entries(error.fieldErrors).forEach(([field, message]) => {
             form.setError(field as keyof SignupFormData, {
               type: "server",
               message: message as string,
-            })
-          })
-          return
+            });
+          });
+          return;
         }
-        
-        toast.error(error.error || "Registration failed")
-        return
+
+        toast.error(error.error || "Registration failed");
+        return;
       }
 
-      const registerData = await registerResponse.json()
+      const registerData = await registerResponse.json();
 
       // After successful registration, sign in the user
       const result = await signIn("credentials", {
         username: data.username,
         password: data.password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        toast.error("Registration successful, but sign-in failed. Please try signing in manually.")
+        toast.error(
+          "Registration successful, but sign-in failed. Please try signing in manually.",
+        );
       } else {
-        toast.success("Account created successfully!")
-        
+        toast.success("Account created successfully!");
+
         // Redirect based on role
         if (data.role === "VENDOR") {
-          router.push("/vendor/onboarding")
+          router.push("/vendor/onboarding");
         } else {
-          router.push("/")
+          router.push("/");
         }
       }
     } catch (error) {
-      console.error("Registration error:", error)
-      toast.error("Something went wrong")
+      console.error("Registration error:", error);
+      toast.error("Something went wrong");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleGoogleSignIn = () => {
-    signIn("google", { callbackUrl: "/auth/select-role" })
-  }
+    signIn("google", { callbackUrl: "/auth/select-role" });
+  };
 
   const handleGitHubSignIn = () => {
-    signIn("github", { callbackUrl: "/auth/select-role" })
-  }
+    signIn("github", { callbackUrl: "/auth/select-role" });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-          <CardDescription>Join PlanEro to start planning your perfect event</CardDescription>
+          <CardDescription>
+            Join PlanEro to start planning your perfect event
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-4"
+            >
               <FormField
                 control={form.control}
                 name="name"
@@ -151,13 +186,17 @@ export default function SignUpPage() {
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input {...field} type="text" placeholder="Enter your full name" />
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder="Enter your full name"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="email"
@@ -165,13 +204,17 @@ export default function SignUpPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input {...field} type="email" placeholder="Enter your email" />
+                      <Input
+                        {...field}
+                        type="email"
+                        placeholder="Enter your email"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="username"
@@ -179,13 +222,17 @@ export default function SignUpPage() {
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input {...field} type="text" placeholder="Choose a username (letters, numbers, _ only)" />
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder="Choose a username (letters, numbers, _ only)"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="password"
@@ -193,13 +240,17 @@ export default function SignUpPage() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input {...field} type="password" placeholder="Must contain uppercase, lowercase, and digit" />
+                      <Input
+                        {...field}
+                        type="password"
+                        placeholder="Must contain uppercase, lowercase, and digit"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="confirmPassword"
@@ -207,13 +258,17 @@ export default function SignUpPage() {
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <Input {...field} type="password" placeholder="Confirm your password" />
+                      <Input
+                        {...field}
+                        type="password"
+                        placeholder="Confirm your password"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="role"
@@ -232,7 +287,9 @@ export default function SignUpPage() {
                             <User className="h-4 w-4" />
                             <div>
                               <p className="font-medium">Event Host</p>
-                              <p className="text-xs text-muted-foreground">Planning an event</p>
+                              <p className="text-xs text-muted-foreground">
+                                Planning an event
+                              </p>
                             </div>
                           </div>
                         </SelectItem>
@@ -241,7 +298,9 @@ export default function SignUpPage() {
                             <Building2 className="h-4 w-4" />
                             <div>
                               <p className="font-medium">Vendor</p>
-                              <p className="text-xs text-muted-foreground">Offering event services</p>
+                              <p className="text-xs text-muted-foreground">
+                                Offering event services
+                              </p>
                             </div>
                           </div>
                         </SelectItem>
@@ -251,7 +310,7 @@ export default function SignUpPage() {
                   </FormItem>
                 )}
               />
-              
+
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Creating Account..." : "Create Account"}
               </Button>
@@ -263,7 +322,9 @@ export default function SignUpPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
             </div>
           </div>
 
@@ -287,5 +348,5 @@ export default function SignUpPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

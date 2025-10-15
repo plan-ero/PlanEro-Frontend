@@ -1,35 +1,43 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { StarRating } from "@/components/ui/star-rating"
-import { useToast } from "@/hooks/use-toast"
-import { useSession } from "next-auth/react"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { StarRating } from "@/components/ui/star-rating";
+import { useToast } from "@/hooks/use-toast";
+import { useSession } from "next-auth/react";
 
 const ratingSchema = z.object({
-  rating: z.number().min(1, "Please select a rating").max(5, "Rating cannot exceed 5"),
+  rating: z
+    .number()
+    .min(1, "Please select a rating")
+    .max(5, "Rating cannot exceed 5"),
   review: z.string().optional(),
-})
+});
 
-type RatingFormData = z.infer<typeof ratingSchema>
+type RatingFormData = z.infer<typeof ratingSchema>;
 
 interface RatingFormProps {
-  serviceId?: number
-  vendorId?: number
-  onRatingSubmitted?: () => void
-  onCancel?: () => void
+  serviceId?: number;
+  vendorId?: number;
+  onRatingSubmitted?: () => void;
+  onCancel?: () => void;
 }
 
-export function RatingForm({ serviceId, vendorId, onRatingSubmitted, onCancel }: RatingFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [selectedRating, setSelectedRating] = useState(0)
-  const { data: session } = useSession()
-  const { toast } = useToast()
+export function RatingForm({
+  serviceId,
+  vendorId,
+  onRatingSubmitted,
+  onCancel,
+}: RatingFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const { data: session } = useSession();
+  const { toast } = useToast();
 
   const {
     register,
@@ -39,12 +47,12 @@ export function RatingForm({ serviceId, vendorId, onRatingSubmitted, onCancel }:
     reset,
   } = useForm<RatingFormData>({
     resolver: zodResolver(ratingSchema),
-  })
+  });
 
   const handleRatingChange = (rating: number) => {
-    setSelectedRating(rating)
-    setValue("rating", rating)
-  }
+    setSelectedRating(rating);
+    setValue("rating", rating);
+  };
 
   const onSubmit = async (data: RatingFormData) => {
     if (!session?.user) {
@@ -52,11 +60,11 @@ export function RatingForm({ serviceId, vendorId, onRatingSubmitted, onCancel }:
         title: "Authentication required",
         description: "Please sign in to submit a rating.",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       const response = await fetch("/api/ratings", {
@@ -70,32 +78,33 @@ export function RatingForm({ serviceId, vendorId, onRatingSubmitted, onCancel }:
           serviceId,
           vendorId,
         }),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Failed to submit rating")
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to submit rating");
       }
 
       toast({
         title: "Rating submitted",
         description: "Thank you for your feedback!",
-      })
+      });
 
-      reset()
-      setSelectedRating(0)
-      onRatingSubmitted?.()
+      reset();
+      setSelectedRating(0);
+      onRatingSubmitted?.();
     } catch (error) {
-      console.error("Error submitting rating:", error)
+      console.error("Error submitting rating:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to submit rating",
+        description:
+          error instanceof Error ? error.message : "Failed to submit rating",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -109,7 +118,9 @@ export function RatingForm({ serviceId, vendorId, onRatingSubmitted, onCancel }:
             size="lg"
           />
           {errors.rating && (
-            <span className="text-sm text-destructive">{errors.rating.message}</span>
+            <span className="text-sm text-destructive">
+              {errors.rating.message}
+            </span>
           )}
         </div>
       </div>
@@ -135,5 +146,5 @@ export function RatingForm({ serviceId, vendorId, onRatingSubmitted, onCancel }:
         </Button>
       </div>
     </form>
-  )
+  );
 }

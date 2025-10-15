@@ -1,15 +1,22 @@
-"use client"
+"use client";
 
-import { useParams } from "next/navigation"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Heart, ShoppingCart, MapPin, Users, Star, ArrowLeft } from "lucide-react"
-import { motion } from "framer-motion"
-import { useCart } from "@/hooks/use-cart"
-import { useFavorites } from "@/hooks/use-favorites"
-import { useAuth } from "@/hooks/use-auth"
-import toast from "react-hot-toast"
-import Link from "next/link"
+import { useParams } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Heart,
+  ShoppingCart,
+  MapPin,
+  Users,
+  Star,
+  ArrowLeft,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { useCart } from "@/hooks/use-cart";
+import { useFavorites } from "@/hooks/use-favorites";
+import { useAuth } from "@/hooks/use-auth";
+import toast from "react-hot-toast";
+import Link from "next/link";
 
 // Mock venues data organized by category
 const venuesByCategory: Record<string, any[]> = {
@@ -19,18 +26,21 @@ const venuesByCategory: Record<string, any[]> = {
       name: "Elegant Garden Venue",
       location: "Beverly Hills, CA",
       price: 5000,
-      image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+      image:
+        "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
       category: "Wedding Venues",
       capacity: 150,
       rating: 4.8,
-      description: "Beautiful outdoor garden venue perfect for intimate weddings",
+      description:
+        "Beautiful outdoor garden venue perfect for intimate weddings",
     },
     {
       id: "3",
       name: "Historic Ballroom",
       location: "Chicago, IL",
       price: 6500,
-      image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+      image:
+        "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
       category: "Wedding Venues",
       capacity: 300,
       rating: 4.9,
@@ -41,7 +51,8 @@ const venuesByCategory: Record<string, any[]> = {
       name: "Lakeside Pavilion",
       location: "Austin, TX",
       price: 4200,
-      image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+      image:
+        "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
       category: "Wedding Venues",
       capacity: 120,
       rating: 4.7,
@@ -52,12 +63,13 @@ const venuesByCategory: Record<string, any[]> = {
       name: "Mountain Resort",
       location: "Aspen, CO",
       price: 8900,
-      image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+      image:
+        "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
       category: "Wedding Venues",
       capacity: 200,
       rating: 4.9,
       description: "Luxury mountain resort perfect for destination weddings",
-    }
+    },
   ],
   "corporate-events": [
     {
@@ -65,7 +77,8 @@ const venuesByCategory: Record<string, any[]> = {
       name: "Modern Rooftop Space",
       location: "Manhattan, NY",
       price: 8000,
-      image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+      image:
+        "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
       category: "Corporate Events",
       capacity: 200,
       rating: 4.6,
@@ -76,7 +89,8 @@ const venuesByCategory: Record<string, any[]> = {
       name: "Tech Conference Center",
       location: "San Francisco, CA",
       price: 6800,
-      image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+      image:
+        "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
       category: "Corporate Events",
       capacity: 500,
       rating: 4.8,
@@ -87,12 +101,13 @@ const venuesByCategory: Record<string, any[]> = {
       name: "Executive Boardroom",
       location: "Seattle, WA",
       price: 3200,
-      image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+      image:
+        "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
       category: "Corporate Events",
       capacity: 50,
       rating: 4.7,
       description: "Intimate boardroom perfect for executive meetings",
-    }
+    },
   ],
   "birthday-parties": [
     {
@@ -100,7 +115,8 @@ const venuesByCategory: Record<string, any[]> = {
       name: "Fun Zone Party Center",
       location: "Orlando, FL",
       price: 1200,
-      image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+      image:
+        "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
       category: "Birthday Parties",
       capacity: 80,
       rating: 4.5,
@@ -111,12 +127,13 @@ const venuesByCategory: Record<string, any[]> = {
       name: "Backyard Paradise",
       location: "Phoenix, AZ",
       price: 800,
-      image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+      image:
+        "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
       category: "Birthday Parties",
       capacity: 60,
       rating: 4.4,
       description: "Private backyard space perfect for outdoor celebrations",
-    }
+    },
   ],
   "special-occasions": [
     {
@@ -124,12 +141,13 @@ const venuesByCategory: Record<string, any[]> = {
       name: "Grand Event Hall",
       location: "Las Vegas, NV",
       price: 5500,
-      image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+      image:
+        "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
       category: "Special Occasions",
       capacity: 250,
       rating: 4.8,
       description: "Elegant hall perfect for anniversaries and celebrations",
-    }
+    },
   ],
   "social-gatherings": [
     {
@@ -137,12 +155,13 @@ const venuesByCategory: Record<string, any[]> = {
       name: "Community Center",
       location: "Portland, OR",
       price: 900,
-      image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+      image:
+        "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
       category: "Social Gatherings",
       capacity: 100,
       rating: 4.3,
       description: "Affordable space for family reunions and gatherings",
-    }
+    },
   ],
   "formal-events": [
     {
@@ -150,33 +169,34 @@ const venuesByCategory: Record<string, any[]> = {
       name: "Luxury Hotel Ballroom",
       location: "New York, NY",
       price: 12000,
-      image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+      image:
+        "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
       category: "Formal Events",
       capacity: 400,
       rating: 4.9,
       description: "Opulent ballroom for the most sophisticated events",
-    }
-  ]
-}
+    },
+  ],
+};
 
 const categoryNames: Record<string, string> = {
   "wedding-venues": "Wedding Venues",
-  "corporate-events": "Corporate Events", 
+  "corporate-events": "Corporate Events",
   "birthday-parties": "Birthday Parties",
   "special-occasions": "Special Occasions",
   "social-gatherings": "Social Gatherings",
-  "formal-events": "Formal Events"
-}
+  "formal-events": "Formal Events",
+};
 
 export default function CategoryPage() {
-  const params = useParams()
-  const categoryId = params?.category as string
-  const { addItem } = useCart()
-  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
-  const { user } = useAuth()
+  const params = useParams();
+  const categoryId = params?.category as string;
+  const { addItem } = useCart();
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+  const { user } = useAuth();
 
-  const venues = venuesByCategory[categoryId] || []
-  const categoryName = categoryNames[categoryId] || "Unknown Category"
+  const venues = venuesByCategory[categoryId] || [];
+  const categoryName = categoryNames[categoryId] || "Unknown Category";
 
   const handleAddToCart = (venue: any) => {
     addItem({
@@ -186,19 +206,19 @@ export default function CategoryPage() {
       image: venue.image,
       type: "venue",
       quantity: 1,
-    })
-    toast.success("Added to cart!")
-  }
+    });
+    toast.success("Added to cart!");
+  };
 
   const handleToggleFavorite = (venue: any) => {
     if (!user) {
-      toast.error("Please log in to add favorites")
-      return
+      toast.error("Please log in to add favorites");
+      return;
     }
 
     if (isFavorite(venue.id)) {
-      removeFromFavorites(venue.id)
-      toast.success("Removed from favorites")
+      removeFromFavorites(venue.id);
+      toast.success("Removed from favorites");
     } else {
       addToFavorites({
         id: venue.id,
@@ -206,10 +226,10 @@ export default function CategoryPage() {
         price: venue.price,
         image: venue.image,
         type: "venue",
-      })
-      toast.success("Added to favorites!")
+      });
+      toast.success("Added to favorites!");
     }
-  }
+  };
 
   if (venues.length === 0) {
     return (
@@ -217,14 +237,16 @@ export default function CategoryPage() {
         <div className="container mx-auto px-4">
           <div className="text-center py-16">
             <h1 className="text-3xl font-bold mb-4">Category Not Found</h1>
-            <p className="text-muted-foreground mb-8">The category you're looking for doesn't exist.</p>
+            <p className="text-muted-foreground mb-8">
+              The category you're looking for doesn't exist.
+            </p>
             <Button asChild>
               <Link href="/">Go Back Home</Link>
             </Button>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -238,7 +260,7 @@ export default function CategoryPage() {
               Back to Categories
             </Link>
           </Button>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -246,7 +268,7 @@ export default function CategoryPage() {
           >
             <h1 className="text-4xl font-bold mb-4">{categoryName}</h1>
             <p className="text-muted-foreground text-lg">
-              {venues.length} venue{venues.length !== 1 ? 's' : ''} available
+              {venues.length} venue{venues.length !== 1 ? "s" : ""} available
             </p>
           </motion.div>
         </div>
@@ -275,53 +297,63 @@ export default function CategoryPage() {
                     }`}
                     onClick={() => handleToggleFavorite(venue)}
                   >
-                    <Heart className={`h-4 w-4 ${isFavorite(venue.id) ? "fill-current" : ""}`} />
+                    <Heart
+                      className={`h-4 w-4 ${isFavorite(venue.id) ? "fill-current" : ""}`}
+                    />
                   </Button>
-                  
+
                   {/* Rating */}
                   <div className="absolute top-3 left-3">
                     <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-semibold">{venue.rating}</span>
+                      <span className="text-sm font-semibold">
+                        {venue.rating}
+                      </span>
                     </div>
                   </div>
                 </div>
-                
+
                 <CardContent className="p-6">
                   <div className="mb-2">
                     <span className="text-xs text-muted-foreground uppercase tracking-wide">
                       {venue.category}
                     </span>
                   </div>
-                  
+
                   <Link href={`/venues/${venue.id}`}>
                     <h3 className="font-bold text-xl mb-2 hover:text-primary transition-colors group-hover:text-primary">
                       {venue.name}
                     </h3>
                   </Link>
-                  
+
                   <div className="flex items-center text-muted-foreground mb-2">
                     <MapPin className="h-4 w-4 mr-1" />
                     <span className="text-sm">{venue.location}</span>
                   </div>
-                  
+
                   <div className="flex items-center text-muted-foreground mb-3">
                     <Users className="h-4 w-4 mr-1" />
-                    <span className="text-sm">Up to {venue.capacity} guests</span>
+                    <span className="text-sm">
+                      Up to {venue.capacity} guests
+                    </span>
                   </div>
-                  
+
                   <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                     {venue.description}
                   </p>
-                  
+
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-2xl font-bold">${venue.price.toLocaleString()}</span>
-                      <span className="text-sm text-muted-foreground ml-1">/ event</span>
+                      <span className="text-2xl font-bold">
+                        ${venue.price.toLocaleString()}
+                      </span>
+                      <span className="text-sm text-muted-foreground ml-1">
+                        / event
+                      </span>
                     </div>
-                    <Button 
-                      size="sm" 
-                      onClick={() => handleAddToCart(venue)} 
+                    <Button
+                      size="sm"
+                      onClick={() => handleAddToCart(venue)}
                       className="flex items-center gap-2"
                     >
                       <ShoppingCart className="h-4 w-4" />
@@ -335,5 +367,5 @@ export default function CategoryPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

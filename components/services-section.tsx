@@ -1,10 +1,20 @@
-"use client"
+"use client";
 
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Camera, ChefHat, Music, Flower, Car, Cake, Heart, Sparkles, ArrowRight } from "lucide-react"
-import { motion } from "framer-motion"
-import Link from "next/link"
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Camera,
+  ChefHat,
+  Music,
+  Flower,
+  Car,
+  Cake,
+  Heart,
+  Sparkles,
+  ArrowRight,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
 const services = [
   {
@@ -14,8 +24,9 @@ const services = [
     description: "Complete wedding planning and coordination",
     count: "200+ planners",
     href: "/services/wedding-planners",
-    image: "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-pink-500 to-rose-600"
+    image:
+      "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-pink-500 to-rose-600",
   },
   {
     id: "photographers",
@@ -24,8 +35,9 @@ const services = [
     description: "Capture your special moments forever",
     count: "500+ professionals",
     href: "/services/photographers",
-    image: "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-purple-500 to-violet-600"
+    image:
+      "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-purple-500 to-violet-600",
   },
   {
     id: "caterers",
@@ -34,8 +46,9 @@ const services = [
     description: "Delicious cuisine for your celebration",
     count: "300+ caterers",
     href: "/services/caterers",
-    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-orange-500 to-red-600"
+    image:
+      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-orange-500 to-red-600",
   },
   {
     id: "florists",
@@ -44,8 +57,9 @@ const services = [
     description: "Beautiful floral arrangements",
     count: "150+ florists",
     href: "/services/florists",
-    image: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-green-500 to-emerald-600"
+    image:
+      "https://images.unsplash.com/photo-1490750967868-88aa4486c946?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-green-500 to-emerald-600",
   },
   {
     id: "decorators",
@@ -54,8 +68,9 @@ const services = [
     description: "Stunning event decoration services",
     count: "180+ decorators",
     href: "/services/decorators",
-    image: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-blue-500 to-indigo-600"
+    image:
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-blue-500 to-indigo-600",
   },
   {
     id: "djs",
@@ -64,10 +79,11 @@ const services = [
     description: "Perfect music and entertainment",
     count: "250+ artists",
     href: "/services/djs",
-    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-yellow-500 to-amber-600"
+    image:
+      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-yellow-500 to-amber-600",
   },
-]
+];
 
 export function ServicesSection() {
   return (
@@ -82,20 +98,23 @@ export function ServicesSection() {
         >
           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
             <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-            <span className="text-primary font-medium text-sm">WEDDING SERVICES</span>
+            <span className="text-primary font-medium text-sm">
+              WEDDING SERVICES
+            </span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
             Wedding Services
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Everything you need for your perfect wedding day. From planning to execution,
-            connect with verified professionals who specialize in making dreams come true.
+            Everything you need for your perfect wedding day. From planning to
+            execution, connect with verified professionals who specialize in
+            making dreams come true.
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => {
-            const IconComponent = service.icon
+            const IconComponent = service.icon;
             return (
               <motion.div
                 key={service.id}
@@ -114,7 +133,9 @@ export function ServicesSection() {
                   />
 
                   {/* Gradient Overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-30 transition-all duration-500`} />
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-30 transition-all duration-500`}
+                  />
 
                   {/* Backdrop Blur Overlay */}
                   <div className="absolute inset-0 bg-background/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500" />
@@ -126,7 +147,9 @@ export function ServicesSection() {
                         <IconComponent className="h-10 w-10 text-primary group-hover:scale-110 transition-all duration-300" />
 
                         {/* Glow Effect */}
-                        <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-30 transition-all duration-500`} />
+                        <div
+                          className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-30 transition-all duration-500`}
+                        />
                       </div>
                     </div>
 
@@ -138,7 +161,9 @@ export function ServicesSection() {
                     </p>
                     <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-3 py-1 mb-6 backdrop-blur-sm">
                       <div className="w-2 h-2 bg-primary rounded-full"></div>
-                      <p className="text-sm text-primary font-semibold">{service.count}</p>
+                      <p className="text-sm text-primary font-semibold">
+                        {service.count}
+                      </p>
                     </div>
 
                     <Button
@@ -154,7 +179,7 @@ export function ServicesSection() {
                   </CardContent>
                 </Card>
               </motion.div>
-            )
+            );
           })}
         </div>
 
@@ -178,5 +203,5 @@ export function ServicesSection() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

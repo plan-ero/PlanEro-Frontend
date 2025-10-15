@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion"
-import Link from "next/link"
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import Link from "next/link";
 import {
   TreePine,
   Building2,
@@ -12,8 +12,8 @@ import {
   Briefcase,
   Heart,
   Cake,
-  ArrowRight
-} from "lucide-react"
+  ArrowRight,
+} from "lucide-react";
 
 const categories = [
   {
@@ -23,8 +23,9 @@ const categories = [
     description: "Beautiful outdoor garden venues",
     count: "200+ venues",
     href: "/venues?category=garden",
-    image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-green-500 to-emerald-600"
+    image:
+      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-green-500 to-emerald-600",
   },
   {
     id: "banquet-hall",
@@ -33,8 +34,9 @@ const categories = [
     description: "Elegant indoor banquet halls",
     count: "150+ venues",
     href: "/venues?category=banquet-hall",
-    image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-blue-500 to-indigo-600"
+    image:
+      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-blue-500 to-indigo-600",
   },
   {
     id: "lawns",
@@ -43,8 +45,9 @@ const categories = [
     description: "Spacious lawn areas for events",
     count: "180+ venues",
     href: "/venues?category=lawns",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-lime-500 to-green-600"
+    image:
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-lime-500 to-green-600",
   },
   {
     id: "farmhouse",
@@ -53,8 +56,9 @@ const categories = [
     description: "Charming farmhouse venues",
     count: "120+ venues",
     href: "/venues?category=farmhouse",
-    image: "https://images.unsplash.com/photo-1449844908441-8829872d2607?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-amber-500 to-orange-600"
+    image:
+      "https://images.unsplash.com/photo-1449844908441-8829872d2607?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-amber-500 to-orange-600",
   },
   {
     id: "corporate",
@@ -63,8 +67,9 @@ const categories = [
     description: "Professional corporate venues",
     count: "90+ venues",
     href: "/venues?category=corporate",
-    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-slate-500 to-gray-600"
+    image:
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-slate-500 to-gray-600",
   },
   {
     id: "anniversary-engagement",
@@ -73,8 +78,9 @@ const categories = [
     description: "Romantic venues for celebrations",
     count: "160+ venues",
     href: "/venues?category=anniversary-engagement",
-    image: "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-pink-500 to-rose-600"
+    image:
+      "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-pink-500 to-rose-600",
   },
   {
     id: "birthday",
@@ -83,10 +89,11 @@ const categories = [
     description: "Fun venues for birthday parties",
     count: "140+ venues",
     href: "/venues?category=birthday",
-    image: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-purple-500 to-violet-600"
+    image:
+      "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-purple-500 to-violet-600",
   },
-]
+];
 
 export function CategoriesSection() {
   return (
@@ -101,20 +108,23 @@ export function CategoriesSection() {
         >
           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
             <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-            <span className="text-primary font-medium text-sm">EVENT CATEGORIES</span>
+            <span className="text-primary font-medium text-sm">
+              EVENT CATEGORIES
+            </span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
             Find Your Perfect Venue
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Discover venues tailored to your event type. From intimate garden settings to grand banquet halls,
-            find the perfect backdrop for your special occasion.
+            Discover venues tailored to your event type. From intimate garden
+            settings to grand banquet halls, find the perfect backdrop for your
+            special occasion.
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {categories.map((category, index) => {
-            const IconComponent = category.icon
+            const IconComponent = category.icon;
             return (
               <motion.div
                 key={category.id}
@@ -134,7 +144,9 @@ export function CategoriesSection() {
                   />
 
                   {/* Gradient Overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-30 transition-all duration-500`} />
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-30 transition-all duration-500`}
+                  />
 
                   {/* Backdrop Blur Overlay */}
                   <div className="absolute inset-0 bg-background/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500" />
@@ -146,7 +158,9 @@ export function CategoriesSection() {
                         <IconComponent className="h-8 w-8 text-primary group-hover:scale-110 transition-all duration-300" />
 
                         {/* Glow Effect */}
-                        <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-30 transition-all duration-500`} />
+                        <div
+                          className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-30 transition-all duration-500`}
+                        />
                       </div>
                     </div>
 
@@ -158,7 +172,9 @@ export function CategoriesSection() {
                     </p>
                     <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-3 py-1 mb-4 backdrop-blur-sm">
                       <div className="w-2 h-2 bg-primary rounded-full"></div>
-                      <p className="text-sm text-primary font-semibold">{category.count}</p>
+                      <p className="text-sm text-primary font-semibold">
+                        {category.count}
+                      </p>
                     </div>
 
                     <Button
@@ -174,7 +190,7 @@ export function CategoriesSection() {
                   </CardContent>
                 </Card>
               </motion.div>
-            )
+            );
           })}
         </div>
 
@@ -198,5 +214,5 @@ export function CategoriesSection() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

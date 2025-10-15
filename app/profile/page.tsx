@@ -1,91 +1,91 @@
-"use client"
-import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { LoadingSpinner } from "@/components/loading-spinner"
-import { useToast } from "@/hooks/use-toast"
-import { authApi, Profile } from "@/lib/api"
-import { User, Mail, Phone, Edit2, Save, X } from "lucide-react"
+"use client";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { LoadingSpinner } from "@/components/loading-spinner";
+import { useToast } from "@/hooks/use-toast";
+import { authApi, Profile } from "@/lib/api";
+import { User, Mail, Phone, Edit2, Save, X } from "lucide-react";
 
 export default function ProfilePage() {
-  const { data: session, status } = useSession()
-  const { toast } = useToast()
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [editing, setEditing] = useState(false)
+  const { data: session, status } = useSession();
+  const { toast } = useToast();
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
-    phone: ""
-  })
+    phone: "",
+  });
 
   useEffect(() => {
     if (status === "authenticated") {
-      fetchProfile()
+      fetchProfile();
     } else if (status === "unauthenticated") {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [status])
+  }, [status]);
 
   const fetchProfile = async () => {
     try {
-      setLoading(true)
-      const profileData = await authApi.getProfile()
-      setProfile(profileData)
+      setLoading(true);
+      const profileData = await authApi.getProfile();
+      setProfile(profileData);
       setFormData({
-        phone: profileData.phone || ""
-      })
+        phone: profileData.phone || "",
+      });
     } catch (error) {
-      console.error("Failed to fetch profile:", error)
+      console.error("Failed to fetch profile:", error);
       toast({
         title: "Error",
         description: "Failed to load profile. Please try again.",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
       // Note: You'll need to implement the update profile API endpoint
-      setEditing(false)
+      setEditing(false);
       toast({
         title: "Success",
-        description: "Profile updated successfully"
-      })
+        description: "Profile updated successfully",
+      });
     } catch (error) {
-      console.error("Failed to update profile:", error)
+      console.error("Failed to update profile:", error);
       toast({
         title: "Error",
         description: "Failed to update profile. Please try again.",
-        variant: "destructive"
-      })
+        variant: "destructive",
+      });
     }
-  }
+  };
 
   const handleCancel = () => {
     setFormData({
-      phone: profile?.phone || ""
-    })
-    setEditing(false)
-  }
+      phone: profile?.phone || "",
+    });
+    setEditing(false);
+  };
 
   const getInitials = () => {
-    return profile?.username[0].toUpperCase() || "U"
-  }
+    return profile?.username[0].toUpperCase() || "U";
+  };
 
   if (status === "loading" || loading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <LoadingSpinner />
       </div>
-    )
+    );
   }
 
   if (status === "unauthenticated") {
@@ -103,7 +103,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   if (!profile) {
@@ -115,13 +115,11 @@ export default function ProfilePage() {
             <p className="text-muted-foreground mb-4">
               Unable to load your profile information.
             </p>
-            <Button onClick={fetchProfile}>
-              Try Again
-            </Button>
+            <Button onClick={fetchProfile}>Try Again</Button>
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -129,7 +127,9 @@ export default function ProfilePage() {
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">My Profile</h1>
-          <p className="text-muted-foreground">Manage your account information</p>
+          <p className="text-muted-foreground">
+            Manage your account information
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -142,10 +142,10 @@ export default function ProfilePage() {
                   {getInitials()}
                 </AvatarFallback>
               </Avatar>
-              <CardTitle className="text-xl">
-                {profile.username}
-              </CardTitle>
-              <Badge variant={profile.role === "VENDOR" ? "default" : "secondary"}>
+              <CardTitle className="text-xl">{profile.username}</CardTitle>
+              <Badge
+                variant={profile.role === "VENDOR" ? "default" : "secondary"}
+              >
                 {profile.role}
               </Badge>
             </CardHeader>
@@ -163,7 +163,9 @@ export default function ProfilePage() {
                 )}
                 {profile.vendor && (
                   <div className="mt-4 p-3 bg-muted rounded-lg">
-                    <h4 className="font-semibold text-sm mb-2">Vendor Information</h4>
+                    <h4 className="font-semibold text-sm mb-2">
+                      Vendor Information
+                    </h4>
                     <p className="text-xs text-muted-foreground">
                       Business: {profile.vendor.businessName}
                     </p>
@@ -171,7 +173,8 @@ export default function ProfilePage() {
                       Location: {profile.vendor.location}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Status: {profile.vendor.approved ? "Approved" : "Pending Review"}
+                      Status:{" "}
+                      {profile.vendor.approved ? "Approved" : "Pending Review"}
                     </p>
                   </div>
                 )}
@@ -194,18 +197,11 @@ export default function ProfilePage() {
                 </Button>
               ) : (
                 <div className="space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleCancel}
-                  >
+                  <Button variant="outline" size="sm" onClick={handleCancel}>
                     <X className="h-4 w-4 mr-2" />
                     Cancel
                   </Button>
-                  <Button
-                    size="sm"
-                    onClick={handleSubmit}
-                  >
+                  <Button size="sm" onClick={handleSubmit}>
                     <Save className="h-4 w-4 mr-2" />
                     Save
                   </Button>
@@ -247,7 +243,12 @@ export default function ProfilePage() {
                     id="phone"
                     type="tel"
                     value={formData.phone}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        phone: e.target.value,
+                      }))
+                    }
                     disabled={!editing}
                     placeholder="Enter your phone number"
                   />
@@ -256,14 +257,19 @@ export default function ProfilePage() {
                 <div>
                   <Label>Account Role</Label>
                   <div className="mt-2">
-                    <Badge variant={profile.role === "VENDOR" ? "default" : "secondary"}>
-                      {profile.role === "VENDOR" ? "Vendor Account" : "Customer Account"}
+                    <Badge
+                      variant={
+                        profile.role === "VENDOR" ? "default" : "secondary"
+                      }
+                    >
+                      {profile.role === "VENDOR"
+                        ? "Vendor Account"
+                        : "Customer Account"}
                     </Badge>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {profile.role === "VENDOR" 
+                      {profile.role === "VENDOR"
                         ? "You can list services and venues"
-                        : "You can book venues and services"
-                      }
+                        : "You can book venues and services"}
                     </p>
                   </div>
                 </div>
@@ -284,5 +290,5 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

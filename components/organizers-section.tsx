@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion"
-import Link from "next/link"
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import Link from "next/link";
 import {
   Heart,
   MapPin,
   Briefcase,
   Trophy,
   ArrowRight,
-  Star
-} from "lucide-react"
+  Star,
+} from "lucide-react";
 
 const organizers = [
   {
@@ -19,24 +19,34 @@ const organizers = [
     name: "Wedding Organizer",
     icon: Heart,
     description: "Complete wedding planning and coordination services",
-    features: ["Full event planning", "Vendor coordination", "Timeline management"],
+    features: [
+      "Full event planning",
+      "Vendor coordination",
+      "Timeline management",
+    ],
     rating: 4.9,
     count: "150+ organizers",
     href: "/services/wedding-organizer",
-    image: "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-pink-500 to-rose-600"
+    image:
+      "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-pink-500 to-rose-600",
   },
   {
     id: "destination-organizer",
     name: "Destination Organizer",
     icon: MapPin,
     description: "Specialized in destination weddings and events",
-    features: ["Location scouting", "Travel arrangements", "Local vendor network"],
+    features: [
+      "Location scouting",
+      "Travel arrangements",
+      "Local vendor network",
+    ],
     rating: 4.8,
     count: "80+ organizers",
     href: "/services/destination-organizer",
-    image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-blue-500 to-indigo-600"
+    image:
+      "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-blue-500 to-indigo-600",
   },
   {
     id: "corporate-organizer",
@@ -47,8 +57,9 @@ const organizers = [
     rating: 4.7,
     count: "120+ organizers",
     href: "/services/corporate-organizer",
-    image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-slate-500 to-gray-600"
+    image:
+      "https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-slate-500 to-gray-600",
   },
   {
     id: "exhibition-organizer",
@@ -59,10 +70,11 @@ const organizers = [
     rating: 4.6,
     count: "60+ organizers",
     href: "/services/exhibition-organizer",
-    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-    color: "from-amber-500 to-orange-600"
+    image:
+      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-amber-500 to-orange-600",
   },
-]
+];
 
 export function OrganizersSection() {
   return (
@@ -77,20 +89,23 @@ export function OrganizersSection() {
         >
           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
             <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-            <span className="text-primary font-medium text-sm">EXPERT ORGANIZERS</span>
+            <span className="text-primary font-medium text-sm">
+              EXPERT ORGANIZERS
+            </span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
             Professional Event Organizers
           </h2>
           <p className="text-base sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-2 sm:px-0">
-            Let our experienced event organizers handle every detail of your special occasion.
-            From intimate weddings to large corporate events, we ensure perfection.
+            Let our experienced event organizers handle every detail of your
+            special occasion. From intimate weddings to large corporate events,
+            we ensure perfection.
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           {organizers.map((organizer, index) => {
-            const IconComponent = organizer.icon
+            const IconComponent = organizer.icon;
             return (
               <motion.div
                 key={organizer.id}
@@ -109,7 +124,9 @@ export function OrganizersSection() {
                   />
 
                   {/* Gradient Overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${organizer.color} opacity-0 group-hover:opacity-30 transition-all duration-500`} />
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${organizer.color} opacity-0 group-hover:opacity-30 transition-all duration-500`}
+                  />
 
                   {/* Backdrop Blur Overlay */}
                   <div className="absolute inset-0 bg-background/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500" />
@@ -122,7 +139,9 @@ export function OrganizersSection() {
                           <IconComponent className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-primary group-hover:scale-110 transition-all duration-300" />
 
                           {/* Glow Effect */}
-                          <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${organizer.color} opacity-0 group-hover:opacity-30 transition-all duration-500`} />
+                          <div
+                            className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${organizer.color} opacity-0 group-hover:opacity-30 transition-all duration-500`}
+                          />
                         </div>
                       </div>
 
@@ -133,7 +152,9 @@ export function OrganizersSection() {
                           </h3>
                           <div className="flex items-center space-x-1">
                             <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-yellow-400 text-yellow-400" />
-                            <span className="text-xs sm:text-sm font-semibold">{organizer.rating}</span>
+                            <span className="text-xs sm:text-sm font-semibold">
+                              {organizer.rating}
+                            </span>
                           </div>
                         </div>
 
@@ -144,7 +165,10 @@ export function OrganizersSection() {
                         <div className="mb-4">
                           <ul className="space-y-1">
                             {organizer.features.map((feature, idx) => (
-                              <li key={idx} className="flex items-center text-xs sm:text-sm text-muted-foreground">
+                              <li
+                                key={idx}
+                                className="flex items-center text-xs sm:text-sm text-muted-foreground"
+                              >
                                 <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-primary rounded-full mr-2"></div>
                                 {feature}
                               </li>
@@ -155,7 +179,9 @@ export function OrganizersSection() {
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
                           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-2 sm:px-3 py-1 backdrop-blur-sm">
                             <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full"></div>
-                            <p className="text-xs sm:text-sm text-primary font-semibold">{organizer.count}</p>
+                            <p className="text-xs sm:text-sm text-primary font-semibold">
+                              {organizer.count}
+                            </p>
                           </div>
 
                           <Button
@@ -175,7 +201,7 @@ export function OrganizersSection() {
                   </CardContent>
                 </Card>
               </motion.div>
-            )
+            );
           })}
         </div>
 
@@ -199,5 +225,5 @@ export function OrganizersSection() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

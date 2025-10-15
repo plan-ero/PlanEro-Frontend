@@ -1,58 +1,78 @@
-import { NextRequest, NextResponse } from "next/server"
-import { TokenManager } from "@/lib/api"
+import { NextRequest, NextResponse } from "next/server";
+import { TokenManager } from "@/lib/api";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
 // PUT /api/vendors/onboard - Update vendor profile during onboarding
 export async function PUT(request: NextRequest) {
   try {
     // Get token from Authorization header
-    const authHeader = request.headers.get('authorization')
-    const token = authHeader?.replace('Bearer ', '') || TokenManager.getToken()
+    const authHeader = request.headers.get("authorization");
+    const token = authHeader?.replace("Bearer ", "") || TokenManager.getToken();
 
     if (!token) {
       return NextResponse.json(
         { error: "Unauthorized - No token provided" },
-        { status: 401 }
-      )
+        { status: 401 },
+      );
     }
 
-    const body = await request.json()
-    console.log("Onboard request body:", body) // Debug log
-    const { businessName, location, bio, websiteUrl, profilePictureUrl, phoneNumber, addressId, email } = body
+    const body = await request.json();
+    console.log("Onboard request body:", body); // Debug log
+    const {
+      businessName,
+      location,
+      bio,
+      websiteUrl,
+      profilePictureUrl,
+      phoneNumber,
+      addressId,
+      email,
+    } = body;
 
     // Get email from session if not provided in body
-    const sessionEmail = request.headers.get('x-user-email') // We'll add this from frontend
-    const userEmail = email || sessionEmail
+    const sessionEmail = request.headers.get("x-user-email"); // We'll add this from frontend
+    const userEmail = email || sessionEmail;
 
     if (!businessName || !location || !userEmail) {
-      console.log("Missing required fields:", { businessName, location, userEmail })
+      console.log("Missing required fields:", {
+        businessName,
+        location,
+        userEmail,
+      });
       return NextResponse.json(
         { error: "Missing required fields: businessName, location, email" },
-        { status: 400 }
-      )
+        { status: 400 },
+      );
     }
 
     try {
       // First, fetch the existing vendor by email to get their ID
-      const vendorFetchResponse = await fetch(`${API_BASE_URL}/vendors/email/${encodeURIComponent(userEmail)}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+      const vendorFetchResponse = await fetch(
+        `${API_BASE_URL}/vendors/email/${encodeURIComponent(userEmail)}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         },
-      })
+      );
 
       if (!vendorFetchResponse.ok) {
-        console.error("Failed to fetch vendor by email:", await vendorFetchResponse.text())
+        console.error(
+          "Failed to fetch vendor by email:",
+          await vendorFetchResponse.text(),
+        );
         return NextResponse.json(
           { error: "Vendor not found. Please contact support." },
-          { status: 404 }
-        )
+          { status: 404 },
+        );
       }
 
-      const existingVendor = await vendorFetchResponse.json()
-      const vendorId = existingVendor.id
+      const existingVendor = await vendorFetchResponse.json();
+      const vendorId = existingVendor.id;
 
       // Prepare updated vendor data
       const vendorData = {
@@ -66,47 +86,50 @@ export async function PUT(request: NextRequest) {
         addressId: addressId || 0,
         approved: false,
         published: false,
-      }
+      };
 
-      console.log("Updating vendor with ID:", vendorId, "data:", vendorData) // Debug log
+      console.log("Updating vendor with ID:", vendorId, "data:", vendorData); // Debug log
 
       // Make PUT request to backend vendors endpoint with ID
-      const backendResponse = await fetch(`${API_BASE_URL}/vendors/${vendorId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+      const backendResponse = await fetch(
+        `${API_BASE_URL}/vendors/${vendorId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(vendorData),
         },
-        body: JSON.stringify(vendorData),
-      })
+      );
 
       if (!backendResponse.ok) {
-        const errorText = await backendResponse.text()
-        console.error("Backend error:", errorText)
+        const errorText = await backendResponse.text();
+        console.error("Backend error:", errorText);
         return NextResponse.json(
           { error: "Failed to create vendor profile", details: errorText },
-          { status: backendResponse.status }
-        )
+          { status: backendResponse.status },
+        );
       }
 
-      const vendor = await backendResponse.json()
-      return NextResponse.json(vendor, { status: 201 })
-
+      const vendor = await backendResponse.json();
+      return NextResponse.json(vendor, { status: 201 });
     } catch (apiError) {
-      console.error("External API error during onboarding:", apiError)
+      console.error("External API error during onboarding:", apiError);
       return NextResponse.json(
         {
           error: "Failed to create vendor profile",
-          details: apiError instanceof Error ? apiError.message : "Unknown error",
+          details:
+            apiError instanceof Error ? apiError.message : "Unknown error",
         },
-        { status: 500 }
-      )
+        { status: 500 },
+      );
     }
   } catch (error) {
-    console.error("Error in /api/vendors/onboard:", error)
+    console.error("Error in /api/vendors/onboard:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }

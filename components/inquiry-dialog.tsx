@@ -1,32 +1,53 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CalendarIcon } from "lucide-react"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { format } from "date-fns"
-import { cn } from "@/lib/utils"
-import { toast } from "react-hot-toast"
-import { useSession } from "next-auth/react"
+import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { toast } from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 interface InquiryDialogProps {
-  serviceId: string
-  serviceName: string
-  serviceType: string
-  children: React.ReactNode
+  serviceId: string;
+  serviceName: string;
+  serviceType: string;
+  children: React.ReactNode;
 }
 
-export function InquiryDialog({ serviceId, serviceName, serviceType, children }: InquiryDialogProps) {
-  const { data: session } = useSession()
-  const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [eventDate, setEventDate] = useState<Date>()
+export function InquiryDialog({
+  serviceId,
+  serviceName,
+  serviceType,
+  children,
+}: InquiryDialogProps) {
+  const { data: session } = useSession();
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [eventDate, setEventDate] = useState<Date>();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -35,48 +56,48 @@ export function InquiryDialog({ serviceId, serviceName, serviceType, children }:
     numberOfGuests: "",
     eventType: "",
     eventVision: "",
-  })
+  });
 
   // Auto-fill form when user session is available
   useEffect(() => {
     if (session?.user && open) {
-      const user = session.user
+      const user = session.user;
       // Try to get name from user.name or fallback to username
-      const fullName = user.name || (user as any).username || ""
-      const [firstName = "", lastName = ""] = fullName.split(" ", 2)
+      const fullName = user.name || (user as any).username || "";
+      const [firstName = "", lastName = ""] = fullName.split(" ", 2);
 
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         firstName: firstName,
         lastName: lastName || "", // If no last name, leave empty
         email: user.email || "",
         phoneNumber: (user as any).phone || "", // Phone might be in the user object
-      }))
+      }));
     }
-  }, [session, open])
+  }, [session, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!session) {
-      toast.error("Please log in to submit an inquiry")
-      return
+      toast.error("Please log in to submit an inquiry");
+      return;
     }
 
     if (!eventDate) {
-      toast.error("Please select an event date")
-      return
+      toast.error("Please select an event date");
+      return;
     }
 
     try {
-      setLoading(true)
+      setLoading(true);
 
       const inquiryData = {
         ...formData,
         numberOfGuests: parseInt(formData.numberOfGuests),
         eventData: format(eventDate, "yyyy-MM-dd"),
         serviceType: serviceType,
-      }
+      };
 
       const response = await fetch("/api/inquiries", {
         method: "POST",
@@ -84,15 +105,17 @@ export function InquiryDialog({ serviceId, serviceName, serviceType, children }:
           "Content-Type": "application/json",
         },
         body: JSON.stringify(inquiryData),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Failed to submit inquiry")
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to submit inquiry");
       }
 
-      toast.success("Inquiry submitted successfully! The vendor will contact you soon.")
-      setOpen(false)
+      toast.success(
+        "Inquiry submitted successfully! The vendor will contact you soon.",
+      );
+      setOpen(false);
 
       // Reset form
       setFormData({
@@ -103,25 +126,25 @@ export function InquiryDialog({ serviceId, serviceName, serviceType, children }:
         numberOfGuests: "",
         eventType: "",
         eventVision: "",
-      })
-      setEventDate(undefined)
+      });
+      setEventDate(undefined);
     } catch (error) {
-      console.error("Error submitting inquiry:", error)
-      toast.error(error instanceof Error ? error.message : "Failed to submit inquiry")
+      console.error("Error submitting inquiry:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to submit inquiry",
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleInputChange = (field: string) => (value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Inquire about {serviceName}</DialogTitle>
@@ -178,7 +201,7 @@ export function InquiryDialog({ serviceId, serviceName, serviceType, children }:
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal",
-                    !eventDate && "text-muted-foreground"
+                    !eventDate && "text-muted-foreground",
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
@@ -204,14 +227,19 @@ export function InquiryDialog({ serviceId, serviceName, serviceType, children }:
               type="number"
               min="1"
               value={formData.numberOfGuests}
-              onChange={(e) => handleInputChange("numberOfGuests")(e.target.value)}
+              onChange={(e) =>
+                handleInputChange("numberOfGuests")(e.target.value)
+              }
               required
             />
           </div>
 
           <div>
             <Label htmlFor="eventType">Event Type</Label>
-            <Select value={formData.eventType} onValueChange={handleInputChange("eventType")}>
+            <Select
+              value={formData.eventType}
+              onValueChange={handleInputChange("eventType")}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select event type" />
               </SelectTrigger>
@@ -251,16 +279,12 @@ export function InquiryDialog({ serviceId, serviceName, serviceType, children }:
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="flex-1"
-            >
+            <Button type="submit" disabled={loading} className="flex-1">
               {loading ? "Submitting..." : "Submit Inquiry"}
             </Button>
           </div>
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

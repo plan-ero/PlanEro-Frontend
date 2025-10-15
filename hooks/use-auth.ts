@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useSession, signIn, signOut } from "next-auth/react"
-import { authApi, TokenManager, type Profile } from "@/lib/api"
+import { useSession, signIn, signOut } from "next-auth/react";
+import { authApi, TokenManager, type Profile } from "@/lib/api";
 
 export function useAuth() {
-  const { data: session, status } = useSession()
+  const { data: session, status } = useSession();
 
   const customSignIn = async (email: string, password: string) => {
     try {
@@ -13,20 +13,25 @@ export function useAuth() {
         email,
         password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        throw new Error("Authentication failed")
+        throw new Error("Authentication failed");
       }
 
-      return result
+      return result;
     } catch (error) {
-      console.error("Sign in error:", error)
-      throw error
+      console.error("Sign in error:", error);
+      throw error;
     }
-  }
+  };
 
-  const customSignUp = async (name: string, email: string, password: string, role: 'USER' | 'VENDOR' = 'USER') => {
+  const customSignUp = async (
+    name: string,
+    email: string,
+    password: string,
+    role: "USER" | "VENDOR" = "USER",
+  ) => {
     try {
       // First register with our API
       const response = await fetch("/api/auth/register", {
@@ -40,11 +45,11 @@ export function useAuth() {
           password,
           role,
         }),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Registration failed")
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Registration failed");
       }
 
       // Then sign in with NextAuth
@@ -52,38 +57,38 @@ export function useAuth() {
         email,
         password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        throw new Error("Registration successful but authentication failed")
+        throw new Error("Registration successful but authentication failed");
       }
 
-      return result
+      return result;
     } catch (error) {
-      console.error("Sign up error:", error)
-      throw error
+      console.error("Sign up error:", error);
+      throw error;
     }
-  }
+  };
 
   const customSignOut = async () => {
     // Clear stored tokens
-    TokenManager.removeToken()
-    
+    TokenManager.removeToken();
+
     // Sign out from NextAuth
-    await signOut()
-  }
+    await signOut();
+  };
 
   const getProfile = async (): Promise<Profile | null> => {
     try {
       if (authApi.isAuthenticated()) {
-        return await authApi.getProfile()
+        return await authApi.getProfile();
       }
-      return null
+      return null;
     } catch (error) {
-      console.error("Error getting profile:", error)
-      return null
+      console.error("Error getting profile:", error);
+      return null;
     }
-  }
+  };
 
   return {
     user: session?.user
@@ -102,5 +107,5 @@ export function useAuth() {
     signOut: customSignOut,
     getProfile,
     isAuthenticated: authApi.isAuthenticated(),
-  }
+  };
 }

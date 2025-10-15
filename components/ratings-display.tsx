@@ -1,112 +1,126 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { StarRating } from "@/components/ui/star-rating"
-import { RatingForm } from "@/components/rating-form"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
-import { Trash2, Star, MessageSquare } from "lucide-react"
-import { useSession } from "next-auth/react"
-import { useToast } from "@/hooks/use-toast"
-import { formatDistanceToNow } from "date-fns"
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { StarRating } from "@/components/ui/star-rating";
+import { RatingForm } from "@/components/rating-form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Trash2, Star, MessageSquare } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useToast } from "@/hooks/use-toast";
+import { formatDistanceToNow } from "date-fns";
 
 interface Rating {
-  id: number
-  userId: number
-  rating: number
-  review?: string
-  serviceId?: number
-  vendorId?: number
-  createdAt: string
-  updatedAt: string
+  id: number;
+  userId: number;
+  rating: number;
+  review?: string;
+  serviceId?: number;
+  vendorId?: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface RatingsDisplayProps {
-  serviceId?: number
-  vendorId?: number
-  title?: string
-  showAddRating?: boolean
+  serviceId?: number;
+  vendorId?: number;
+  title?: string;
+  showAddRating?: boolean;
 }
 
-export function RatingsDisplay({ serviceId, vendorId, title, showAddRating = true }: RatingsDisplayProps) {
-  const [ratings, setRatings] = useState<Rating[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showRatingForm, setShowRatingForm] = useState(false)
-  const { data: session } = useSession()
-  const { toast } = useToast()
+export function RatingsDisplay({
+  serviceId,
+  vendorId,
+  title,
+  showAddRating = true,
+}: RatingsDisplayProps) {
+  const [ratings, setRatings] = useState<Rating[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showRatingForm, setShowRatingForm] = useState(false);
+  const { data: session } = useSession();
+  const { toast } = useToast();
 
   const fetchRatings = async () => {
     try {
-      setLoading(true)
-      const params = new URLSearchParams()
-      if (serviceId) params.append('serviceId', serviceId.toString())
-      if (vendorId) params.append('vendorId', vendorId.toString())
+      setLoading(true);
+      const params = new URLSearchParams();
+      if (serviceId) params.append("serviceId", serviceId.toString());
+      if (vendorId) params.append("vendorId", vendorId.toString());
 
-      const response = await fetch(`/api/ratings?${params.toString()}`)
+      const response = await fetch(`/api/ratings?${params.toString()}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch ratings')
+        throw new Error("Failed to fetch ratings");
       }
 
-      const data = await response.json()
-      setRatings(data)
+      const data = await response.json();
+      setRatings(data);
     } catch (error) {
-      console.error('Error fetching ratings:', error)
+      console.error("Error fetching ratings:", error);
       toast({
         title: "Error",
         description: "Failed to load ratings",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchRatings()
-  }, [serviceId, vendorId])
+    fetchRatings();
+  }, [serviceId, vendorId]);
 
   const handleDeleteRating = async (ratingId: number) => {
     try {
       const response = await fetch(`/api/ratings/${ratingId}`, {
-        method: 'DELETE',
-      })
+        method: "DELETE",
+      });
 
       if (!response.ok) {
-        throw new Error('Failed to delete rating')
+        throw new Error("Failed to delete rating");
       }
 
       toast({
         title: "Rating deleted",
         description: "Your rating has been removed",
-      })
+      });
 
-      fetchRatings() // Refresh ratings
+      fetchRatings(); // Refresh ratings
     } catch (error) {
-      console.error('Error deleting rating:', error)
+      console.error("Error deleting rating:", error);
       toast({
         title: "Error",
         description: "Failed to delete rating",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
-  const averageRating = ratings.length > 0
-    ? ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length
-    : 0
+  const averageRating =
+    ratings.length > 0
+      ? ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length
+      : 0;
 
   const ratingCounts = {
-    5: ratings.filter(r => r.rating === 5).length,
-    4: ratings.filter(r => r.rating === 4).length,
-    3: ratings.filter(r => r.rating === 3).length,
-    2: ratings.filter(r => r.rating === 2).length,
-    1: ratings.filter(r => r.rating === 1).length,
-  }
+    5: ratings.filter((r) => r.rating === 5).length,
+    4: ratings.filter((r) => r.rating === 4).length,
+    3: ratings.filter((r) => r.rating === 3).length,
+    2: ratings.filter((r) => r.rating === 2).length,
+    1: ratings.filter((r) => r.rating === 1).length,
+  };
 
-  const userHasRated = session?.user && ratings.some(rating => rating.userId.toString() === session.user.id)
+  const userHasRated =
+    session?.user &&
+    ratings.some((rating) => rating.userId.toString() === session.user.id);
 
   if (loading) {
     return (
@@ -121,7 +135,7 @@ export function RatingsDisplay({ serviceId, vendorId, title, showAddRating = tru
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -137,10 +151,12 @@ export function RatingsDisplay({ serviceId, vendorId, title, showAddRating = tru
         <CardContent className="space-y-4">
           <div className="flex items-center gap-6">
             <div className="text-center">
-              <div className="text-3xl font-bold">{averageRating.toFixed(1)}</div>
+              <div className="text-3xl font-bold">
+                {averageRating.toFixed(1)}
+              </div>
               <StarRating rating={averageRating} readonly size="md" />
               <div className="text-sm text-muted-foreground mt-1">
-                {ratings.length} review{ratings.length !== 1 ? 's' : ''}
+                {ratings.length} review{ratings.length !== 1 ? "s" : ""}
               </div>
             </div>
 
@@ -153,9 +169,10 @@ export function RatingsDisplay({ serviceId, vendorId, title, showAddRating = tru
                     <div
                       className="bg-yellow-400 h-2 rounded-full"
                       style={{
-                        width: ratings.length > 0
-                          ? `${(ratingCounts[star as keyof typeof ratingCounts] / ratings.length) * 100}%`
-                          : '0%'
+                        width:
+                          ratings.length > 0
+                            ? `${(ratingCounts[star as keyof typeof ratingCounts] / ratings.length) * 100}%`
+                            : "0%",
                       }}
                     />
                   </div>
@@ -184,8 +201,8 @@ export function RatingsDisplay({ serviceId, vendorId, title, showAddRating = tru
                   serviceId={serviceId}
                   vendorId={vendorId}
                   onRatingSubmitted={() => {
-                    setShowRatingForm(false)
-                    fetchRatings()
+                    setShowRatingForm(false);
+                    fetchRatings();
                   }}
                   onCancel={() => setShowRatingForm(false)}
                 />
@@ -195,7 +212,7 @@ export function RatingsDisplay({ serviceId, vendorId, title, showAddRating = tru
 
           {userHasRated && (
             <Badge variant="secondary" className="w-full justify-center">
-              You have already rated this {serviceId ? 'service' : 'vendor'}
+              You have already rated this {serviceId ? "service" : "vendor"}
             </Badge>
           )}
         </CardContent>
@@ -216,28 +233,37 @@ export function RatingsDisplay({ serviceId, vendorId, title, showAddRating = tru
                       </Avatar>
                       <div>
                         <div className="flex items-center gap-2">
-                          <StarRating rating={rating.rating} readonly size="sm" />
+                          <StarRating
+                            rating={rating.rating}
+                            readonly
+                            size="sm"
+                          />
                           <span className="text-sm text-muted-foreground">
-                            {formatDistanceToNow(new Date(rating.createdAt), { addSuffix: true })}
+                            {formatDistanceToNow(new Date(rating.createdAt), {
+                              addSuffix: true,
+                            })}
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    {session?.user && rating.userId.toString() === session.user.id && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteRating(rating.id)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
+                    {session?.user &&
+                      rating.userId.toString() === session.user.id && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteRating(rating.id)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
                   </div>
 
                   {rating.review && (
-                    <p className="text-sm text-muted-foreground">{rating.review}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {rating.review}
+                    </p>
                   )}
                 </div>
               </CardContent>
@@ -258,5 +284,5 @@ export function RatingsDisplay({ serviceId, vendorId, title, showAddRating = tru
         </Card>
       )}
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextResponse } from "next/server";
 
 // Mock venue data - replace with actual database queries
 const venues = {
@@ -16,7 +16,8 @@ const venues = {
     ],
     category: "Wedding Venues",
     capacity: 150,
-    description: "Beautiful outdoor garden venue perfect for intimate weddings and special celebrations.",
+    description:
+      "Beautiful outdoor garden venue perfect for intimate weddings and special celebrations.",
     longDescription:
       "Nestled in the heart of Beverly Hills, our Elegant Garden Venue offers a magical setting for your most important celebrations. With meticulously maintained gardens, charming gazebos, and elegant outdoor spaces, we provide the perfect canvas for creating unforgettable memories.",
     rating: 4.8,
@@ -112,15 +113,18 @@ const venues = {
       website: "www.modernrooftop.com",
     },
   },
-}
+};
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  const venue = venues[id as keyof typeof venues]
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  const venue = venues[id as keyof typeof venues];
 
   if (!venue) {
-    return NextResponse.json({ error: "Venue not found" }, { status: 404 })
+    return NextResponse.json({ error: "Venue not found" }, { status: 404 });
   }
 
-  return NextResponse.json(venue)
+  return NextResponse.json(venue);
 }

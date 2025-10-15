@@ -1,54 +1,59 @@
-import { NextRequest, NextResponse } from "next/server"
-import { getToken } from "next-auth/jwt"
+import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8080'
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8080";
 
 // GET /api/vendors/services/:id - Get a specific service by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Get the token from NextAuth JWT
     const token = await getToken({
       req: request,
-      secret: process.env.NEXTAUTH_SECRET
-    })
+      secret: process.env.NEXTAUTH_SECRET,
+    });
 
-    const { id } = await params
+    const { id } = await params;
 
     if (!token?.apiToken) {
       return NextResponse.json(
         { error: "Unauthorized - Please sign in" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const serviceId = id;
 
     // Make request to backend
-    const backendResponse = await fetch(`${BACKEND_URL}/services/${serviceId}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token.apiToken}`,
-        'Content-Type': 'application/json',
+    const backendResponse = await fetch(
+      `${BACKEND_URL}/services/${serviceId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token.apiToken}`,
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (!backendResponse.ok) {
-      const errorData = await backendResponse.text().catch(() => 'Unknown error');
+      const errorData = await backendResponse
+        .text()
+        .catch(() => "Unknown error");
       console.error(`Backend error (${backendResponse.status}):`, errorData);
 
       if (backendResponse.status === 404) {
         return NextResponse.json(
           { error: "Service not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
       return NextResponse.json(
         { error: "Failed to fetch service" },
-        { status: backendResponse.status }
+        { status: backendResponse.status },
       );
     }
 
@@ -58,7 +63,7 @@ export async function GET(
     console.error(`Error in GET /api/vendors/services/[id]:`, error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -66,49 +71,54 @@ export async function GET(
 // PUT /api/vendors/services/:id - Update a specific service by ID
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Get the token from NextAuth JWT
     const token = await getToken({
       req: request,
-      secret: process.env.NEXTAUTH_SECRET
-    })
+      secret: process.env.NEXTAUTH_SECRET,
+    });
 
     if (!token?.apiToken) {
       return NextResponse.json(
         { error: "Unauthorized - Please sign in" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    const { id: serviceId } = await params
+    const { id: serviceId } = await params;
     const serviceData = await request.json();
 
     // Make request to backend
-    const backendResponse = await fetch(`${BACKEND_URL}/services/${serviceId}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token.apiToken}`,
-        'Content-Type': 'application/json',
+    const backendResponse = await fetch(
+      `${BACKEND_URL}/services/${serviceId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token.apiToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(serviceData),
       },
-      body: JSON.stringify(serviceData),
-    });
+    );
 
     if (!backendResponse.ok) {
-      const errorData = await backendResponse.text().catch(() => 'Unknown error');
+      const errorData = await backendResponse
+        .text()
+        .catch(() => "Unknown error");
       console.error(`Backend error (${backendResponse.status}):`, errorData);
 
       if (backendResponse.status === 404) {
         return NextResponse.json(
           { error: "Service not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
       return NextResponse.json(
         { error: "Failed to update service" },
-        { status: backendResponse.status }
+        { status: backendResponse.status },
       );
     }
 
@@ -118,7 +128,7 @@ export async function PUT(
     console.error(`Error in PUT /api/vendors/services/[id]:`, error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -126,56 +136,64 @@ export async function PUT(
 // DELETE /api/vendors/services/:id - Delete a specific service by ID
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Get the token from NextAuth JWT
     const token = await getToken({
       req: request,
-      secret: process.env.NEXTAUTH_SECRET
-    })
+      secret: process.env.NEXTAUTH_SECRET,
+    });
 
     if (!token?.apiToken) {
       return NextResponse.json(
         { error: "Unauthorized - Please sign in" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    const { id: serviceId } = await params
+    const { id: serviceId } = await params;
 
     // Make request to backend
-    const backendResponse = await fetch(`${BACKEND_URL}/services/${serviceId}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token.apiToken}`,
-        'Content-Type': 'application/json',
+    const backendResponse = await fetch(
+      `${BACKEND_URL}/services/${serviceId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token.apiToken}`,
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (!backendResponse.ok) {
-      const errorData = await backendResponse.text().catch(() => 'Unknown error');
+      const errorData = await backendResponse
+        .text()
+        .catch(() => "Unknown error");
       console.error(`Backend error (${backendResponse.status}):`, errorData);
 
       if (backendResponse.status === 404) {
         return NextResponse.json(
           { error: "Service not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
       return NextResponse.json(
         { error: "Failed to delete service" },
-        { status: backendResponse.status }
+        { status: backendResponse.status },
       );
     }
 
-    return NextResponse.json({ message: "Service deleted successfully" }, { status: 200 });
+    return NextResponse.json(
+      { message: "Service deleted successfully" },
+      { status: 200 },
+    );
   } catch (error) {
     console.error(`Error in DELETE /api/vendors/services/[id]:`, error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

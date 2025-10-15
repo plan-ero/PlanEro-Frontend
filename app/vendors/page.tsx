@@ -1,132 +1,153 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
-import { LoadingSpinner } from "@/components/loading-spinner"
-import { StarRating } from "@/components/ui/star-rating"
-import { MapPin, Globe, Phone, Star, Search, Filter, Mail } from "lucide-react"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { LoadingSpinner } from "@/components/loading-spinner";
+import { StarRating } from "@/components/ui/star-rating";
+import { MapPin, Globe, Phone, Star, Search, Filter, Mail } from "lucide-react";
 
 interface Vendor {
-  id: number
-  businessName: string
-  location: string
-  bio: string
-  websiteUrl: string[]
-  profilePictureUrl: string
-  email: string
-  phoneNumber: string
-  addressId: number
-  approved: boolean
-  published: boolean
-  totalRating?: number
-  numberOfRatings?: number
+  id: number;
+  businessName: string;
+  location: string;
+  bio: string;
+  websiteUrl: string[];
+  profilePictureUrl: string;
+  email: string;
+  phoneNumber: string;
+  addressId: number;
+  approved: boolean;
+  published: boolean;
+  totalRating?: number;
+  numberOfRatings?: number;
 }
 
 interface VendorsResponse {
-  vendors: Vendor[]
+  vendors: Vendor[];
   pagination: {
-    page: number
-    size: number
-    total: number
-    pages: number
-  }
+    page: number;
+    size: number;
+    total: number;
+    pages: number;
+  };
 }
 
 export default function VendorsPage() {
-  const [vendors, setVendors] = useState<Vendor[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [locationFilter, setLocationFilter] = useState("all")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [totalVendors, setTotalVendors] = useState(0)
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [locationFilter, setLocationFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalVendors, setTotalVendors] = useState(0);
 
-  const pageSize = 12
+  const pageSize = 12;
 
   useEffect(() => {
-    fetchVendors()
-  }, [currentPage, searchQuery, locationFilter])
+    fetchVendors();
+  }, [currentPage, searchQuery, locationFilter]);
 
   const fetchVendors = async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       const params = new URLSearchParams({
         pgNo: currentPage.toString(),
         pgSize: pageSize.toString(),
-      })
+      });
 
       if (searchQuery && searchQuery.trim()) {
-        params.append('search', searchQuery.trim())
+        params.append("search", searchQuery.trim());
       }
 
-      if (locationFilter && locationFilter !== 'all') {
-        params.append('location', locationFilter)
+      if (locationFilter && locationFilter !== "all") {
+        params.append("location", locationFilter);
       }
 
-      console.log('Frontend: Fetching vendors with params:', Object.fromEntries(params))
-      const response = await fetch(`/api/vendors?${params.toString()}`)
-      console.log('Frontend: API response status:', response.status)
+      console.log(
+        "Frontend: Fetching vendors with params:",
+        Object.fromEntries(params),
+      );
+      const response = await fetch(`/api/vendors?${params.toString()}`);
+      console.log("Frontend: API response status:", response.status);
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch vendors: ${response.status} ${response.statusText}`)
+        throw new Error(
+          `Failed to fetch vendors: ${response.status} ${response.statusText}`,
+        );
       }
 
-      const data: VendorsResponse = await response.json()
-      console.log('Frontend: API Response:', data)
-      console.log('Frontend: Vendors array:', data.vendors)
-      console.log('Frontend: Number of vendors:', data.vendors?.length || 0)
+      const data: VendorsResponse = await response.json();
+      console.log("Frontend: API Response:", data);
+      console.log("Frontend: Vendors array:", data.vendors);
+      console.log("Frontend: Number of vendors:", data.vendors?.length || 0);
 
       // Ensure vendors is always an array
-      const vendorsArray = Array.isArray(data.vendors) ? data.vendors : []
-      setVendors(vendorsArray)
-      setTotalPages(data.pagination?.pages || 1)
-      setTotalVendors(data.pagination?.total || 0)
+      const vendorsArray = Array.isArray(data.vendors) ? data.vendors : [];
+      setVendors(vendorsArray);
+      setTotalPages(data.pagination?.pages || 1);
+      setTotalVendors(data.pagination?.total || 0);
     } catch (err) {
-      console.error('Frontend: Error fetching vendors:', err)
-      setError(err instanceof Error ? err.message : 'An error occurred')
-      setVendors([])
-      setTotalPages(1)
-      setTotalVendors(0)
+      console.error("Frontend: Error fetching vendors:", err);
+      setError(err instanceof Error ? err.message : "An error occurred");
+      setVendors([]);
+      setTotalPages(1);
+      setTotalVendors(0);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    setCurrentPage(1) // Reset to first page when searching
-    fetchVendors()
-  }
+    e.preventDefault();
+    setCurrentPage(1); // Reset to first page when searching
+    fetchVendors();
+  };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-  }
+    setCurrentPage(page);
+  };
 
   const getInitials = (name: string) => {
     return name
-      .split(' ')
-      .map(word => word.charAt(0))
-      .join('')
+      .split(" ")
+      .map((word) => word.charAt(0))
+      .join("")
       .toUpperCase()
-      .slice(0, 2)
-  }
+      .slice(0, 2);
+  };
 
   if (loading && vendors.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner />
       </div>
-    )
+    );
   }
 
   return (
@@ -139,8 +160,9 @@ export default function VendorsPage() {
               Discover Amazing Vendors
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Find the perfect vendors for your special events. From photographers to caterers,
-              discover trusted professionals in your area.
+              Find the perfect vendors for your special events. From
+              photographers to caterers, discover trusted professionals in your
+              area.
             </p>
           </div>
         </div>
@@ -148,14 +170,14 @@ export default function VendorsPage() {
 
       <div className="container mx-auto px-4 py-8">
         {/* Debug Info - Remove this after debugging */}
-        {process.env.NODE_ENV === 'development' && (
+        {process.env.NODE_ENV === "development" && (
           <div className="mb-4 p-4 bg-muted rounded-lg">
             <h3 className="font-semibold mb-2">Debug Info:</h3>
             <p>Vendors count: {vendors.length}</p>
             <p>Total from API: {totalVendors}</p>
             <p>Current page: {currentPage}</p>
-            <p>Loading: {loading ? 'true' : 'false'}</p>
-            <p>Error: {error || 'none'}</p>
+            <p>Loading: {loading ? "true" : "false"}</p>
+            <p>Error: {error || "none"}</p>
             <details className="mt-2">
               <summary className="cursor-pointer">Raw vendor data</summary>
               <pre className="text-xs mt-2 overflow-auto max-h-40">
@@ -183,15 +205,15 @@ export default function VendorsPage() {
             <Select value={locationFilter} onValueChange={setLocationFilter}>
               <SelectTrigger className="w-full md:w-48 h-12">
                 <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Filter by location"/>
+                <SelectValue placeholder="Filter by location" />
               </SelectTrigger>
               <SelectContent>
-                    <SelectItem value="all">All Locations</SelectItem>
-                    <SelectItem value="New York">New York</SelectItem>
-                    <SelectItem value="Los Angeles">Los Angeles</SelectItem>
-                    <SelectItem value="Chicago">Chicago</SelectItem>
-                    <SelectItem value="Houston">Houston</SelectItem>
-                    <SelectItem value="Phoenix">Phoenix</SelectItem>
+                <SelectItem value="all">All Locations</SelectItem>
+                <SelectItem value="New York">New York</SelectItem>
+                <SelectItem value="Los Angeles">Los Angeles</SelectItem>
+                <SelectItem value="Chicago">Chicago</SelectItem>
+                <SelectItem value="Houston">Houston</SelectItem>
+                <SelectItem value="Phoenix">Phoenix</SelectItem>
               </SelectContent>
             </Select>
 
@@ -203,11 +225,9 @@ export default function VendorsPage() {
           {/* Results count */}
           <div className="flex items-center justify-between">
             <p className="text-muted-foreground">
-              {totalVendors > 0 ? (
-                `Showing ${((currentPage - 1) * pageSize) + 1}-${Math.min(currentPage * pageSize, totalVendors)} of ${totalVendors} vendors`
-              ) : (
-                'No vendors found'
-              )}
+              {totalVendors > 0
+                ? `Showing ${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, totalVendors)} of ${totalVendors} vendors`
+                : "No vendors found"}
             </p>
           </div>
         </div>
@@ -216,13 +236,11 @@ export default function VendorsPage() {
         {error && (
           <div className="text-center py-12">
             <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 max-w-md mx-auto">
-              <p className="text-destructive font-medium mb-2">Error loading vendors</p>
+              <p className="text-destructive font-medium mb-2">
+                Error loading vendors
+              </p>
               <p className="text-sm text-muted-foreground">{error}</p>
-              <Button
-                onClick={fetchVendors}
-                variant="outline"
-                className="mt-4"
-              >
+              <Button onClick={fetchVendors} variant="outline" className="mt-4">
                 Try Again
               </Button>
             </div>
@@ -235,21 +253,35 @@ export default function VendorsPage() {
             {vendors.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                 {vendors.map((vendor) => (
-                  <Card key={vendor?.id || Math.random()} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  <Card
+                    key={vendor?.id || Math.random()}
+                    className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                  >
                     <CardHeader className="pb-4">
                       <div className="flex items-start space-x-4">
                         <Avatar className="h-16 w-16">
                           <AvatarImage
-                            src={vendor?.profilePictureUrl || "/placeholder-user.jpg"}
-                            alt={vendor?.businessName || vendor?.email || "Vendor"}
+                            src={
+                              vendor?.profilePictureUrl ||
+                              "/placeholder-user.jpg"
+                            }
+                            alt={
+                              vendor?.businessName || vendor?.email || "Vendor"
+                            }
                           />
                           <AvatarFallback className="text-lg">
-                            {getInitials(vendor?.businessName || vendor?.email || "Unknown Vendor")}
+                            {getInitials(
+                              vendor?.businessName ||
+                                vendor?.email ||
+                                "Unknown Vendor",
+                            )}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
                           <CardTitle className="text-lg group-hover:text-primary transition-colors line-clamp-2">
-                            {vendor?.businessName || vendor?.email || "Unnamed Vendor"}
+                            {vendor?.businessName ||
+                              vendor?.email ||
+                              "Unnamed Vendor"}
                           </CardTitle>
                           <div className="flex items-center text-sm text-muted-foreground mt-1">
                             <MapPin className="h-3 w-3 mr-1" />
@@ -267,19 +299,25 @@ export default function VendorsPage() {
                       )}
 
                       <div className="space-y-2 mb-4">
-                        {vendor?.websiteUrl && Array.isArray(vendor.websiteUrl) && vendor.websiteUrl.length > 0 && vendor.websiteUrl[0] && (
-                          <div className="flex items-center text-sm text-muted-foreground">
-                            <Globe className="h-3 w-3 mr-2" />
-                            <a
-                              href={vendor.websiteUrl[0]}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="hover:text-primary transition-colors truncate"
-                            >
-                              {vendor.websiteUrl[0].replace(/^https?:\/\//, '')}
-                            </a>
-                          </div>
-                        )}
+                        {vendor?.websiteUrl &&
+                          Array.isArray(vendor.websiteUrl) &&
+                          vendor.websiteUrl.length > 0 &&
+                          vendor.websiteUrl[0] && (
+                            <div className="flex items-center text-sm text-muted-foreground">
+                              <Globe className="h-3 w-3 mr-2" />
+                              <a
+                                href={vendor.websiteUrl[0]}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-primary transition-colors truncate"
+                              >
+                                {vendor.websiteUrl[0].replace(
+                                  /^https?:\/\//,
+                                  "",
+                                )}
+                              </a>
+                            </div>
+                          )}
 
                         {vendor?.phoneNumber && vendor.phoneNumber.trim() && (
                           <div className="flex items-center text-sm text-muted-foreground">
@@ -297,25 +335,38 @@ export default function VendorsPage() {
                       </div>
 
                       <div className="flex items-center justify-between">
-                        {(vendor?.totalRating !== undefined && vendor?.numberOfRatings !== undefined) ? (
+                        {vendor?.totalRating !== undefined &&
+                        vendor?.numberOfRatings !== undefined ? (
                           <div className="flex items-center gap-2">
-                            <StarRating rating={vendor.totalRating || 0} readonly size="sm" />
-                            <span className="text-xs text-muted-foreground">({vendor.numberOfRatings} reviews)</span>
+                            <StarRating
+                              rating={vendor.totalRating || 0}
+                              readonly
+                              size="sm"
+                            />
+                            <span className="text-xs text-muted-foreground">
+                              ({vendor.numberOfRatings} reviews)
+                            </span>
                           </div>
                         ) : (
                           <div className="flex items-center gap-2">
                             <StarRating rating={0} readonly size="sm" />
-                            <span className="text-xs text-muted-foreground">(No reviews yet)</span>
+                            <span className="text-xs text-muted-foreground">
+                              (No reviews yet)
+                            </span>
                           </div>
                         )}
 
-                        <Badge variant={(vendor?.approved === true) ? "default" : "secondary"}>
-                          {(vendor?.approved === true) ? "Verified" : "Pending"}
+                        <Badge
+                          variant={
+                            vendor?.approved === true ? "default" : "secondary"
+                          }
+                        >
+                          {vendor?.approved === true ? "Verified" : "Pending"}
                         </Badge>
                       </div>
 
                       <Button asChild className="w-full mt-4">
-                        <Link href={`/vendors/${vendor?.id || ''}`}>
+                        <Link href={`/vendors/${vendor?.id || ""}`}>
                           View Profile
                         </Link>
                       </Button>
@@ -330,28 +381,37 @@ export default function VendorsPage() {
                     <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                       <Search className="h-8 w-8 text-muted-foreground" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">No vendors found</h3>
+                    <h3 className="text-lg font-semibold mb-2">
+                      No vendors found
+                    </h3>
                     <p className="text-muted-foreground mb-4">
-                      Try adjusting your search criteria or browse all available vendors.
+                      Try adjusting your search criteria or browse all available
+                      vendors.
                     </p>
-                    <Button onClick={() => {
-                      setSearchQuery("")
-                      setLocationFilter("all")
-                      setCurrentPage(1)
-                    }}>
+                    <Button
+                      onClick={() => {
+                        setSearchQuery("");
+                        setLocationFilter("all");
+                        setCurrentPage(1);
+                      }}
+                    >
                       Clear Filters
                     </Button>
                     <Button
                       variant="outline"
                       onClick={async () => {
                         try {
-                          const response = await fetch('/api/vendors?showAll=true')
-                          const data = await response.json()
-                          console.log('Show all API call result:', data)
-                          alert(`Show all API call: ${data.vendors?.length || 0} vendors found`)
+                          const response = await fetch(
+                            "/api/vendors?showAll=true",
+                          );
+                          const data = await response.json();
+                          console.log("Show all API call result:", data);
+                          alert(
+                            `Show all API call: ${data.vendors?.length || 0} vendors found`,
+                          );
                         } catch (err) {
-                          console.error('Show all API call failed:', err)
-                          alert('Show all API call failed')
+                          console.error("Show all API call failed:", err);
+                          alert("Show all API call failed");
                         }
                       }}
                     >
@@ -369,13 +429,21 @@ export default function VendorsPage() {
                   <PaginationContent>
                     <PaginationItem>
                       <PaginationPrevious
-                        onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-                        className={currentPage <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        onClick={() =>
+                          currentPage > 1 && handlePageChange(currentPage - 1)
+                        }
+                        className={
+                          currentPage <= 1
+                            ? "pointer-events-none opacity-50"
+                            : "cursor-pointer"
+                        }
                       />
                     </PaginationItem>
 
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      const pageNumber = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i
+                      const pageNumber =
+                        Math.max(1, Math.min(totalPages - 4, currentPage - 2)) +
+                        i;
                       return (
                         <PaginationItem key={pageNumber}>
                           <PaginationLink
@@ -386,7 +454,7 @@ export default function VendorsPage() {
                             {pageNumber}
                           </PaginationLink>
                         </PaginationItem>
-                      )
+                      );
                     })}
 
                     {totalPages > 5 && currentPage < totalPages - 2 && (
@@ -397,8 +465,15 @@ export default function VendorsPage() {
 
                     <PaginationItem>
                       <PaginationNext
-                        onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
-                        className={currentPage >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        onClick={() =>
+                          currentPage < totalPages &&
+                          handlePageChange(currentPage + 1)
+                        }
+                        className={
+                          currentPage >= totalPages
+                            ? "pointer-events-none opacity-50"
+                            : "cursor-pointer"
+                        }
                       />
                     </PaginationItem>
                   </PaginationContent>
@@ -409,5 +484,5 @@ export default function VendorsPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

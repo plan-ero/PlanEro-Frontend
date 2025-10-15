@@ -1,91 +1,97 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState } from "react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { 
-  Building2, 
-  Users, 
-  Eye, 
-  Settings, 
-  Plus, 
-  CheckCircle, 
-  XCircle, 
+import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  Building2,
+  Users,
+  Eye,
+  Settings,
+  Plus,
+  CheckCircle,
+  XCircle,
   AlertCircle,
   TrendingUp,
-  Calendar
-} from "lucide-react"
-import Link from "next/link"
-import { LoadingSpinner } from "@/components/loading-spinner"
+  Calendar,
+} from "lucide-react";
+import Link from "next/link";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
 interface VendorStats {
-  totalViews: number
-  totalInquiries: number
-  servicesCount: number
-  profileCompleteness: number
-  isApproved: boolean
-  isPublished: boolean
+  totalViews: number;
+  totalInquiries: number;
+  servicesCount: number;
+  profileCompleteness: number;
+  isApproved: boolean;
+  isPublished: boolean;
 }
 
 interface Vendor {
-  id: number
-  businessName: string
-  location: string
-  bio: string
-  websiteUrl: string[]
-  profilePictureUrl: string
-  email: string
-  phoneNumber: string
-  addressId: number
-  approved: boolean
-  published: boolean
+  id: number;
+  businessName: string;
+  location: string;
+  bio: string;
+  websiteUrl: string[];
+  profilePictureUrl: string;
+  email: string;
+  phoneNumber: string;
+  addressId: number;
+  approved: boolean;
+  published: boolean;
 }
 
 export default function VendorDashboard() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const [vendor, setVendor] = useState<Vendor | null>(null)
-  const [stats, setStats] = useState<VendorStats | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [vendor, setVendor] = useState<Vendor | null>(null);
+  const [stats, setStats] = useState<VendorStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Redirect if not authenticated
   useEffect(() => {
-    if (status === "loading") return
-    
+    if (status === "loading") return;
+
     if (!session) {
-      router.push("/auth/signin?callbackUrl=/vendor/dashboard")
-      return
+      router.push("/auth/signin?callbackUrl=/vendor/dashboard");
+      return;
     }
-    
-    fetchVendorData()
-  }, [session, status, router])
+
+    fetchVendorData();
+  }, [session, status, router]);
 
   const fetchVendorData = async () => {
     try {
-      setLoading(true)
-      setError(null)
-      
+      setLoading(true);
+      setError(null);
+
       // Fetch vendor profile from API
-      const response = await fetch('/api/vendors/profile')
-      
+      const response = await fetch("/api/vendors/profile");
+
       if (response.status === 404) {
         // Vendor profile not found, redirect to onboarding
-        router.push("/vendor/onboarding")
-        return
+        router.push("/vendor/onboarding");
+        return;
       }
-      
+
       if (!response.ok) {
-        throw new Error(`Failed to fetch vendor data: ${response.statusText}`)
+        throw new Error(`Failed to fetch vendor data: ${response.statusText}`);
       }
-      
-      const vendorData = await response.json()
-      setVendor(vendorData)
-      
+
+      const vendorData = await response.json();
+      setVendor(vendorData);
+
       // Generate stats
       setStats({
         totalViews: Math.floor(Math.random() * 1000) + 100,
@@ -93,43 +99,44 @@ export default function VendorDashboard() {
         servicesCount: 0,
         profileCompleteness: calculateProfileCompleteness(vendorData),
         isApproved: vendorData.approved,
-        isPublished: vendorData.published
-      })
-      
+        isPublished: vendorData.published,
+      });
     } catch (err) {
-      console.error("Error fetching vendor data:", err)
-      setError(err instanceof Error ? err.message : "Failed to load vendor data")
+      console.error("Error fetching vendor data:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to load vendor data",
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const calculateProfileCompleteness = (vendor: Vendor): number => {
-    let completeness = 0
+    let completeness = 0;
     const fields = [
       vendor.businessName,
       vendor.location,
       vendor.bio,
       vendor.email,
       vendor.phoneNumber,
-      vendor.profilePictureUrl
-    ]
-    
-    fields.forEach(field => {
-      if (field && field.trim() !== '') {
-        completeness += 16.67 // 100/6 fields
+      vendor.profilePictureUrl,
+    ];
+
+    fields.forEach((field) => {
+      if (field && field.trim() !== "") {
+        completeness += 16.67; // 100/6 fields
       }
-    })
-    
-    return Math.round(completeness)
-  }
+    });
+
+    return Math.round(completeness);
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <LoadingSpinner />
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -142,9 +149,9 @@ export default function VendorDashboard() {
               <span className="font-medium">Error</span>
             </div>
             <p className="mt-2 text-sm text-muted-foreground">{error}</p>
-            <Button 
-              onClick={fetchVendorData} 
-              variant="outline" 
+            <Button
+              onClick={fetchVendorData}
+              variant="outline"
               className="mt-4"
             >
               Try Again
@@ -152,7 +159,7 @@ export default function VendorDashboard() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   if (!vendor || !stats) {
@@ -162,9 +169,12 @@ export default function VendorDashboard() {
           <CardContent className="p-6">
             <div className="text-center">
               <Building2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-medium mb-2">Complete Your Vendor Profile</h3>
+              <h3 className="text-lg font-medium mb-2">
+                Complete Your Vendor Profile
+              </h3>
               <p className="text-muted-foreground mb-4">
-                Start by setting up your vendor profile to showcase your services.
+                Start by setting up your vendor profile to showcase your
+                services.
               </p>
               <Button asChild>
                 <Link href="/vendor/onboarding">
@@ -176,7 +186,7 @@ export default function VendorDashboard() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -192,7 +202,7 @@ export default function VendorDashboard() {
           </p>
         </div>
         <div className="flex items-center space-x-3">
-          <Badge 
+          <Badge
             variant={stats.isApproved ? "default" : "secondary"}
             className="text-sm px-3 py-1 rounded-full"
           >
@@ -255,9 +265,7 @@ export default function VendorDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.servicesCount}</div>
-            <p className="text-xs text-muted-foreground">
-              Active services
-            </p>
+            <p className="text-xs text-muted-foreground">Active services</p>
           </CardContent>
         </Card>
 
@@ -269,10 +277,10 @@ export default function VendorDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{stats.profileCompleteness}%</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Completeness
-            </p>
+            <div className="text-3xl font-bold">
+              {stats.profileCompleteness}%
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Completeness</p>
           </CardContent>
         </Card>
       </div>
@@ -294,14 +302,17 @@ export default function VendorDashboard() {
               <div>
                 <div className="flex justify-between text-sm mb-2">
                   <span>Profile Completion</span>
-                  <span className="font-medium">{stats.profileCompleteness}%</span>
+                  <span className="font-medium">
+                    {stats.profileCompleteness}%
+                  </span>
                 </div>
-                <Progress value={stats.profileCompleteness} className="h-2 bg-primary/20" />
+                <Progress
+                  value={stats.profileCompleteness}
+                  className="h-2 bg-primary/20"
+                />
               </div>
               <Button asChild className="bg-primary hover:bg-primary/90">
-                <Link href="/vendor/profile">
-                  Complete Profile
-                </Link>
+                <Link href="/vendor/profile">Complete Profile</Link>
               </Button>
             </div>
           </CardContent>
@@ -327,14 +338,12 @@ export default function VendorDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <Button 
-              asChild 
-              variant="outline" 
+            <Button
+              asChild
+              variant="outline"
               className="w-full border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-all group-hover:border-primary"
             >
-              <Link href="/vendor/profile">
-                Edit Profile
-              </Link>
+              <Link href="/vendor/profile">Edit Profile</Link>
             </Button>
           </CardContent>
         </Card>
@@ -355,14 +364,12 @@ export default function VendorDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <Button 
-              asChild 
-              variant="outline" 
+            <Button
+              asChild
+              variant="outline"
               className="w-full border-secondary/20 text-secondary hover:bg-secondary hover:text-secondary-foreground transition-all group-hover:border-secondary"
             >
-              <Link href="/vendor/services">
-                Manage Services
-              </Link>
+              <Link href="/vendor/services">Manage Services</Link>
             </Button>
           </CardContent>
         </Card>
@@ -383,14 +390,12 @@ export default function VendorDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <Button 
-              asChild 
-              variant="outline" 
+            <Button
+              asChild
+              variant="outline"
               className="w-full border-blue-500/20 text-blue-500 hover:bg-blue-500 hover:text-white transition-all group-hover:border-blue-500"
             >
-              <Link href="/vendor/analytics">
-                View Analytics
-              </Link>
+              <Link href="/vendor/analytics">View Analytics</Link>
             </Button>
           </CardContent>
         </Card>
@@ -409,7 +414,8 @@ export default function VendorDashboard() {
                   Profile Under Review
                 </p>
                 <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                  Your vendor profile is being reviewed by our team. You'll be notified once it's approved.
+                  Your vendor profile is being reviewed by our team. You'll be
+                  notified once it's approved.
                 </p>
               </div>
             </div>
@@ -428,17 +434,16 @@ export default function VendorDashboard() {
                     Ready to Publish
                   </p>
                   <p className="text-sm text-blue-700 dark:text-blue-300">
-                    Your profile is approved! Publish it to start receiving customer inquiries.
+                    Your profile is approved! Publish it to start receiving
+                    customer inquiries.
                   </p>
                 </div>
               </div>
-              <Button size="sm">
-                Publish Profile
-              </Button>
+              <Button size="sm">Publish Profile</Button>
             </div>
           </CardContent>
         </Card>
       )}
     </div>
-  )
+  );
 }

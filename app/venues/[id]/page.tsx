@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useParams } from "next/navigation"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Calendar } from "@/components/ui/calendar"
+import { useState } from "react";
+import { useParams } from "next/navigation";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Heart,
   ShoppingCart,
@@ -22,12 +22,12 @@ import {
   Share2,
   ChevronLeft,
   ChevronRight,
-} from "lucide-react"
-import { useCart } from "@/hooks/use-cart"
-import { useFavorites } from "@/hooks/use-favorites"
-import { useAuth } from "@/hooks/use-auth"
-import toast from "react-hot-toast"
-import Link from "next/link"
+} from "lucide-react";
+import { useCart } from "@/hooks/use-cart";
+import { useFavorites } from "@/hooks/use-favorites";
+import { useAuth } from "@/hooks/use-auth";
+import toast from "react-hot-toast";
+import Link from "next/link";
 
 // Mock venue data - replace with actual API call
 const getVenueById = (id: string) => {
@@ -143,33 +143,37 @@ const getVenueById = (id: string) => {
         website: "www.modernrooftop.com",
       },
     },
-  }
+  };
 
-  return venues[id as keyof typeof venues] || null
-}
+  return venues[id as keyof typeof venues] || null;
+};
 
 export default function VenueDetailPage() {
-  const params = useParams()
-  const venue = getVenueById(params.id as string)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
+  const params = useParams();
+  const venue = getVenueById(params.id as string);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    new Date(),
+  );
 
-  const { addItem } = useCart()
-  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites()
-  const { user } = useAuth()
+  const { addItem } = useCart();
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+  const { user } = useAuth();
 
   if (!venue) {
     return (
-        <main className="container mx-auto px-4 py-16">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold mb-4">Venue Not Found</h1>
-            <p className="text-muted-foreground mb-8">The venue you're looking for doesn't exist.</p>
-            <Button asChild>
-              <Link href="/venues">Browse All Venues</Link>
-            </Button>
-          </div>
-        </main>
-    )
+      <main className="container mx-auto px-4 py-16">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold mb-4">Venue Not Found</h1>
+          <p className="text-muted-foreground mb-8">
+            The venue you're looking for doesn't exist.
+          </p>
+          <Button asChild>
+            <Link href="/venues">Browse All Venues</Link>
+          </Button>
+        </div>
+      </main>
+    );
   }
 
   const handleAddToCart = () => {
@@ -180,19 +184,19 @@ export default function VenueDetailPage() {
       image: venue.images[0],
       type: "venue",
       quantity: 1,
-    })
-    toast.success("Added to cart!")
-  }
+    });
+    toast.success("Added to cart!");
+  };
 
   const handleToggleFavorite = () => {
     if (!user) {
-      toast.error("Please log in to add favorites")
-      return
+      toast.error("Please log in to add favorites");
+      return;
     }
 
     if (isFavorite(venue.id)) {
-      removeFromFavorites(venue.id)
-      toast.success("Removed from favorites")
+      removeFromFavorites(venue.id);
+      toast.success("Removed from favorites");
     } else {
       addToFavorites({
         id: venue.id,
@@ -200,233 +204,263 @@ export default function VenueDetailPage() {
         price: venue.price,
         image: venue.images[0],
         type: "venue",
-      })
-      toast.success("Added to favorites!")
+      });
+      toast.success("Added to favorites!");
     }
-  }
+  };
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % venue.images.length)
-  }
+    setCurrentImageIndex((prev) => (prev + 1) % venue.images.length);
+  };
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + venue.images.length) % venue.images.length)
-  }
+    setCurrentImageIndex(
+      (prev) => (prev - 1 + venue.images.length) % venue.images.length,
+    );
+  };
 
   return (
-      <main className="container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
-        <nav className="mb-6">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <Link href="/" className="hover:text-primary">
-              Home
-            </Link>
-            <span>/</span>
-            <Link href="/venues" className="hover:text-primary">
-              Venues
-            </Link>
-            <span>/</span>
-            <span className="text-foreground">{venue.name}</span>
-          </div>
-        </nav>
+    <main className="container mx-auto px-4 py-8">
+      {/* Breadcrumb */}
+      <nav className="mb-6">
+        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+          <Link href="/" className="hover:text-primary">
+            Home
+          </Link>
+          <span>/</span>
+          <Link href="/venues" className="hover:text-primary">
+            Venues
+          </Link>
+          <span>/</span>
+          <span className="text-foreground">{venue.name}</span>
+        </div>
+      </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Images and Details */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Image Gallery */}
-            <div className="relative">
-              <div className="aspect-video relative overflow-hidden rounded-lg">
-                <img
-                  src={venue.images[currentImageIndex] || "/placeholder.svg"}
-                  alt={venue.name}
-                  className="w-full h-full object-cover"
-                />
-                {venue.images.length > 1 && (
-                  <>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
-                      onClick={prevImage}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
-                      onClick={nextImage}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </>
-                )}
-              </div>
-
-              {/* Thumbnail Navigation */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column - Images and Details */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Image Gallery */}
+          <div className="relative">
+            <div className="aspect-video relative overflow-hidden rounded-lg">
+              <img
+                src={venue.images[currentImageIndex] || "/placeholder.svg"}
+                alt={venue.name}
+                className="w-full h-full object-cover"
+              />
               {venue.images.length > 1 && (
-                <div className="flex space-x-2 mt-4 overflow-x-auto">
-                  {venue.images.map((image, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentImageIndex(index)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${
-                        index === currentImageIndex ? "border-primary" : "border-transparent"
-                      }`}
-                    >
-                      <img
-                        src={image || "/placeholder.svg"}
-                        alt={`${venue.name} ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  ))}
-                </div>
+                <>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
+                    onClick={prevImage}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white"
+                    onClick={nextImage}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </>
               )}
             </div>
 
-            {/* Venue Details */}
-            <div>
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <Badge variant="secondary" className="mb-2">
-                    {venue.category}
-                  </Badge>
-                  <h1 className="text-3xl font-bold mb-2">{venue.name}</h1>
-                  <div className="flex items-center text-muted-foreground mb-2">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {venue.address}
+            {/* Thumbnail Navigation */}
+            {venue.images.length > 1 && (
+              <div className="flex space-x-2 mt-4 overflow-x-auto">
+                {venue.images.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${
+                      index === currentImageIndex
+                        ? "border-primary"
+                        : "border-transparent"
+                    }`}
+                  >
+                    <img
+                      src={image || "/placeholder.svg"}
+                      alt={`${venue.name} ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Venue Details */}
+          <div>
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <Badge variant="secondary" className="mb-2">
+                  {venue.category}
+                </Badge>
+                <h1 className="text-3xl font-bold mb-2">{venue.name}</h1>
+                <div className="flex items-center text-muted-foreground mb-2">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  {venue.address}
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center">
+                    <Star className="h-4 w-4 fill-current text-yellow-500 mr-1" />
+                    <span className="font-medium">{venue.rating}</span>
+                    <span className="text-muted-foreground ml-1">
+                      ({venue.reviews} reviews)
+                    </span>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center">
-                      <Star className="h-4 w-4 fill-current text-yellow-500 mr-1" />
-                      <span className="font-medium">{venue.rating}</span>
-                      <span className="text-muted-foreground ml-1">({venue.reviews} reviews)</span>
-                    </div>
-                    <div className="flex items-center text-muted-foreground">
-                      <Users className="h-4 w-4 mr-1" />
-                      Up to {venue.capacity} guests
-                    </div>
+                  <div className="flex items-center text-muted-foreground">
+                    <Users className="h-4 w-4 mr-1" />
+                    Up to {venue.capacity} guests
                   </div>
                 </div>
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="icon" onClick={handleToggleFavorite}>
-                    <Heart className={`h-4 w-4 ${isFavorite(venue.id) ? "fill-current text-red-500" : ""}`} />
-                  </Button>
-                  <Button variant="outline" size="icon">
-                    <Share2 className="h-4 w-4" />
-                  </Button>
+              </div>
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleToggleFavorite}
+                >
+                  <Heart
+                    className={`h-4 w-4 ${isFavorite(venue.id) ? "fill-current text-red-500" : ""}`}
+                  />
+                </Button>
+                <Button variant="outline" size="icon">
+                  <Share2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <p className="text-muted-foreground mb-6">
+              {venue.longDescription}
+            </p>
+
+            {/* Tabs for Additional Information */}
+            <Tabs defaultValue="amenities" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="amenities">Amenities</TabsTrigger>
+                <TabsTrigger value="features">Features</TabsTrigger>
+                <TabsTrigger value="policies">Policies</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="amenities" className="mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {venue.amenities.map((amenity, index) => {
+                    const IconComponent = amenity.icon;
+                    return (
+                      <div
+                        key={index}
+                        className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg"
+                      >
+                        <IconComponent className="h-5 w-5 text-primary" />
+                        <span>{amenity.name}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="features" className="mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {venue.features.map((feature, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-primary rounded-full" />
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="policies" className="mt-6">
+                <div className="space-y-3">
+                  {venue.policies.map((policy, index) => (
+                    <div key={index} className="flex items-start space-x-2">
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2" />
+                      <span className="text-sm">{policy}</span>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+
+        {/* Right Column - Booking Card */}
+        <div className="lg:col-span-1">
+          <Card className="sticky top-24">
+            <CardContent className="p-6">
+              <div className="mb-6">
+                <div className="text-3xl font-bold mb-2">
+                  ${venue.price.toLocaleString()}
+                  <span className="text-lg font-normal text-muted-foreground ml-2">
+                    / event
+                  </span>
                 </div>
               </div>
 
-              <p className="text-muted-foreground mb-6">{venue.longDescription}</p>
+              {/* Date Selection */}
+              <div className="mb-6">
+                <h3 className="font-semibold mb-3">Select Date</h3>
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  className="rounded-md border"
+                  disabled={(date) => {
+                    const dateStr = date.toISOString().split("T")[0];
+                    return venue.availability[dateStr] === false;
+                  }}
+                />
+              </div>
 
-              {/* Tabs for Additional Information */}
-              <Tabs defaultValue="amenities" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="amenities">Amenities</TabsTrigger>
-                  <TabsTrigger value="features">Features</TabsTrigger>
-                  <TabsTrigger value="policies">Policies</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="amenities" className="mt-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {venue.amenities.map((amenity, index) => {
-                      const IconComponent = amenity.icon
-                      return (
-                        <div key={index} className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
-                          <IconComponent className="h-5 w-5 text-primary" />
-                          <span>{amenity.name}</span>
-                        </div>
-                      )
-                    })}
+              {/* Contact Information */}
+              <div className="mb-6 p-4 bg-muted/50 rounded-lg">
+                <h3 className="font-semibold mb-3">Contact Information</h3>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="font-medium">Phone:</span>{" "}
+                    {venue.contact.phone}
                   </div>
-                </TabsContent>
-
-                <TabsContent value="features" className="mt-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {venue.features.map((feature, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-primary rounded-full" />
-                        <span>{feature}</span>
-                      </div>
-                    ))}
+                  <div>
+                    <span className="font-medium">Email:</span>{" "}
+                    {venue.contact.email}
                   </div>
-                </TabsContent>
-
-                <TabsContent value="policies" className="mt-6">
-                  <div className="space-y-3">
-                    {venue.policies.map((policy, index) => (
-                      <div key={index} className="flex items-start space-x-2">
-                        <div className="w-2 h-2 bg-muted-foreground rounded-full mt-2" />
-                        <span className="text-sm">{policy}</span>
-                      </div>
-                    ))}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </div>
-          </div>
-
-          {/* Right Column - Booking Card */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-24">
-              <CardContent className="p-6">
-                <div className="mb-6">
-                  <div className="text-3xl font-bold mb-2">
-                    ${venue.price.toLocaleString()}
-                    <span className="text-lg font-normal text-muted-foreground ml-2">/ event</span>
+                  <div>
+                    <span className="font-medium">Website:</span>{" "}
+                    {venue.contact.website}
                   </div>
                 </div>
+              </div>
 
-                {/* Date Selection */}
-                <div className="mb-6">
-                  <h3 className="font-semibold mb-3">Select Date</h3>
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    className="rounded-md border"
-                    disabled={(date) => {
-                      const dateStr = date.toISOString().split("T")[0]
-                      return venue.availability[dateStr] === false
-                    }}
-                  />
-                </div>
-
-                {/* Contact Information */}
-                <div className="mb-6 p-4 bg-muted/50 rounded-lg">
-                  <h3 className="font-semibold mb-3">Contact Information</h3>
-                  <div className="space-y-2 text-sm">
-                    <div>
-                      <span className="font-medium">Phone:</span> {venue.contact.phone}
-                    </div>
-                    <div>
-                      <span className="font-medium">Email:</span> {venue.contact.email}
-                    </div>
-                    <div>
-                      <span className="font-medium">Website:</span> {venue.contact.website}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                  <Button className="w-full" size="lg" onClick={handleAddToCart}>
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Add to Cart
-                  </Button>
-                  <Button variant="outline" className="w-full bg-transparent" size="lg">
-                    Request Quote
-                  </Button>
-                  <Button variant="outline" className="w-full bg-transparent" size="lg">
-                    Schedule Tour
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              {/* Action Buttons */}
+              <div className="space-y-3">
+                <Button className="w-full" size="lg" onClick={handleAddToCart}>
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Add to Cart
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full bg-transparent"
+                  size="lg"
+                >
+                  Request Quote
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full bg-transparent"
+                  size="lg"
+                >
+                  Schedule Tour
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </main>
-  )
+      </div>
+    </main>
+  );
 }

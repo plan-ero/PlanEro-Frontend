@@ -1,11 +1,15 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useEffect } from "react"
-import Lenis from "@studio-freight/lenis"
+import { useEffect } from "react";
+import Lenis from "@studio-freight/lenis";
 
-export function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
+export function SmoothScrollProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -17,19 +21,19 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       smoothTouch: false,
       touchMultiplier: 2,
       infinite: false,
-    })
+    });
 
     function raf(time: number) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
+      lenis.raf(time);
+      requestAnimationFrame(raf);
     }
 
-    requestAnimationFrame(raf)
+    requestAnimationFrame(raf);
 
     return () => {
-      lenis.destroy()
-    }
-  }, [])
+      lenis.destroy();
+    };
+  }, []);
 
-  return <>{children}</>
+  return <>{children}</>;
 }

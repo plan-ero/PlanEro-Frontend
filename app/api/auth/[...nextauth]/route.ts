@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server"
-import NextAuth from "next-auth"
-import Credentials from "next-auth/providers/credentials"
-import { authApi } from "@/lib/api"
+import { NextRequest, NextResponse } from "next/server";
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+import { authApi } from "@/lib/api";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -13,7 +13,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
-          return null
+          return null;
         }
 
         try {
@@ -21,12 +21,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const authResponse = await authApi.login({
             username: credentials.username as string,
             password: credentials.password as string,
-          })
+          });
 
           // Get user profile from the external API
-          const profile = await authApi.getProfile(authResponse.token)
+          const profile = await authApi.getProfile(authResponse.token);
 
-          console.log("Authenticated user profile:", profile)
+          console.log("Authenticated user profile:", profile);
 
           return {
             id: profile.email, // Use email as ID for consistency with backend
@@ -36,10 +36,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             vendor: profile.vendor || null,
             role: profile.role,
             token: authResponse.token,
-          }
+          };
         } catch (error) {
-          console.error("Authentication error:", error)
-          return null
+          console.error("Authentication error:", error);
+          return null;
         }
       },
     }),
@@ -48,22 +48,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       // On sign in, store user info and API token
       if (user) {
-        token.id = user.id
-        token.role = user.role
-        token.apiToken = user.token
-        token.vendor = user.vendor // Store vendor data in token
+        token.id = user.id;
+        token.role = user.role;
+        token.apiToken = user.token;
+        token.vendor = user.vendor; // Store vendor data in token
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.id = token.id as string
-        session.user.role = token.role as string
-        session.user.vendor = token.vendor // Include vendor data in session
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+        session.user.vendor = token.vendor; // Include vendor data in session
         // Store API token in session for API calls
-        ;(session as any).apiToken = token.apiToken
+        (session as any).apiToken = token.apiToken;
       }
-      return session
+      return session;
     },
   },
   pages: {
@@ -74,7 +74,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     maxAge: 24 * 60 * 60, // 24 hours
   },
   secret: process.env.NEXTAUTH_SECRET,
-})
+});
 
-export const GET = handlers.GET
-export const POST = handlers.POST
+export const GET = handlers.GET;
+export const POST = handlers.POST;

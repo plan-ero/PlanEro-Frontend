@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { Star } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Star } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface StarRatingProps {
-  rating: number
-  maxRating?: number
-  size?: "sm" | "md" | "lg"
-  readonly?: boolean
-  onRatingChange?: (rating: number) => void
-  className?: string
+  rating: number;
+  maxRating?: number;
+  size?: "sm" | "md" | "lg";
+  readonly?: boolean;
+  onRatingChange?: (rating: number) => void;
+  className?: string;
 }
 
 export function StarRating({
@@ -24,19 +24,19 @@ export function StarRating({
     sm: "h-4 w-4",
     md: "h-5 w-5",
     lg: "h-6 w-6",
-  }
+  };
 
   const handleStarClick = (starIndex: number) => {
     if (!readonly && onRatingChange) {
-      onRatingChange(starIndex + 1)
+      onRatingChange(starIndex + 1);
     }
-  }
+  };
 
   return (
     <div className={cn("flex items-center gap-1", className)}>
       {Array.from({ length: maxRating }, (_, index) => {
-        const filled = index < Math.floor(rating)
-        const halfFilled = index < rating && index >= Math.floor(rating)
+        const filled = index < Math.floor(rating);
+        const halfFilled = index < rating && index >= Math.floor(rating);
 
         return (
           <button
@@ -47,7 +47,7 @@ export function StarRating({
             className={cn(
               "transition-colors duration-200",
               !readonly && "hover:scale-110 cursor-pointer",
-              readonly && "cursor-default"
+              readonly && "cursor-default",
             )}
           >
             <Star
@@ -55,11 +55,11 @@ export function StarRating({
                 sizeClasses[size],
                 filled && "fill-yellow-400 text-yellow-400",
                 halfFilled && "fill-yellow-200 text-yellow-400",
-                !filled && !halfFilled && "text-gray-300"
+                !filled && !halfFilled && "text-gray-300",
               )}
             />
           </button>
-        )
+        );
       })}
       {rating > 0 && (
         <span className="ml-2 text-sm text-muted-foreground">
@@ -67,5 +67,5 @@ export function StarRating({
         </span>
       )}
     </div>
-  )
+  );
 }

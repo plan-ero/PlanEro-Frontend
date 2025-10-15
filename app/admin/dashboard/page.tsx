@@ -1,24 +1,30 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { motion } from "framer-motion"
-import { 
-  Users, 
-  Building2, 
-  CheckCircle, 
-  XCircle, 
-  Eye, 
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import {
+  Users,
+  Building2,
+  CheckCircle,
+  XCircle,
+  Eye,
   Settings,
   BarChart3,
   Shield,
   UserCheck,
-  UserX
-} from "lucide-react"
-import Link from "next/link"
+  UserX,
+} from "lucide-react";
+import Link from "next/link";
 
 // Mock data - replace with actual API calls
 const dashboardStats = {
@@ -27,8 +33,8 @@ const dashboardStats = {
   pendingVendors: 8,
   approvedVendors: 34,
   totalServices: 89,
-  monthlyRevenue: 45678
-}
+  monthlyRevenue: 45678,
+};
 
 const recentVendors = [
   {
@@ -37,7 +43,7 @@ const recentVendors = [
     ownerName: "Sarah Johnson",
     email: "sarah@elitecatering.com",
     status: "pending",
-    createdAt: "2024-08-10"
+    createdAt: "2024-08-10",
   },
   {
     id: "2",
@@ -45,7 +51,7 @@ const recentVendors = [
     ownerName: "Mike Chen",
     email: "mike@perfectflowers.com",
     status: "pending",
-    createdAt: "2024-08-09"
+    createdAt: "2024-08-09",
   },
   {
     id: "3",
@@ -53,14 +59,14 @@ const recentVendors = [
     ownerName: "David Wilson",
     email: "david@soundlight.com",
     status: "approved",
-    createdAt: "2024-08-08"
-  }
-]
+    createdAt: "2024-08-08",
+  },
+];
 
 export default function AdminDashboard() {
-  const { data: session } = useSession()
-  const [stats, setStats] = useState(dashboardStats)
-  const [vendors, setVendors] = useState(recentVendors)
+  const { data: session } = useSession();
+  const [stats, setStats] = useState(dashboardStats);
+  const [vendors, setVendors] = useState(recentVendors);
 
   return (
     <div className="min-h-screen bg-background/70">
@@ -69,11 +75,18 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
-              <p className="text-secondary">Welcome back, {session?.user?.name || 'Admin'}</p>
+              <h1 className="text-3xl font-bold text-foreground">
+                Admin Dashboard
+              </h1>
+              <p className="text-secondary">
+                Welcome back, {session?.user?.name || "Admin"}
+              </p>
             </div>
             <div className="flex items-center space-x-4">
-              <Badge variant="secondary" className="bg-green-100 text-green-800">
+              <Badge
+                variant="secondary"
+                className="bg-green-100 text-green-800"
+              >
                 <Shield className="h-3 w-3 mr-1" />
                 Admin Access
               </Badge>
@@ -98,12 +111,16 @@ export default function AdminDashboard() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total Users
+                </CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalUsers}</div>
-                <p className="text-xs text-muted-foreground">+12% from last month</p>
+                <p className="text-xs text-muted-foreground">
+                  +12% from last month
+                </p>
               </CardContent>
             </Card>
           </motion.div>
@@ -115,12 +132,16 @@ export default function AdminDashboard() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Vendors</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total Vendors
+                </CardTitle>
                 <Building2 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalVendors}</div>
-                <p className="text-xs text-muted-foreground">+8 new this month</p>
+                <p className="text-xs text-muted-foreground">
+                  +8 new this month
+                </p>
               </CardContent>
             </Card>
           </motion.div>
@@ -132,12 +153,18 @@ export default function AdminDashboard() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Pending Approvals</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Pending Approvals
+                </CardTitle>
                 <XCircle className="h-4 w-4 text-orange-500" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-orange-600">{stats.pendingVendors}</div>
-                <p className="text-xs text-muted-foreground">Requires attention</p>
+                <div className="text-2xl font-bold text-orange-600">
+                  {stats.pendingVendors}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Requires attention
+                </p>
               </CardContent>
             </Card>
           </motion.div>
@@ -149,12 +176,18 @@ export default function AdminDashboard() {
           >
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Monthly Revenue
+                </CardTitle>
                 <BarChart3 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${stats.monthlyRevenue.toLocaleString()}</div>
-                <p className="text-xs text-muted-foreground">+23% from last month</p>
+                <div className="text-2xl font-bold">
+                  ${stats.monthlyRevenue.toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  +23% from last month
+                </p>
               </CardContent>
             </Card>
           </motion.div>
@@ -168,7 +201,9 @@ export default function AdminDashboard() {
                 <UserCheck className="h-5 w-5 mr-2" />
                 Vendor Management
               </CardTitle>
-              <CardDescription>Manage vendor applications and approvals</CardDescription>
+              <CardDescription>
+                Manage vendor applications and approvals
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <Button className="w-full" asChild>
@@ -188,7 +223,9 @@ export default function AdminDashboard() {
                 <Users className="h-5 w-5 mr-2" />
                 User Management
               </CardTitle>
-              <CardDescription>Manage user accounts and permissions</CardDescription>
+              <CardDescription>
+                Manage user accounts and permissions
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <Button className="w-full" asChild>
@@ -206,7 +243,9 @@ export default function AdminDashboard() {
                 <BarChart3 className="h-5 w-5 mr-2" />
                 Analytics
               </CardTitle>
-              <CardDescription>View platform analytics and reports</CardDescription>
+              <CardDescription>
+                View platform analytics and reports
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <Button className="w-full" asChild>
@@ -223,7 +262,9 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Recent Vendor Applications</CardTitle>
-            <CardDescription>Latest vendor registration requests</CardDescription>
+            <CardDescription>
+              Latest vendor registration requests
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -239,17 +280,27 @@ export default function AdminDashboard() {
                     <div className="flex items-center space-x-3">
                       <div>
                         <p className="font-semibold">{vendor.businessName}</p>
-                        <p className="text-sm text-gray-600">{vendor.ownerName} • {vendor.email}</p>
-                        <p className="text-xs text-gray-500">Applied on {vendor.createdAt}</p>
+                        <p className="text-sm text-gray-600">
+                          {vendor.ownerName} • {vendor.email}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Applied on {vendor.createdAt}
+                        </p>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Badge
-                      variant={vendor.status === 'approved' ? 'default' : 'secondary'}
-                      className={vendor.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}
+                      variant={
+                        vendor.status === "approved" ? "default" : "secondary"
+                      }
+                      className={
+                        vendor.status === "approved"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-orange-100 text-orange-800"
+                      }
                     >
-                      {vendor.status === 'approved' ? (
+                      {vendor.status === "approved" ? (
                         <CheckCircle className="h-3 w-3 mr-1" />
                       ) : (
                         <XCircle className="h-3 w-3 mr-1" />
@@ -275,5 +326,5 @@ export default function AdminDashboard() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

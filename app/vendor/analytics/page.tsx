@@ -1,101 +1,116 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { 
-  TrendingUp, 
-  Eye, 
-  Users, 
-  Mail, 
-  Phone, 
+import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  TrendingUp,
+  Eye,
+  Users,
+  Mail,
+  Phone,
   Calendar,
   MapPin,
   Star,
   Clock,
-  DollarSign
-} from "lucide-react"
-import { LoadingSpinner } from "@/components/loading-spinner"
+  DollarSign,
+} from "lucide-react";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
 interface Analytics {
   profileViews: {
-    total: number
-    thisMonth: number
-    lastMonth: number
-    trend: "up" | "down" | "neutral"
-  }
+    total: number;
+    thisMonth: number;
+    lastMonth: number;
+    trend: "up" | "down" | "neutral";
+  };
   inquiries: {
-    total: number
-    thisMonth: number
-    lastMonth: number
-    trend: "up" | "down" | "neutral"
-  }
+    total: number;
+    thisMonth: number;
+    lastMonth: number;
+    trend: "up" | "down" | "neutral";
+  };
   topServices: Array<{
-    serviceName: string
-    views: number
-    inquiries: number
-  }>
+    serviceName: string;
+    views: number;
+    inquiries: number;
+  }>;
   viewsByLocation: Array<{
-    location: string
-    views: number
-    percentage: number
-  }>
+    location: string;
+    views: number;
+    percentage: number;
+  }>;
   monthlyData: Array<{
-    month: string
-    views: number
-    inquiries: number
-  }>
-  averageRating: number
-  responseTime: string
-  conversionRate: number
+    month: string;
+    views: number;
+    inquiries: number;
+  }>;
+  averageRating: number;
+  responseTime: string;
+  conversionRate: number;
 }
 
 interface RecentActivity {
-  id: number
-  type: "view" | "inquiry" | "booking"
-  description: string
-  timestamp: string
-  location?: string
+  id: number;
+  type: "view" | "inquiry" | "booking";
+  description: string;
+  timestamp: string;
+  location?: string;
 }
 
 export default function VendorAnalytics() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const [analytics, setAnalytics] = useState<Analytics | null>(null)
-  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([])
-  const [loading, setLoading] = useState(true)
-  const [timeRange, setTimeRange] = useState("30d")
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [analytics, setAnalytics] = useState<Analytics | null>(null);
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [timeRange, setTimeRange] = useState("30d");
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/auth/signin")
-      return
+      router.push("/auth/signin");
+      return;
     }
 
     if (session?.user && status === "authenticated") {
-      fetchAnalytics()
-      fetchRecentActivity()
+      fetchAnalytics();
+      fetchRecentActivity();
     }
-  }, [session, status, router, timeRange])
+  }, [session, status, router, timeRange]);
 
   const fetchAnalytics = async () => {
     try {
-      setLoading(true)
-      
-      const response = await fetch(`/api/vendors/analytics?timeRange=${timeRange}`, {
-        headers: {
-          'Content-Type': 'application/json',
+      setLoading(true);
+
+      const response = await fetch(
+        `/api/vendors/analytics?timeRange=${timeRange}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      })
-      
+      );
+
       if (response.ok) {
-        const data = await response.json()
-        setAnalytics(data)
+        const data = await response.json();
+        setAnalytics(data);
       } else {
         // Mock data for demo
         setAnalytics({
@@ -103,24 +118,24 @@ export default function VendorAnalytics() {
             total: 1247,
             thisMonth: 234,
             lastMonth: 189,
-            trend: "up"
+            trend: "up",
           },
           inquiries: {
             total: 67,
             thisMonth: 12,
             lastMonth: 8,
-            trend: "up"
+            trend: "up",
           },
           topServices: [
             { serviceName: "Wedding Photography", views: 456, inquiries: 23 },
             { serviceName: "Event Planning", views: 321, inquiries: 15 },
-            { serviceName: "Catering Services", views: 234, inquiries: 12 }
+            { serviceName: "Catering Services", views: 234, inquiries: 12 },
           ],
           viewsByLocation: [
             { location: "New York", views: 345, percentage: 45 },
             { location: "Los Angeles", views: 234, percentage: 30 },
             { location: "Chicago", views: 123, percentage: 16 },
-            { location: "Others", views: 67, percentage: 9 }
+            { location: "Others", views: 67, percentage: 9 },
           ],
           monthlyData: [
             { month: "Jan", views: 156, inquiries: 8 },
@@ -128,31 +143,31 @@ export default function VendorAnalytics() {
             { month: "Mar", views: 234, inquiries: 15 },
             { month: "Apr", views: 267, inquiries: 18 },
             { month: "May", views: 298, inquiries: 21 },
-            { month: "Jun", views: 345, inquiries: 25 }
+            { month: "Jun", views: 345, inquiries: 25 },
           ],
           averageRating: 4.8,
           responseTime: "2 hours",
-          conversionRate: 18.5
-        })
+          conversionRate: 18.5,
+        });
       }
     } catch (error) {
-      console.error("Error fetching analytics:", error)
+      console.error("Error fetching analytics:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchRecentActivity = async () => {
     try {
       const response = await fetch(`/api/vendors/activity`, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-      })
-      
+      });
+
       if (response.ok) {
-        const data = await response.json()
-        setRecentActivity(data)
+        const data = await response.json();
+        setRecentActivity(data);
       } else {
         // Mock data for demo
         setRecentActivity([
@@ -161,56 +176,61 @@ export default function VendorAnalytics() {
             type: "inquiry",
             description: "New inquiry for wedding photography",
             timestamp: "2025-08-04T10:30:00Z",
-            location: "New York"
+            location: "New York",
           },
           {
             id: 2,
             type: "view",
             description: "Profile viewed by potential client",
             timestamp: "2025-08-04T09:15:00Z",
-            location: "Los Angeles"
+            location: "Los Angeles",
           },
           {
             id: 3,
             type: "view",
             description: "Service page viewed",
             timestamp: "2025-08-04T08:45:00Z",
-            location: "Chicago"
+            location: "Chicago",
           },
           {
             id: 4,
             type: "inquiry",
             description: "Question about catering packages",
             timestamp: "2025-08-03T16:20:00Z",
-            location: "Miami"
-          }
-        ])
+            location: "Miami",
+          },
+        ]);
       }
     } catch (error) {
-      console.error("Error fetching recent activity:", error)
+      console.error("Error fetching recent activity:", error);
     }
-  }
+  };
 
   const getTrendIcon = (trend: "up" | "down" | "neutral") => {
-    if (trend === "up") return <TrendingUp className="h-4 w-4 text-green-500" />
-    if (trend === "down") return <TrendingUp className="h-4 w-4 text-red-500 rotate-180" />
-    return <TrendingUp className="h-4 w-4 text-gray-500" />
-  }
+    if (trend === "up")
+      return <TrendingUp className="h-4 w-4 text-green-500" />;
+    if (trend === "down")
+      return <TrendingUp className="h-4 w-4 text-red-500 rotate-180" />;
+    return <TrendingUp className="h-4 w-4 text-gray-500" />;
+  };
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case "inquiry": return <Mail className="h-4 w-4 text-blue-500" />
-      case "booking": return <Calendar className="h-4 w-4 text-green-500" />
-      default: return <Eye className="h-4 w-4 text-gray-500" />
+      case "inquiry":
+        return <Mail className="h-4 w-4 text-blue-500" />;
+      case "booking":
+        return <Calendar className="h-4 w-4 text-green-500" />;
+      default:
+        return <Eye className="h-4 w-4 text-gray-500" />;
     }
-  }
+  };
 
   if (loading || status === "loading") {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <LoadingSpinner size="lg" />
       </div>
-    )
+    );
   }
 
   return (
@@ -220,7 +240,9 @@ export default function VendorAnalytics() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Analytics</h1>
-            <p className="text-muted-foreground">Track your performance and growth</p>
+            <p className="text-muted-foreground">
+              Track your performance and growth
+            </p>
           </div>
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger className="w-32">
@@ -241,8 +263,12 @@ export default function VendorAnalytics() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Profile Views</p>
-                  <p className="text-2xl font-bold">{analytics?.profileViews.thisMonth}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Profile Views
+                  </p>
+                  <p className="text-2xl font-bold">
+                    {analytics?.profileViews.thisMonth}
+                  </p>
                   <div className="flex items-center gap-1 mt-1">
                     {getTrendIcon(analytics?.profileViews.trend || "neutral")}
                     <span className="text-xs text-muted-foreground">
@@ -259,8 +285,12 @@ export default function VendorAnalytics() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Inquiries</p>
-                  <p className="text-2xl font-bold">{analytics?.inquiries.thisMonth}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Inquiries
+                  </p>
+                  <p className="text-2xl font-bold">
+                    {analytics?.inquiries.thisMonth}
+                  </p>
                   <div className="flex items-center gap-1 mt-1">
                     {getTrendIcon(analytics?.inquiries.trend || "neutral")}
                     <span className="text-xs text-muted-foreground">
@@ -277,8 +307,12 @@ export default function VendorAnalytics() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Conversion Rate</p>
-                  <p className="text-2xl font-bold">{analytics?.conversionRate}%</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Conversion Rate
+                  </p>
+                  <p className="text-2xl font-bold">
+                    {analytics?.conversionRate}%
+                  </p>
                   <div className="flex items-center gap-1 mt-1">
                     <TrendingUp className="h-4 w-4 text-green-500" />
                     <span className="text-xs text-muted-foreground">
@@ -295,9 +329,13 @@ export default function VendorAnalytics() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Avg. Rating</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Avg. Rating
+                  </p>
                   <div className="flex items-center gap-1">
-                    <p className="text-2xl font-bold">{analytics?.averageRating}</p>
+                    <p className="text-2xl font-bold">
+                      {analytics?.averageRating}
+                    </p>
                     <Star className="h-5 w-5 text-yellow-500 fill-current" />
                   </div>
                   <div className="flex items-center gap-1 mt-1">
@@ -326,7 +364,9 @@ export default function VendorAnalytics() {
               <Card>
                 <CardHeader>
                   <CardTitle>Performance Metrics</CardTitle>
-                  <CardDescription>Key indicators of your business growth</CardDescription>
+                  <CardDescription>
+                    Key indicators of your business growth
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -336,13 +376,15 @@ export default function VendorAnalytics() {
                     </div>
                     <Badge variant="outline">{analytics?.responseTime}</Badge>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <DollarSign className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm">Conversion Rate</span>
                     </div>
-                    <span className="font-medium">{analytics?.conversionRate}%</span>
+                    <span className="font-medium">
+                      {analytics?.conversionRate}%
+                    </span>
                   </div>
 
                   <div className="space-y-2">
@@ -358,13 +400,20 @@ export default function VendorAnalytics() {
               <Card>
                 <CardHeader>
                   <CardTitle>Monthly Trends</CardTitle>
-                  <CardDescription>Views and inquiries over time</CardDescription>
+                  <CardDescription>
+                    Views and inquiries over time
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     {analytics?.monthlyData.slice(-6).map((month) => (
-                      <div key={month.month} className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{month.month}</span>
+                      <div
+                        key={month.month}
+                        className="flex items-center justify-between"
+                      >
+                        <span className="text-sm font-medium">
+                          {month.month}
+                        </span>
                         <div className="flex items-center gap-4 text-sm">
                           <div className="flex items-center gap-1">
                             <Eye className="h-3 w-3 text-blue-500" />
@@ -387,12 +436,17 @@ export default function VendorAnalytics() {
             <Card>
               <CardHeader>
                 <CardTitle>Top Performing Services</CardTitle>
-                <CardDescription>Your most viewed and inquired services</CardDescription>
+                <CardDescription>
+                  Your most viewed and inquired services
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {analytics?.topServices.map((service, index) => (
-                    <div key={service.serviceName} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div
+                      key={service.serviceName}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
                       <div>
                         <h4 className="font-medium">{service.serviceName}</h4>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
@@ -420,7 +474,9 @@ export default function VendorAnalytics() {
             <Card>
               <CardHeader>
                 <CardTitle>Views by Location</CardTitle>
-                <CardDescription>Where your potential clients are located</CardDescription>
+                <CardDescription>
+                  Where your potential clients are located
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -429,7 +485,9 @@ export default function VendorAnalytics() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <MapPin className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium">{location.location}</span>
+                          <span className="font-medium">
+                            {location.location}
+                          </span>
                         </div>
                         <div className="text-right">
                           <span className="font-medium">{location.views}</span>
@@ -450,19 +508,28 @@ export default function VendorAnalytics() {
             <Card>
               <CardHeader>
                 <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>Latest interactions with your profile</CardDescription>
+                <CardDescription>
+                  Latest interactions with your profile
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex items-start gap-3 p-3 border rounded-lg">
+                    <div
+                      key={activity.id}
+                      className="flex items-start gap-3 p-3 border rounded-lg"
+                    >
                       <div className="mt-1">
                         {getActivityIcon(activity.type)}
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-sm">{activity.description}</p>
+                        <p className="font-medium text-sm">
+                          {activity.description}
+                        </p>
                         <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                          <span>{new Date(activity.timestamp).toLocaleDateString()}</span>
+                          <span>
+                            {new Date(activity.timestamp).toLocaleDateString()}
+                          </span>
                           {activity.location && (
                             <>
                               <span>•</span>
@@ -480,5 +547,5 @@ export default function VendorAnalytics() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

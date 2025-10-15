@@ -1,21 +1,40 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
+import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   Plus,
   Edit,
@@ -43,12 +62,12 @@ import {
   MapPin,
   Upload,
   X,
-  Image as ImageIcon
-} from "lucide-react"
-import { LoadingSpinner } from "@/components/loading-spinner"
-import { StarRating } from "@/components/ui/star-rating"
-import MultiImageUpload from "@/components/multi-image-upload"
-import toast from "react-hot-toast"
+  Image as ImageIcon,
+} from "lucide-react";
+import { LoadingSpinner } from "@/components/loading-spinner";
+import { StarRating } from "@/components/ui/star-rating";
+import MultiImageUpload from "@/components/multi-image-upload";
+import toast from "react-hot-toast";
 
 // Service Types Enum based on backend
 enum ServiceType {
@@ -105,7 +124,7 @@ const serviceTypeIcons = {
   [ServiceType.ANCHOR]: User,
   [ServiceType.MAGICIAN]: Sparkles,
   [ServiceType.VENUE]: Building,
-}
+};
 
 const eventTypeIcons = {
   [EventType.WEDDING]: Heart,
@@ -118,14 +137,14 @@ const eventTypeIcons = {
   [EventType.HOLIDAY_PARTY]: Gift,
   [EventType.CONFERENCE]: User,
   [EventType.EXHIBITION]: Tag,
-}
+};
 
 const priceEnumIcons = {
   [PriceEnum.INEXPENSIVE]: DollarSign,
   [PriceEnum.AFFORDABLE]: TrendingUp,
   [PriceEnum.MODERATE]: Zap,
   [PriceEnum.LUXURY]: Gem,
-}
+};
 
 const serviceSchema = z.object({
   name: z.string().min(2, "Service name must be at least 2 characters"),
@@ -136,33 +155,33 @@ const serviceSchema = z.object({
   cost: z.number().min(0, "Cost must be a positive number"),
   metadata: z.string().optional(),
   images: z.array(z.string()).optional(),
-})
+});
 
-type ServiceForm = z.infer<typeof serviceSchema>
+type ServiceForm = z.infer<typeof serviceSchema>;
 
 interface Service {
-  id: number
-  name: string
-  serviceType: ServiceType
-  eventType: EventType
-  priceEnum: PriceEnum
-  availability: boolean
-  cost: number
-  metadata?: string
-  images?: string[]
-  vendorId: number
-  totalRating?: number
-  numberOfRatings?: number
+  id: number;
+  name: string;
+  serviceType: ServiceType;
+  eventType: EventType;
+  priceEnum: PriceEnum;
+  availability: boolean;
+  cost: number;
+  metadata?: string;
+  images?: string[];
+  vendorId: number;
+  totalRating?: number;
+  numberOfRatings?: number;
 }
 
 export default function VendorServices() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const [services, setServices] = useState<Service[]>([])
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [editingService, setEditingService] = useState<Service | null>(null)
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingService, setEditingService] = useState<Service | null>(null);
 
   const form = useForm<ServiceForm>({
     resolver: zodResolver(serviceSchema),
@@ -175,182 +194,197 @@ export default function VendorServices() {
       cost: 0,
       metadata: "",
       images: [],
-    }
-  })
+    },
+  });
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/auth/signin")
-      return
+      router.push("/auth/signin");
+      return;
     }
 
     if (session?.user && status === "authenticated") {
-      fetchServices()
+      fetchServices();
     }
-  }, [session, status, router])
+  }, [session, status, router]);
 
   // Helper function to create authenticated headers
   const getAuthHeaders = (): HeadersInit => {
     const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    }
+      "Content-Type": "application/json",
+    };
 
     // Check all possible token locations
-    let token = null
+    let token = null;
 
     if ((session as any)?.apiToken) {
-      token = (session as any).apiToken
+      token = (session as any).apiToken;
     } else if ((session as any)?.user?.token) {
-      token = (session as any).user.token
+      token = (session as any).user.token;
     } else if ((session as any)?.token) {
-      token = (session as any).token
+      token = (session as any).token;
     }
 
     // Add authorization header if we have a token
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`
+      headers["Authorization"] = `Bearer ${token}`;
     }
 
-    return headers
-  }
+    return headers;
+  };
 
   const fetchServices = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       // Get authenticated headers
-      const headers = getAuthHeaders()
+      const headers = getAuthHeaders();
       // Get vendorId from session (user.profile or user.vendorId)
-      let vendorId = null
+      let vendorId = null;
       // Prefer vendor.id (number) from session
-      if ((session as any)?.user?.vendor?.id && !isNaN(Number((session as any).user.vendor.id))) {
-        vendorId = (session as any).user.vendor.id
-      } else if ((session as any)?.user?.vendorId && !isNaN(Number((session as any).user.vendorId))) {
-        vendorId = (session as any).user.vendorId
+      if (
+        (session as any)?.user?.vendor?.id &&
+        !isNaN(Number((session as any).user.vendor.id))
+      ) {
+        vendorId = (session as any).user.vendor.id;
+      } else if (
+        (session as any)?.user?.vendorId &&
+        !isNaN(Number((session as any).user.vendorId))
+      ) {
+        vendorId = (session as any).user.vendorId;
       }
       if (!vendorId) {
-        toast.error("No valid numeric vendorId found in session. Please re-login as a vendor.")
-        console.log("Session user data:", session?.user)
-        setLoading(false)
-        return
+        toast.error(
+          "No valid numeric vendorId found in session. Please re-login as a vendor.",
+        );
+        console.log("Session user data:", session?.user);
+        setLoading(false);
+        return;
       }
-      console.log("Fetching services for vendorId:", session)
+      console.log("Fetching services for vendorId:", session);
 
-      const response = await fetch(`/api/vendors/services?vendorId=${vendorId}`, {
-        headers,
-      })
+      const response = await fetch(
+        `/api/vendors/services?vendorId=${vendorId}`,
+        {
+          headers,
+        },
+      );
       if (response.ok) {
-        const data = await response.json()
-        setServices(data)
+        const data = await response.json();
+        setServices(data);
       } else if (response.status === 401) {
-        toast.error("Authentication required. Please sign in again.")
-        router.push('/auth/signin')
+        toast.error("Authentication required. Please sign in again.");
+        router.push("/auth/signin");
       } else {
-        toast.error("Failed to load services")
+        toast.error("Failed to load services");
       }
     } catch (error) {
-      console.error("Error fetching services:", error)
-      toast.error("Failed to load services")
+      console.error("Error fetching services:", error);
+      toast.error("Failed to load services");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const onSubmit = async (data: ServiceForm) => {
     try {
-      setSaving(true)
+      setSaving(true);
 
       const url = editingService
         ? `/api/vendors/services/${editingService.id}`
-        : `/api/vendors/services`
+        : `/api/vendors/services`;
 
-      const method = editingService ? "PUT" : "POST"
+      const method = editingService ? "PUT" : "POST";
 
       // Get authenticated headers
-      const headers = getAuthHeaders()
+      const headers = getAuthHeaders();
 
       // Get vendorId from session for new services
-      let requestData: any = { ...data }
+      let requestData: any = { ...data };
 
       if (!editingService) {
         // For new services, add vendorId
-        let vendorId = null
+        let vendorId = null;
 
         // Debug log to see what we have in session
         console.log("Session data for vendorId extraction:", {
           session: session,
           user: (session as any)?.user,
-          vendor: (session as any)?.user?.vendor
-        })
+          vendor: (session as any)?.user?.vendor,
+        });
 
         if ((session as any)?.user?.vendor?.id) {
-          vendorId = Number((session as any).user.vendor.id)
-          console.log("Using vendor.id from session:", vendorId)
+          vendorId = Number((session as any).user.vendor.id);
+          console.log("Using vendor.id from session:", vendorId);
         }
 
         if (!vendorId || isNaN(vendorId)) {
-          console.error("Invalid vendorId extracted:", vendorId)
-          toast.error("No valid vendorId found in session. Please re-login.")
-          setSaving(false)
-          return
+          console.error("Invalid vendorId extracted:", vendorId);
+          toast.error("No valid vendorId found in session. Please re-login.");
+          setSaving(false);
+          return;
         }
 
-        requestData = { ...data, vendorId }
-        console.log("Request data being sent:", requestData)
+        requestData = { ...data, vendorId };
+        console.log("Request data being sent:", requestData);
       }
 
       const response = await fetch(url, {
         method,
         headers,
         body: JSON.stringify(requestData),
-      })
+      });
 
       if (response.ok) {
-        toast.success(editingService ? "Service updated successfully!" : "Service added successfully!")
-        setDialogOpen(false)
-        setEditingService(null)
-        form.reset()
-        fetchServices()
+        toast.success(
+          editingService
+            ? "Service updated successfully!"
+            : "Service added successfully!",
+        );
+        setDialogOpen(false);
+        setEditingService(null);
+        form.reset();
+        fetchServices();
       } else {
-        const error = await response.json()
-        console.error("API Error Response:", error)
-        toast.error(error.message || error.error || "Failed to save service")
+        const error = await response.json();
+        console.error("API Error Response:", error);
+        toast.error(error.message || error.error || "Failed to save service");
       }
     } catch (error) {
-      console.error("Error saving service:", error)
-      toast.error("Something went wrong. Please try again.")
+      console.error("Error saving service:", error);
+      toast.error("Something went wrong. Please try again.");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const deleteService = async (serviceId: number) => {
-    if (!confirm("Are you sure you want to delete this service?")) return
+    if (!confirm("Are you sure you want to delete this service?")) return;
 
     try {
       // Get authenticated headers
-      const headers = getAuthHeaders()
+      const headers = getAuthHeaders();
 
       const response = await fetch(`/api/vendors/services/${serviceId}`, {
         method: "DELETE",
         headers,
-      })
+      });
 
       if (response.ok) {
-        toast.success("Service deleted successfully!")
-        fetchServices()
+        toast.success("Service deleted successfully!");
+        fetchServices();
       } else {
-        toast.error("Failed to delete service")
+        toast.error("Failed to delete service");
       }
     } catch (error) {
-      console.error("Error deleting service:", error)
-      toast.error("Something went wrong. Please try again.")
+      console.error("Error deleting service:", error);
+      toast.error("Something went wrong. Please try again.");
     }
-  }
+  };
 
   const toggleAvailability = async (service: Service) => {
     try {
       // Get authenticated headers
-      const headers = getAuthHeaders()
+      const headers = getAuthHeaders();
 
       const response = await fetch(`/api/vendors/services/${service.id}`, {
         method: "PUT",
@@ -359,23 +393,23 @@ export default function VendorServices() {
           ...service,
           availability: !service.availability,
         }),
-      })
+      });
 
       if (response.ok) {
-        toast.success("Service availability updated!")
-        fetchServices()
+        toast.success("Service availability updated!");
+        fetchServices();
       } else {
-        toast.error("Failed to update service availability")
+        toast.error("Failed to update service availability");
       }
     } catch (error) {
-      console.error("Error updating service:", error)
-      toast.error("Something went wrong. Please try again.")
+      console.error("Error updating service:", error);
+      toast.error("Something went wrong. Please try again.");
     }
-  }
+  };
 
   const openEditDialog = (service: Service) => {
-    setEditingService(service)
-    const serviceImages = service.images || []
+    setEditingService(service);
+    const serviceImages = service.images || [];
     form.reset({
       name: service.name,
       serviceType: service.serviceType,
@@ -385,12 +419,12 @@ export default function VendorServices() {
       cost: service.cost,
       metadata: service.metadata || "",
       images: serviceImages,
-    })
-    setDialogOpen(true)
-  }
+    });
+    setDialogOpen(true);
+  };
 
   const openAddDialog = () => {
-    setEditingService(null)
+    setEditingService(null);
     form.reset({
       name: "",
       serviceType: ServiceType.PHOTOGRAPHER,
@@ -400,16 +434,16 @@ export default function VendorServices() {
       cost: 0,
       metadata: "",
       images: [],
-    })
-    setDialogOpen(true)
-  }
+    });
+    setDialogOpen(true);
+  };
 
   if (loading || status === "loading") {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <LoadingSpinner size="lg" />
       </div>
-    )
+    );
   }
 
   return (
@@ -419,7 +453,9 @@ export default function VendorServices() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Services</h1>
-            <p className="text-muted-foreground">Manage the services you offer to customers</p>
+            <p className="text-muted-foreground">
+              Manage the services you offer to customers
+            </p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
@@ -434,11 +470,16 @@ export default function VendorServices() {
                   {editingService ? "Edit Service" : "Add New Service"}
                 </DialogTitle>
                 <DialogDescription>
-                  {editingService ? "Update your service details" : "Add a new service to your offerings"}
+                  {editingService
+                    ? "Update your service details"
+                    : "Add a new service to your offerings"}
                 </DialogDescription>
               </DialogHeader>
 
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Service Name *</Label>
@@ -446,10 +487,14 @@ export default function VendorServices() {
                       id="name"
                       placeholder="e.g., Wedding Photography"
                       {...form.register("name")}
-                      className={form.formState.errors.name ? "border-red-500" : ""}
+                      className={
+                        form.formState.errors.name ? "border-red-500" : ""
+                      }
                     />
                     {form.formState.errors.name && (
-                      <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>
+                      <p className="text-sm text-red-500">
+                        {form.formState.errors.name.message}
+                      </p>
                     )}
                   </div>
 
@@ -457,14 +502,16 @@ export default function VendorServices() {
                     <Label htmlFor="serviceType">Service Type *</Label>
                     <Select
                       value={form.watch("serviceType")}
-                      onValueChange={(value) => form.setValue("serviceType", value as ServiceType)}
+                      onValueChange={(value) =>
+                        form.setValue("serviceType", value as ServiceType)
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select service type" />
                       </SelectTrigger>
                       <SelectContent>
                         {Object.values(ServiceType).map((type) => {
-                          const IconComponent = serviceTypeIcons[type]
+                          const IconComponent = serviceTypeIcons[type];
                           return (
                             <SelectItem key={type} value={type}>
                               <div className="flex items-center gap-2">
@@ -472,7 +519,7 @@ export default function VendorServices() {
                                 {type.replace(/_/g, " ")}
                               </div>
                             </SelectItem>
-                          )
+                          );
                         })}
                       </SelectContent>
                     </Select>
@@ -482,14 +529,16 @@ export default function VendorServices() {
                     <Label htmlFor="eventType">Event Type *</Label>
                     <Select
                       value={form.watch("eventType")}
-                      onValueChange={(value) => form.setValue("eventType", value as EventType)}
+                      onValueChange={(value) =>
+                        form.setValue("eventType", value as EventType)
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select event type" />
                       </SelectTrigger>
                       <SelectContent>
                         {Object.values(EventType).map((type) => {
-                          const IconComponent = eventTypeIcons[type]
+                          const IconComponent = eventTypeIcons[type];
                           return (
                             <SelectItem key={type} value={type}>
                               <div className="flex items-center gap-2">
@@ -497,7 +546,7 @@ export default function VendorServices() {
                                 {type.replace(/_/g, " ")}
                               </div>
                             </SelectItem>
-                          )
+                          );
                         })}
                       </SelectContent>
                     </Select>
@@ -507,14 +556,16 @@ export default function VendorServices() {
                     <Label htmlFor="priceEnum">Price Tier *</Label>
                     <Select
                       value={form.watch("priceEnum")}
-                      onValueChange={(value) => form.setValue("priceEnum", value as PriceEnum)}
+                      onValueChange={(value) =>
+                        form.setValue("priceEnum", value as PriceEnum)
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select price tier" />
                       </SelectTrigger>
                       <SelectContent>
                         {Object.values(PriceEnum).map((tier) => {
-                          const IconComponent = priceEnumIcons[tier]
+                          const IconComponent = priceEnumIcons[tier];
                           return (
                             <SelectItem key={tier} value={tier}>
                               <div className="flex items-center gap-2">
@@ -522,7 +573,7 @@ export default function VendorServices() {
                                 {tier.replace(/_/g, " ")}
                               </div>
                             </SelectItem>
-                          )
+                          );
                         })}
                       </SelectContent>
                     </Select>
@@ -544,7 +595,9 @@ export default function VendorServices() {
                     />
                   </div>
                   {form.formState.errors.cost && (
-                    <p className="text-sm text-red-500">{form.formState.errors.cost.message}</p>
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.cost.message}
+                    </p>
                   )}
                 </div>
 
@@ -556,7 +609,8 @@ export default function VendorServices() {
                     {...form.register("metadata")}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Add any specific details about this service that customers should know
+                    Add any specific details about this service that customers
+                    should know
                   </p>
                 </div>
 
@@ -579,7 +633,9 @@ export default function VendorServices() {
                   <Switch
                     id="availability"
                     checked={form.watch("availability")}
-                    onCheckedChange={(checked) => form.setValue("availability", checked)}
+                    onCheckedChange={(checked) =>
+                      form.setValue("availability", checked)
+                    }
                   />
                 </div>
 
@@ -594,7 +650,9 @@ export default function VendorServices() {
                     Cancel
                   </Button>
                   <Button type="submit" disabled={saving}>
-                    {saving ? <LoadingSpinner size="sm" className="mr-2" /> : null}
+                    {saving ? (
+                      <LoadingSpinner size="sm" className="mr-2" />
+                    ) : null}
                     {editingService ? "Update Service" : "Add Service"}
                   </Button>
                 </div>
@@ -624,19 +682,31 @@ export default function VendorServices() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service) => {
               // Fallback to 'PHOTOGRAPHER' if serviceType is missing or invalid
-              const typeKey = service.serviceType && serviceTypeIcons[service.serviceType] ? service.serviceType : ServiceType.PHOTOGRAPHER;
+              const typeKey =
+                service.serviceType && serviceTypeIcons[service.serviceType]
+                  ? service.serviceType
+                  : ServiceType.PHOTOGRAPHER;
               const IconComponent = serviceTypeIcons[typeKey] || Tag;
 
               // Get event type icon and fallback
-              const eventTypeKey = service.eventType && eventTypeIcons[service.eventType] ? service.eventType : EventType.WEDDING;
+              const eventTypeKey =
+                service.eventType && eventTypeIcons[service.eventType]
+                  ? service.eventType
+                  : EventType.WEDDING;
               const EventIconComponent = eventTypeIcons[eventTypeKey] || Tag;
 
               // Get price tier icon and fallback
-              const priceKey = service.priceEnum && priceEnumIcons[service.priceEnum] ? service.priceEnum : PriceEnum.MODERATE;
+              const priceKey =
+                service.priceEnum && priceEnumIcons[service.priceEnum]
+                  ? service.priceEnum
+                  : PriceEnum.MODERATE;
               const PriceIconComponent = priceEnumIcons[priceKey] || DollarSign;
 
               return (
-                <Card key={service.id} className="group hover:shadow-lg transition-all duration-200 border-0 shadow-md">
+                <Card
+                  key={service.id}
+                  className="group hover:shadow-lg transition-all duration-200 border-0 shadow-md"
+                >
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
@@ -644,7 +714,9 @@ export default function VendorServices() {
                           <IconComponent className="h-6 w-6 text-primary" />
                         </div>
                         <div className="flex-1">
-                          <CardTitle className="text-xl font-semibold text-gray-900">{service.name}</CardTitle>
+                          <CardTitle className="text-xl font-semibold text-gray-900">
+                            {service.name}
+                          </CardTitle>
                           <div className="mt-2 space-y-1.5">
                             <div className="flex items-center gap-2 text-sm text-gray-600">
                               <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
@@ -659,25 +731,41 @@ export default function VendorServices() {
                             <div className="flex items-center gap-2 text-sm text-gray-600">
                               <PriceIconComponent className="h-3.5 w-3.5 text-gray-500" />
                               <span className="font-medium">Tier:</span>
-                              <Badge variant="outline" className="text-xs px-2 py-0.5 bg-gray-50">
+                              <Badge
+                                variant="outline"
+                                className="text-xs px-2 py-0.5 bg-gray-50"
+                              >
                                 {priceKey.replace(/_/g, " ")}
                               </Badge>
                             </div>
-                            {(service.totalRating !== undefined && service.numberOfRatings !== undefined) && (
-                              <div className="flex items-center gap-2 text-sm text-gray-600">
-                                <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" />
-                                <span className="font-medium">Rating:</span>
-                                <StarRating rating={service.totalRating || 0} readonly size="sm" />
-                                <span className="text-xs text-gray-500">({service.numberOfRatings} reviews)</span>
-                              </div>
-                            )}
+                            {service.totalRating !== undefined &&
+                              service.numberOfRatings !== undefined && (
+                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                  <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" />
+                                  <span className="font-medium">Rating:</span>
+                                  <StarRating
+                                    rating={service.totalRating || 0}
+                                    readonly
+                                    size="sm"
+                                  />
+                                  <span className="text-xs text-gray-500">
+                                    ({service.numberOfRatings} reviews)
+                                  </span>
+                                </div>
+                              )}
                           </div>
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-2">
                         <Badge
-                          variant={service.availability ? "default" : "secondary"}
-                          className={service.availability ? "bg-green-100 text-green-800 border-green-200" : ""}
+                          variant={
+                            service.availability ? "default" : "secondary"
+                          }
+                          className={
+                            service.availability
+                              ? "bg-green-100 text-green-800 border-green-200"
+                              : ""
+                          }
                         >
                           {service.availability ? "Available" : "Unavailable"}
                         </Badge>
@@ -691,12 +779,18 @@ export default function VendorServices() {
                           <DollarSign className="h-4 w-4 text-green-600" />
                         </div>
                         <div>
-                          <span className="text-lg font-bold text-gray-900">${service.cost.toFixed(2)}</span>
-                          <p className="text-xs text-gray-500">Starting price</p>
+                          <span className="text-lg font-bold text-gray-900">
+                            ${service.cost.toFixed(2)}
+                          </span>
+                          <p className="text-xs text-gray-500">
+                            Starting price
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">Available:</span>
+                        <span className="text-sm text-gray-600">
+                          Available:
+                        </span>
                         <Switch
                           checked={service.availability}
                           onCheckedChange={() => toggleAvailability(service)}
@@ -720,16 +814,18 @@ export default function VendorServices() {
                                 className="w-full h-20 object-cover rounded-lg border border-gray-200"
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement;
-                                  target.style.display = 'none';
+                                  target.style.display = "none";
                                 }}
                               />
-                              {index === 3 && service.images && service.images.length > 4 && (
-                                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
-                                  <span className="text-white text-sm font-medium">
-                                    +{service.images.length - 3} more
-                                  </span>
-                                </div>
-                              )}
+                              {index === 3 &&
+                                service.images &&
+                                service.images.length > 4 && (
+                                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                                    <span className="text-white text-sm font-medium">
+                                      +{service.images.length - 3} more
+                                    </span>
+                                  </div>
+                                )}
                             </div>
                           ))}
                         </div>
@@ -771,11 +867,11 @@ export default function VendorServices() {
                     </div>
                   </CardContent>
                 </Card>
-              )
+              );
             })}
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }

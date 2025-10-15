@@ -1,9 +1,20 @@
-"use client"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ArrowRight, Calendar, Users, Sparkles, Building2, Heart, Cake, GraduationCap, PartyPopper, MapPin } from "lucide-react"
-import { motion } from "framer-motion"
-import Link from "next/link"
+"use client";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  ArrowRight,
+  Calendar,
+  Users,
+  Sparkles,
+  Building2,
+  Heart,
+  Cake,
+  GraduationCap,
+  PartyPopper,
+  MapPin,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
 // Venue categories with their details
 const venueCategories = [
@@ -12,66 +23,74 @@ const venueCategories = [
     name: "Wedding",
     description: "Dream venues for your special day",
     icon: Heart,
-    image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
-    color: "from-pink-500/20 to-rose-500/20"
+    image:
+      "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+    color: "from-pink-500/20 to-rose-500/20",
   },
   {
     id: "anniversary-engagement",
     name: "Anniversary/Engagement",
     description: "Celebrate love milestones",
     icon: Sparkles,
-    image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
-    color: "from-purple-500/20 to-violet-500/20"
+    image:
+      "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+    color: "from-purple-500/20 to-violet-500/20",
   },
   {
     id: "corporate",
     name: "Corporate",
     description: "Professional event spaces",
     icon: Building2,
-    image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
-    color: "from-blue-500/20 to-indigo-500/20"
+    image:
+      "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+    color: "from-blue-500/20 to-indigo-500/20",
   },
   {
     id: "college-fests",
     name: "College Fests",
     description: "Campus celebration venues",
     icon: GraduationCap,
-    image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
-    color: "from-green-500/20 to-emerald-500/20"
+    image:
+      "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+    color: "from-green-500/20 to-emerald-500/20",
   },
   {
     id: "house-private-party",
     name: "House/Private Party",
     description: "Intimate gathering spaces",
     icon: Users,
-    image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
-    color: "from-yellow-500/20 to-orange-500/20"
+    image:
+      "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+    color: "from-yellow-500/20 to-orange-500/20",
   },
   {
     id: "farewell",
     name: "Farewell",
     description: "Memorable goodbye venues",
     icon: Calendar,
-    image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
-    color: "from-teal-500/20 to-cyan-500/20"
+    image:
+      "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+    color: "from-teal-500/20 to-cyan-500/20",
   },
   {
     id: "reunion",
     name: "Reunion",
     description: "Reconnect in style",
     icon: PartyPopper,
-    image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
-    color: "from-amber-500/20 to-yellow-500/20"
+    image:
+      "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+    color: "from-amber-500/20 to-yellow-500/20",
   },
   {
     id: "baby-shower",
     name: "Baby Shower",
     description: "Celebrate new arrivals",
     icon: Cake,
-    image: "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
-    color: "from-pink-400/20 to-blue-400/20"
-  }
-]
+    image:
+      "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
+    color: "from-pink-400/20 to-blue-400/20",
+  },
+];
 
 export function VenuesSection() {
   return (
@@ -91,7 +110,8 @@ export function VenuesSection() {
             Browse by Venue Type
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Find the perfect venue for your event from our curated collection of premium locations
+            Find the perfect venue for your event from our curated collection of
+            premium locations
           </p>
         </motion.div>
 
@@ -108,7 +128,9 @@ export function VenuesSection() {
               <Link href={`/venues/category/${category.id}`}>
                 <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer h-full bg-card border border-border/50 shadow-lg hover:border-primary/20 relative">
                   <div className="relative overflow-hidden">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10`} />
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10`}
+                    />
                     <div className="overflow-hidden">
                       <img
                         src={category.image}
@@ -128,7 +150,7 @@ export function VenuesSection() {
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
                   </div>
-                  
+
                   <CardContent className="p-4 md:p-6 relative z-20">
                     <h3 className="font-bold text-lg md:text-xl mb-2 group-hover:text-primary transition-colors duration-300 text-center line-clamp-1">
                       {category.name}
@@ -136,7 +158,7 @@ export function VenuesSection() {
                     <p className="text-muted-foreground text-sm text-center line-clamp-2 group-hover:text-muted-foreground/80 transition-colors duration-300">
                       {category.description}
                     </p>
-                    
+
                     {/* Hover Effect Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg pointer-events-none" />
                   </CardContent>
@@ -146,15 +168,15 @@ export function VenuesSection() {
           ))}
         </div>
 
-        <motion.div 
+        <motion.div
           className="text-center mt-16"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="lg"
             className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary hover:text-white transition-all duration-300 transform hover:scale-105"
             asChild
@@ -167,5 +189,5 @@ export function VenuesSection() {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

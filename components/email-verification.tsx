@@ -1,82 +1,91 @@
-"use client"
+"use client";
 
-import React, { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { LoadingSpinner } from "@/components/loading-spinner"
-import { Mail, CheckCircle, AlertCircle } from "lucide-react"
-import toast from "react-hot-toast"
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LoadingSpinner } from "@/components/loading-spinner";
+import { Mail, CheckCircle, AlertCircle } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface EmailVerificationProps {
-  email: string
-  onVerificationComplete: (token: string) => void
-  onEmailChange?: (email: string) => void
-  showEmailInput?: boolean
+  email: string;
+  onVerificationComplete: (token: string) => void;
+  onEmailChange?: (email: string) => void;
+  showEmailInput?: boolean;
 }
 
 export default function EmailVerification({
   email,
   onVerificationComplete,
   onEmailChange,
-  showEmailInput = false
+  showEmailInput = false,
 }: EmailVerificationProps) {
-  const [currentEmail, setCurrentEmail] = useState(email)
-  const [otp, setOtp] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [otpSent, setOtpSent] = useState(false)
-  const [verified, setVerified] = useState(false)
-  const [resendCooldown, setResendCooldown] = useState(0)
+  const [currentEmail, setCurrentEmail] = useState(email);
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [verified, setVerified] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   React.useEffect(() => {
     if (resendCooldown > 0) {
-      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000)
-      return () => clearTimeout(timer)
+      const timer = setTimeout(
+        () => setResendCooldown(resendCooldown - 1),
+        1000,
+      );
+      return () => clearTimeout(timer);
     }
-  }, [resendCooldown])
+  }, [resendCooldown]);
 
   const sendVerificationEmail = async () => {
     if (!currentEmail || !currentEmail.includes("@")) {
-      toast.error("Please enter a valid email address")
-      return
+      toast.error("Please enter a valid email address");
+      return;
     }
 
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await fetch("/api/vendor-verification/send-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email: currentEmail }),
-      })
+      });
 
       if (response.ok) {
-        setOtpSent(true)
-        setResendCooldown(60) // 60 second cooldown
-        toast.success("Verification code sent to your email!")
+        setOtpSent(true);
+        setResendCooldown(60); // 60 second cooldown
+        toast.success("Verification code sent to your email!");
       } else {
-        const error = await response.json()
-        toast.error(error.error || "Failed to send verification email")
+        const error = await response.json();
+        toast.error(error.error || "Failed to send verification email");
       }
     } catch (error) {
-      console.error("Error sending verification email:", error)
-      toast.error("Network error. Please try again.")
+      console.error("Error sending verification email:", error);
+      toast.error("Network error. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const verifyOtp = async () => {
     if (!otp || otp.length !== 6) {
-      toast.error("Please enter a valid 6-digit verification code")
-      return
+      toast.error("Please enter a valid 6-digit verification code");
+      return;
     }
 
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await fetch("/api/vendor-verification/verify-email", {
         method: "POST",
         headers: {
@@ -85,38 +94,38 @@ export default function EmailVerification({
         body: JSON.stringify({
           contact: currentEmail,
           otp: otp,
-          channelType: "EMAIL"
+          channelType: "EMAIL",
         }),
-      })
+      });
 
       if (response.ok) {
-        const data = await response.json()
-        setVerified(true)
-        toast.success("Email verified successfully!")
-        onVerificationComplete(data.token)
+        const data = await response.json();
+        setVerified(true);
+        toast.success("Email verified successfully!");
+        onVerificationComplete(data.token);
       } else {
-        const error = await response.json()
-        toast.error(error.error || "Invalid verification code")
-        setOtp("") // Clear invalid OTP
+        const error = await response.json();
+        toast.error(error.error || "Invalid verification code");
+        setOtp(""); // Clear invalid OTP
       }
     } catch (error) {
-      console.error("Error verifying OTP:", error)
-      toast.error("Network error. Please try again.")
+      console.error("Error verifying OTP:", error);
+      toast.error("Network error. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleEmailChange = (newEmail: string) => {
-    setCurrentEmail(newEmail)
+    setCurrentEmail(newEmail);
     if (onEmailChange) {
-      onEmailChange(newEmail)
+      onEmailChange(newEmail);
     }
     // Reset states when email changes
-    setOtpSent(false)
-    setVerified(false)
-    setOtp("")
-  }
+    setOtpSent(false);
+    setVerified(false);
+    setOtp("");
+  };
 
   if (verified) {
     return (
@@ -131,7 +140,7 @@ export default function EmailVerification({
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -166,7 +175,8 @@ export default function EmailVerification({
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  We'll send a verification code to: <strong>{currentEmail}</strong>
+                  We'll send a verification code to:{" "}
+                  <strong>{currentEmail}</strong>
                 </AlertDescription>
               </Alert>
             )}
@@ -191,8 +201,9 @@ export default function EmailVerification({
             <Alert>
               <Mail className="h-4 w-4" />
               <AlertDescription>
-                We've sent a 6-digit verification code to <strong>{currentEmail}</strong>.
-                Please check your inbox and enter the code below.
+                We've sent a 6-digit verification code to{" "}
+                <strong>{currentEmail}</strong>. Please check your inbox and
+                enter the code below.
               </AlertDescription>
             </Alert>
 
@@ -202,7 +213,9 @@ export default function EmailVerification({
                 id="otp"
                 type="text"
                 value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                onChange={(e) =>
+                  setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                }
                 placeholder="Enter 6-digit code"
                 maxLength={6}
                 className="text-center text-lg tracking-widest"
@@ -238,5 +251,5 @@ export default function EmailVerification({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -1,86 +1,93 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { createContext, useContext, useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { createContext, useContext, useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 interface CartItem {
-  id: string
-  name: string
-  price: number
-  image: string
-  type: "venue" | "service"
-  quantity: number
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  type: "venue" | "service";
+  quantity: number;
 }
 
 interface CartContextType {
-  items: CartItem[]
-  addItem: (item: CartItem) => void
-  removeItem: (id: string) => void
-  updateQuantity: (id: string, quantity: number) => void
-  clearCart: () => void
-  total: number
+  items: CartItem[];
+  addItem: (item: CartItem) => void;
+  removeItem: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
+  clearCart: () => void;
+  total: number;
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined)
+const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export { CartContext }
+export { CartContext };
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([])
-  const { data: session } = useSession()
+  const [items, setItems] = useState<CartItem[]>([]);
+  const { data: session } = useSession();
 
   useEffect(() => {
     // Load cart from localStorage
-    const storedCart = localStorage.getItem("cart")
+    const storedCart = localStorage.getItem("cart");
     if (storedCart) {
-      setItems(JSON.parse(storedCart))
+      setItems(JSON.parse(storedCart));
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     // Save cart to localStorage
-    localStorage.setItem("cart", JSON.stringify(items))
-  }, [items])
+    localStorage.setItem("cart", JSON.stringify(items));
+  }, [items]);
 
   useEffect(() => {
     // Sync cart with user account when logged in
     if (session?.user) {
       // TODO: Sync with backend
-      console.log("Syncing cart with user account:", session.user.id)
+      console.log("Syncing cart with user account:", session.user.id);
     }
-  }, [session])
+  }, [session]);
 
   const addItem = (newItem: CartItem) => {
     setItems((prev) => {
-      const existingItem = prev.find((item) => item.id === newItem.id)
+      const existingItem = prev.find((item) => item.id === newItem.id);
       if (existingItem) {
         return prev.map((item) =>
-          item.id === newItem.id ? { ...item, quantity: item.quantity + newItem.quantity } : item,
-        )
+          item.id === newItem.id
+            ? { ...item, quantity: item.quantity + newItem.quantity }
+            : item,
+        );
       }
-      return [...prev, newItem]
-    })
-  }
+      return [...prev, newItem];
+    });
+  };
 
   const removeItem = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id))
-  }
+    setItems((prev) => prev.filter((item) => item.id !== id));
+  };
 
   const updateQuantity = (id: string, quantity: number) => {
     if (quantity <= 0) {
-      removeItem(id)
-      return
+      removeItem(id);
+      return;
     }
-    setItems((prev) => prev.map((item) => (item.id === id ? { ...item, quantity } : item)))
-  }
+    setItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, quantity } : item)),
+    );
+  };
 
   const clearCart = () => {
-    setItems([])
-  }
+    setItems([]);
+  };
 
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const total = items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
 
   return (
     <CartContext.Provider
@@ -95,13 +102,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     >
       {children}
     </CartContext.Provider>
-  )
+  );
 }
 
 export function useCart() {
-  const context = useContext(CartContext)
+  const context = useContext(CartContext);
   if (context === undefined) {
-    throw new Error("useCart must be used within a CartProvider")
+    throw new Error("useCart must be used within a CartProvider");
   }
-  return context
+  return context;
 }

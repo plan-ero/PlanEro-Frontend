@@ -1,19 +1,23 @@
-"use client"
+"use client";
 
-import { ReactNode } from "react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { Toaster } from "@/components/ui/toaster"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { LoadingSpinner } from "@/components/loading-spinner"
-import { Calendar, Home, User, Heart, ShoppingBag, LogOut } from "lucide-react"
+import { ReactNode } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Toaster } from "@/components/ui/toaster";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { LoadingSpinner } from "@/components/loading-spinner";
+import { Calendar, Home, User, Heart, ShoppingBag, LogOut } from "lucide-react";
 
-export default function UserDashboardLayout({ children }: { children: ReactNode }) {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+export default function UserDashboardLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
   if (status === "loading") {
     return (
@@ -23,12 +27,12 @@ export default function UserDashboardLayout({ children }: { children: ReactNode 
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (status === "unauthenticated") {
-    router.push("/auth/signin")
-    return null
+    router.push("/auth/signin");
+    return null;
   }
 
   return (
@@ -44,7 +48,10 @@ export default function UserDashboardLayout({ children }: { children: ReactNode 
           <div className="flex items-center space-x-2">
             <Link href="/profile">
               <Avatar className="h-8 w-8">
-                <AvatarImage src="/placeholder-user.jpg" alt={session?.user?.name || "User"} />
+                <AvatarImage
+                  src="/placeholder-user.jpg"
+                  alt={session?.user?.name || "User"}
+                />
                 <AvatarFallback>
                   {session?.user?.name?.charAt(0) || "U"}
                 </AvatarFallback>
@@ -61,14 +68,21 @@ export default function UserDashboardLayout({ children }: { children: ReactNode 
             <CardContent className="p-4">
               <div className="flex flex-col items-center mb-6 mt-2 pt-4">
                 <Avatar className="h-16 w-16">
-                  <AvatarImage src="/placeholder-user.jpg" alt={session?.user?.name || "User"} />
+                  <AvatarImage
+                    src="/placeholder-user.jpg"
+                    alt={session?.user?.name || "User"}
+                  />
                   <AvatarFallback>
                     {session?.user?.name?.charAt(0) || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="mt-3 text-center">
-                  <h2 className="text-lg font-medium">{session?.user?.name || "User"}</h2>
-                  <p className="text-sm text-muted-foreground">{session?.user?.email || ""}</p>
+                  <h2 className="text-lg font-medium">
+                    {session?.user?.name || "User"}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    {session?.user?.email || ""}
+                  </p>
                 </div>
               </div>
 
@@ -114,5 +128,5 @@ export default function UserDashboardLayout({ children }: { children: ReactNode 
 
       <Toaster />
     </div>
-  )
+  );
 }

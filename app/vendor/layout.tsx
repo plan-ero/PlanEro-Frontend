@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import React from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   LayoutDashboard,
   Building2,
@@ -14,9 +14,9 @@ import {
   TrendingUp,
   Package,
   Home,
-  LogOut
-} from "lucide-react"
-import { useSession, signOut } from "next-auth/react"
+  LogOut,
+} from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
 
 const navigation = [
   {
@@ -44,19 +44,19 @@ const navigation = [
     href: "/vendor/analytics",
     icon: TrendingUp,
   },
-]
+];
 
 export default function VendorLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const pathname = usePathname()
-  const { data: session } = useSession()
+  const pathname = usePathname();
+  const { data: session } = useSession();
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: "/" })
-  }
+    signOut({ callbackUrl: "/" });
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -69,8 +69,8 @@ export default function VendorLayout({
           <nav className="flex-1 p-4">
             <div className="space-y-2">
               {navigation.map((item) => {
-                const isActive = pathname === item.href
-                const Icon = item.icon
+                const isActive = pathname === item.href;
+                const Icon = item.icon;
 
                 return (
                   <Link key={item.name} href={item.href}>
@@ -79,14 +79,14 @@ export default function VendorLayout({
                         "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                         isActive
                           ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted",
                       )}
                     >
                       <Icon className="h-4 w-4" />
                       {item.name}
                     </div>
                   </Link>
-                )
+                );
               })}
             </div>
           </nav>
@@ -96,7 +96,11 @@ export default function VendorLayout({
           {/* Footer */}
           <div className="p-4 space-y-2">
             <Link href="/">
-              <Button variant="outline" className="w-full justify-start" size="sm">
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                size="sm"
+              >
                 <Home className="h-4 w-4 mr-2" />
                 Back to Site
               </Button>
@@ -123,9 +127,7 @@ export default function VendorLayout({
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        {children}
-      </div>
+      <div className="flex-1 overflow-auto">{children}</div>
     </div>
-  )
+  );
 }

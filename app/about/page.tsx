@@ -1,41 +1,45 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Heart, Users, Award, Clock, CheckCircle } from "lucide-react"
-import Link from "next/link"
-import { Header } from "@/components/header"
+import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Heart, Users, Award, Clock, CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { Header } from "@/components/header";
 
 const features = [
   {
     icon: Heart,
     title: "Passionate About Events",
-    description: "We're dedicated to making every event memorable and stress-free for our clients."
+    description:
+      "We're dedicated to making every event memorable and stress-free for our clients.",
   },
   {
     icon: Users,
     title: "Expert Team",
-    description: "Our team of event professionals brings years of experience and creativity to every project."
+    description:
+      "Our team of event professionals brings years of experience and creativity to every project.",
   },
   {
     icon: Award,
     title: "Award-Winning Service",
-    description: "Recognized for excellence in event planning and customer satisfaction."
+    description:
+      "Recognized for excellence in event planning and customer satisfaction.",
   },
   {
     icon: Clock,
     title: "Always On Time",
-    description: "We pride ourselves on punctuality and delivering events exactly as planned."
-  }
-]
+    description:
+      "We pride ourselves on punctuality and delivering events exactly as planned.",
+  },
+];
 
 const stats = [
   { number: "1000+", label: "Events Planned" },
   { number: "500+", label: "Happy Clients" },
   { number: "50+", label: "Partner Vendors" },
-  { number: "5", label: "Years Experience" }
-]
+  { number: "5", label: "Years Experience" },
+];
 
 const values = [
   "Excellence in every detail",
@@ -43,8 +47,8 @@ const values = [
   "Creative and innovative solutions",
   "Personalized service for each client",
   "Sustainable and eco-friendly practices",
-  "Building lasting relationships"
-]
+  "Building lasting relationships",
+];
 
 export default function AboutPage() {
   return (
@@ -61,8 +65,9 @@ export default function AboutPage() {
               About <span className="text-primary">PlanEro</span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
-              We're passionate about creating unforgettable events that bring people together. 
-              From intimate gatherings to grand celebrations, we make your vision come to life.
+              We're passionate about creating unforgettable events that bring
+              people together. From intimate gatherings to grand celebrations,
+              we make your vision come to life.
             </p>
             <Button size="lg" asChild>
               <Link href="/services">Start Planning Today</Link>
@@ -83,19 +88,21 @@ export default function AboutPage() {
             >
               <h2 className="text-3xl font-bold mb-6">Our Story</h2>
               <p className="text-muted-foreground mb-6">
-                Founded in 2019, PlanEro started with a simple mission: to make event planning 
-                accessible, enjoyable, and stress-free for everyone. What began as a small team 
-                of passionate event enthusiasts has grown into a comprehensive platform connecting 
+                Founded in 2019, PlanEro started with a simple mission: to make
+                event planning accessible, enjoyable, and stress-free for
+                everyone. What began as a small team of passionate event
+                enthusiasts has grown into a comprehensive platform connecting
                 event hosts with the best vendors and venues.
               </p>
               <p className="text-muted-foreground mb-6">
-                We believe that every event, no matter the size or budget, deserves careful 
-                attention and creative execution. Our platform brings together the best vendors, 
-                venues, and services to ensure your event is exactly what you envision.
+                We believe that every event, no matter the size or budget,
+                deserves careful attention and creative execution. Our platform
+                brings together the best vendors, venues, and services to ensure
+                your event is exactly what you envision.
               </p>
               <p className="text-muted-foreground">
-                Today, we're proud to serve thousands of clients across the country, helping 
-                them create memories that last a lifetime.
+                Today, we're proud to serve thousands of clients across the
+                country, helping them create memories that last a lifetime.
               </p>
             </motion.div>
             <motion.div
@@ -127,7 +134,8 @@ export default function AboutPage() {
           >
             <h2 className="text-3xl font-bold mb-4">Why Choose PlanEro?</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              We combine expertise, technology, and passion to deliver exceptional event experiences.
+              We combine expertise, technology, and passion to deliver
+              exceptional event experiences.
             </p>
           </motion.div>
 
@@ -144,7 +152,9 @@ export default function AboutPage() {
                   <CardContent className="pt-6">
                     <feature.icon className="h-12 w-12 mx-auto mb-4 text-primary" />
                     <h3 className="font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {feature.description}
+                    </p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -193,7 +203,8 @@ export default function AboutPage() {
           >
             <h2 className="text-3xl font-bold mb-4">Our Values</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              These principles guide everything we do and every decision we make.
+              These principles guide everything we do and every decision we
+              make.
             </p>
           </motion.div>
 
@@ -231,10 +242,12 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="text-center max-w-2xl mx-auto"
           >
-            <h2 className="text-3xl font-bold mb-4">Ready to Plan Your Event?</h2>
+            <h2 className="text-3xl font-bold mb-4">
+              Ready to Plan Your Event?
+            </h2>
             <p className="text-muted-foreground mb-8">
-              Join thousands of satisfied clients who trust PlanEro with their special moments. 
-              Let's create something amazing together.
+              Join thousands of satisfied clients who trust PlanEro with their
+              special moments. Let's create something amazing together.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild>
@@ -248,5 +261,5 @@ export default function AboutPage() {
         </div>
       </section>
     </>
-  )
+  );
 }

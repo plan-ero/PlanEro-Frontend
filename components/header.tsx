@@ -1,14 +1,19 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useSession, signIn, signOut } from "next-auth/react"
-import { useTheme } from "next-themes"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
-import { Badge } from "@/components/ui/badge"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSession, signIn, signOut } from "next-auth/react";
+import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
 import {
   Search,
   Menu,
@@ -24,8 +29,8 @@ import {
   Filter,
   Sun,
   Moon,
-  Monitor
-} from "lucide-react"
+  Monitor,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,37 +40,37 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useCart } from "@/hooks/use-cart"
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useCart } from "@/hooks/use-cart";
 
 export function Header() {
-  const router = useRouter()
-  const { data: session, status } = useSession()
-  const { theme, setTheme } = useTheme()
-  const { items } = useCart()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isScrolled, setIsScrolled] = useState(false)
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const { theme, setTheme } = useTheme();
+  const { items } = useCart();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isScrolled, setIsScrolled] = useState(false);
 
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
-  }
+  };
 
   const handleAdvancedSearch = () => {
-    router.push("/search/advanced")
-  }
+    router.push("/search/advanced");
+  };
 
   return (
     <header
@@ -77,27 +82,43 @@ export function Header() {
     >
       <div className="container mx-auto px-2 sm:px-3 md:px-4">
         <div className="flex h-12 sm:h-14 md:h-16 items-center justify-between">
-
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-1 sm:space-x-2 mr-2 sm:mr-4 md:mr-7">
+          <Link
+            href="/"
+            className="flex items-center space-x-1 sm:space-x-2 mr-2 sm:mr-4 md:mr-7"
+          >
             <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-gradient-to-r from-primary to-primary/80 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-xs">PE</span>
             </div>
-            <span className="font-bold text-base sm:text-lg md:text-xl text-foreground">Planero</span>
+            <span className="font-bold text-base sm:text-lg md:text-xl text-foreground">
+              Planero
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
-            <Link href="/venues" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="/venues"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
               Venues
             </Link>
-            <Link href="/services" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="/services"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
               Services
             </Link>
-            <Link href="/vendors" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="/vendors"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
               Vendors
             </Link>
-            <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="/about"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
               About
             </Link>
           </nav>
@@ -132,7 +153,6 @@ export function Header() {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-1 sm:space-x-2">
-
             {/* Mobile Search */}
             <Sheet>
               <SheetTrigger asChild>
@@ -157,7 +177,11 @@ export function Header() {
                         <Search className="h-4 w-4 mr-2" />
                         Search
                       </Button>
-                      <Button type="button" variant="outline" onClick={handleAdvancedSearch}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleAdvancedSearch}
+                      >
                         <Filter className="h-4 w-4 mr-2" />
                         Advanced
                       </Button>
@@ -203,9 +227,15 @@ export function Header() {
             ) : session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full"
+                  >
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={session.user?.image || "/placeholder-user.jpg"} alt={session.user?.name || "User"} />
+                      <AvatarImage
+                        src={session.user?.image || "/placeholder-user.jpg"}
+                        alt={session.user?.name || "User"}
+                      />
                       <AvatarFallback>
                         {session.user?.name?.charAt(0)?.toUpperCase() || "U"}
                       </AvatarFallback>
@@ -215,7 +245,9 @@ export function Header() {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-medium">{session.user?.name || "User"}</p>
+                      <p className="font-medium">
+                        {session.user?.name || "User"}
+                      </p>
                       <p className="w-[200px] truncate text-sm text-muted-foreground">
                         {session.user?.email}
                       </p>
@@ -331,19 +363,31 @@ export function Header() {
                     <div className="space-y-2">
                       {session && (
                         <>
-                          <Button variant="outline" className="w-full justify-start" asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start"
+                            asChild
+                          >
                             <Link href="/favorites">
                               <Heart className="mr-2 h-4 w-4" />
                               Favorites
                             </Link>
                           </Button>
-                          <Button variant="outline" className="w-full justify-start" asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start"
+                            asChild
+                          >
                             <Link href="/cart">
                               <ShoppingCart className="mr-2 h-4 w-4" />
                               Cart ({items.length})
                             </Link>
                           </Button>
-                          <Button variant="outline" className="w-full justify-start" asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start"
+                            asChild
+                          >
                             <Link href="/dashboard">
                               <User className="mr-2 h-4 w-4" />
                               Dashboard
@@ -406,17 +450,29 @@ export function Header() {
                       <h3 className="text-lg font-semibold">Account</h3>
                       <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted">
                         <Avatar className="h-10 w-10">
-                          <AvatarImage src={session.user?.image || "/placeholder-user.jpg"} alt={session.user?.name || "User"} />
+                          <AvatarImage
+                            src={session.user?.image || "/placeholder-user.jpg"}
+                            alt={session.user?.name || "User"}
+                          />
                           <AvatarFallback>
-                            {session.user?.name?.charAt(0)?.toUpperCase() || "U"}
+                            {session.user?.name?.charAt(0)?.toUpperCase() ||
+                              "U"}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{session.user?.name || "User"}</p>
-                          <p className="text-sm text-muted-foreground truncate">{session.user?.email}</p>
+                          <p className="font-medium truncate">
+                            {session.user?.name || "User"}
+                          </p>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {session.user?.email}
+                          </p>
                         </div>
                       </div>
-                      <Button variant="outline" className="w-full justify-start" onClick={() => signOut()}>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                        onClick={() => signOut()}
+                      >
                         <LogOut className="mr-2 h-4 w-4" />
                         Sign Out
                       </Button>
@@ -429,7 +485,7 @@ export function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }
 
-export default Header
+export default Header;
