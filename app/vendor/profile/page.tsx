@@ -220,14 +220,100 @@ export default function VendorProfile() {
     }
   }
 
-  const handleImageUploaded = (url: string) => {
+  const handleImageUploaded = async (url: string) => {
+    console.log("=== VendorProfile.handleImageUploaded START ===")
+    console.log("Uploaded URL:", url)
+    
     profileForm.setValue("profilePictureUrl", url)
-    toast.success("Profile picture uploaded successfully!")
+    
+    // Also update in backend immediately
+    if (vendor) {
+      console.log("Updating vendor profile in backend...")
+      try {
+        const response = await fetch(`/api/vendors/profile`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...vendor,
+            profilePictureUrl: url, // Update the profile picture
+            websiteUrl: vendor.websiteUrl || []
+          }),
+        })
+
+        console.log("Backend response status:", response.status)
+
+        if (response.ok) {
+          const updatedVendor = await response.json()
+          console.log("Backend response data:", updatedVendor)
+          setVendor(updatedVendor)
+          toast.success("Profile picture uploaded and saved successfully!")
+          console.log("=== VendorProfile.handleImageUploaded END (SUCCESS) ===")
+        } else {
+          const errorData = await response.json()
+          console.error("Backend error:", errorData)
+          toast.error("Failed to update profile. Please save your changes manually.")
+          console.log("=== VendorProfile.handleImageUploaded END (FAILED) ===")
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error)
+        toast.error("Network error. Please save your changes manually.")
+        console.log("=== VendorProfile.handleImageUploaded END (EXCEPTION) ===")
+      }
+    } else {
+      console.log("No vendor data available, only updated form")
+      toast.success("Profile picture uploaded successfully!")
+      console.log("=== VendorProfile.handleImageUploaded END (NO VENDOR) ===")
+    }
   }
 
-  const handleImageDeleted = () => {
+  const handleImageDeleted = async () => {
+    console.log("=== VendorProfile.handleImageDeleted START ===")
+    
+    // Set form value to empty
     profileForm.setValue("profilePictureUrl", "")
-    toast.success("Profile picture removed successfully!")
+    
+    // Also update in backend immediately
+    if (vendor) {
+      console.log("Updating vendor profile in backend to remove picture...")
+      try {
+        const response = await fetch(`/api/vendors/profile`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...vendor,
+            profilePictureUrl: "", // Clear the profile picture
+            websiteUrl: vendor.websiteUrl || []
+          }),
+        })
+
+        console.log("Backend response status:", response.status)
+
+        if (response.ok) {
+          const updatedVendor = await response.json()
+          console.log("Backend response data:", updatedVendor)
+          setVendor(updatedVendor)
+          toast.success("Profile picture removed successfully!")
+          console.log("=== VendorProfile.handleImageDeleted END (SUCCESS) ===")
+        } else {
+          const errorData = await response.json()
+          console.error("Backend error:", errorData)
+          toast.error("Failed to update profile. Please save your changes manually.")
+          console.log("=== VendorProfile.handleImageDeleted END (FAILED) ===")
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error)
+        toast.error("Network error. Please save your changes manually.")
+        console.log("=== VendorProfile.handleImageDeleted END (EXCEPTION) ===")
+      }
+    } else {
+      console.log("No vendor data available, only updated form")
+      toast.success("Profile picture removed!")
+      console.log("=== VendorProfile.handleImageDeleted END (NO VENDOR) ===")
+    }
   }
 
   const onProfileSubmit = async (data: ProfileForm) => {

@@ -67,6 +67,12 @@ export default function ImageUpload({
   }
 
   const uploadFile = async (file: File) => {
+    console.log("=== ImageUpload.uploadFile START ===")
+    console.log("File name:", file.name)
+    console.log("File size:", file.size, "bytes")
+    console.log("File type:", file.type)
+    console.log("Folder:", folder)
+    
     try {
       setUploading(true)
 
@@ -83,25 +89,38 @@ export default function ImageUpload({
         formData.append('folder', folder)
       }
 
+      console.log("Upload endpoint:", endpoint)
+      console.log("Sending request...")
+
       const response = await fetch(endpoint, {
         method: 'POST',
         body: formData,
       })
 
+      console.log("Response status:", response.status)
+      console.log("Response OK:", response.ok)
+
       if (response.ok) {
         const data = await response.json()
+        console.log("Response data:", data)
+        console.log("Uploaded URL:", data.url)
+        
         setPreview(data.url)
         onImageUploaded(data.url)
         toast.success("Image uploaded successfully!")
+        console.log("=== ImageUpload.uploadFile END (SUCCESS) ===")
       } else {
         const error = await response.json()
+        console.error("Upload failed with error:", error)
         toast.error(error.error || "Failed to upload image")
         setPreview(currentImageUrl || null)
+        console.log("=== ImageUpload.uploadFile END (FAILED) ===")
       }
     } catch (error) {
       console.error("Error uploading image:", error)
       toast.error("Network error. Please try again.")
       setPreview(currentImageUrl || null)
+      console.log("=== ImageUpload.uploadFile END (EXCEPTION) ===")
     } finally {
       setUploading(false)
       // Reset file input
@@ -114,20 +133,29 @@ export default function ImageUpload({
   const handleDelete = async () => {
     if (!preview && !currentImageUrl) return
 
+    console.log("=== ImageUpload.handleDelete START ===")
+    const urlToDelete = preview || currentImageUrl
+    console.log("URL to delete:", urlToDelete)
+
     try {
       setDeleting(true)
 
-      const urlToDelete = preview || currentImageUrl
-
-      // Only attempt CDN deletion if the image appears to be from our CDN
+      // Only attempt CDN deletion if the image appears to be from our CDN or S3
       const isCdnImage = urlToDelete && (
         urlToDelete.includes(window.location.hostname) ||
         urlToDelete.includes('cloudinary') ||
         urlToDelete.includes('cdn') ||
+        urlToDelete.includes('amazonaws.com') ||  // AWS S3
+        urlToDelete.includes('s3.') ||             // S3 URLs
         urlToDelete.startsWith('/uploads')
       )
 
+      console.log("Is CDN image:", isCdnImage)
+
       if (isCdnImage) {
+        console.log("Attempting CDN deletion...")
+        console.log("Delete endpoint: /api/upload/image?url=" + encodeURIComponent(urlToDelete))
+        
         const response = await fetch('/api/upload/image', {
           method: 'DELETE',
           headers: {
@@ -136,20 +164,33 @@ export default function ImageUpload({
           body: JSON.stringify({ url: urlToDelete }),
         })
 
+        console.log("Delete response status:", response.status)
+        console.log("Delete response OK:", response.ok)
+
         if (!response.ok) {
+          const responseText = await response.text()
           console.warn("Failed to delete image from CDN storage")
+          console.warn("Response:", responseText)
+        } else {
+          const data = await response.json()
+          console.log("Delete response data:", data)
         }
+      } else {
+        console.log("Skipping CDN deletion (external image)")
       }
 
       // Always remove from UI regardless of CDN deletion
       setPreview(null)
       if (onImageDeleted) {
+        console.log("Calling onImageDeleted callback...")
         onImageDeleted()
       }
       toast.success("Image removed successfully!")
+      console.log("=== ImageUpload.handleDelete END (SUCCESS) ===")
     } catch (error) {
       console.error("Error deleting image:", error)
       toast.error("Network error. Please try again.")
+      console.log("=== ImageUpload.handleDelete END (EXCEPTION) ===")
     } finally {
       setDeleting(false)
     }
