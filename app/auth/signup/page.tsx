@@ -345,6 +345,19 @@ export default function SignUpPage() {
               Sign in
             </Link>
           </div>
+
+          <div className="text-center text-sm border-t pt-4">
+            <p className="text-muted-foreground mb-2">
+              Vendor looking for quick setup?
+            </p>
+            <Link
+              href="/vendor/quick-onboarding-v2"
+              className="text-purple-600 hover:underline font-medium flex items-center justify-center gap-2"
+            >
+              <Crown className="h-4 w-4" />
+              Try Quick Onboarding
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>
