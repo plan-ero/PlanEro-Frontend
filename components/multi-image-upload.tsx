@@ -98,6 +98,8 @@ export default function MultiImageUpload({
         formData.append("folder", folder);
       }
 
+      console.log(`Uploading ${file.name} to ${endpoint}...`);
+
       const response = await fetch(endpoint, {
         method: "POST",
         body: formData,
@@ -105,17 +107,32 @@ export default function MultiImageUpload({
 
       if (response.ok) {
         const data = await response.json();
+        
+        if (!data.url) {
+          throw new Error("No URL returned from upload");
+        }
+        
         const newImages = [...images, data.url];
         setImages(newImages);
         onImagesChange(newImages);
-        toast.success("Image uploaded successfully!");
+        toast.success(`${file.name} uploaded successfully!`);
+        console.log(`Successfully uploaded ${file.name}:`, data.url);
       } else {
-        const error = await response.json();
-        toast.error(error.error || "Failed to upload image");
+        let errorMessage = `Failed to upload ${file.name}`;
+        try {
+          const error = await response.json();
+          console.error(`Upload failed for ${file.name}:`, error);
+          errorMessage = error.error || error.message || errorMessage;
+        } catch (e) {
+          errorMessage = `Upload failed with status ${response.status}`;
+        }
+        toast.error(errorMessage);
+        console.error(`Error uploading ${file.name}:`, errorMessage);
       }
     } catch (error) {
-      console.error("Error uploading image:", error);
-      toast.error("Network error. Please try again.");
+      console.error(`Error uploading ${file.name}:`, error);
+      const errorMessage = error instanceof Error ? error.message : "Network error. Please try again.";
+      toast.error(`${file.name}: ${errorMessage}`);
     } finally {
       setUploading(false);
     }

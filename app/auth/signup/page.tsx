@@ -351,7 +351,7 @@ export default function SignUpPage() {
               Vendor looking for quick setup?
             </p>
             <Link
-              href="/vendor/quick-onboarding-v2"
+              href="/vendor/quick-onboarding"
               className="text-purple-600 hover:underline font-medium flex items-center justify-center gap-2"
             >
               <Crown className="h-4 w-4" />

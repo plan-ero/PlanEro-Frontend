@@ -107,22 +107,36 @@ export default function ImageUpload({
         console.log("Response data:", data);
         console.log("Uploaded URL:", data.url);
 
+        if (!data.url) {
+          throw new Error("No URL returned from upload");
+        }
+
         setPreview(data.url);
         onImageUploaded(data.url);
         toast.success("Image uploaded successfully!");
         console.log("=== ImageUpload.uploadFile END (SUCCESS) ===");
       } else {
-        const error = await response.json();
-        console.error("Upload failed with error:", error);
-        toast.error(error.error || "Failed to upload image");
+        let errorMessage = "Failed to upload image";
+        try {
+          const error = await response.json();
+          console.error("Upload failed with error:", error);
+          errorMessage = error.error || error.message || errorMessage;
+        } catch (e) {
+          errorMessage = `Upload failed with status ${response.status}`;
+        }
+        
+        toast.error(errorMessage);
         setPreview(currentImageUrl || null);
         console.log("=== ImageUpload.uploadFile END (FAILED) ===");
+        console.error("Error details:", errorMessage);
       }
     } catch (error) {
       console.error("Error uploading image:", error);
-      toast.error("Network error. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : "Network error. Please try again.";
+      toast.error(errorMessage);
       setPreview(currentImageUrl || null);
       console.log("=== ImageUpload.uploadFile END (EXCEPTION) ===");
+      console.error("Exception details:", error);
     } finally {
       setUploading(false);
       // Reset file input

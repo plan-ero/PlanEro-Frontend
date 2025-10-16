@@ -46,6 +46,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import ImageUpload from "@/components/image-upload";
+import MultiImageUpload from "@/components/multi-image-upload";
 
 // Service Types Enum
 enum ServiceType {
@@ -137,7 +139,7 @@ const quickOnboardingSchema = z
     location: z.string().min(2, "Location is required"),
     bio: z
       .string()
-      .min(50, "Bio must be at least 50 characters")
+      .min(1, "Bio is required")
       .max(1000, "Bio must be less than 1000 characters"),
 
     // Service types selection
@@ -158,12 +160,14 @@ interface ServiceConfig {
   eventType: EventType;
   priceEnum: PriceEnum;
   cost: number;
+  images: string[]; // Add images array
 }
 
 export default function QuickOnboarding() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
+  const [profilePicture, setProfilePicture] = useState<string>(""); // Add profile picture state
   const [selectedServiceTypes, setSelectedServiceTypes] = useState<
     ServiceType[]
   >([]);
@@ -208,6 +212,7 @@ export default function QuickOnboarding() {
           eventType: EventType.WEDDING,
           priceEnum: PriceEnum.MODERATE,
           cost: 0,
+          images: [], // Initialize empty images array
         },
       }));
     }
@@ -285,18 +290,84 @@ export default function QuickOnboarding() {
     if (step > 1) setStep(step - 1);
   };
 
+  // Prevent form submission on Enter key unless on final step
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === "Enter") {
+      const target = e.target as HTMLElement;
+      
+      console.log("Enter key pressed in:", target.tagName, "Current step:", step);
+      
+      // Allow Enter in textarea
+      if (target.tagName === "TEXTAREA") {
+        console.log("Allowing Enter in textarea");
+        return;
+      }
+      
+      // Allow Enter in select/combobox
+      if (target.getAttribute("role") === "combobox" || target.tagName === "SELECT") {
+        console.log("Allowing Enter in select/combobox");
+        return;
+      }
+      
+      if (step !== totalSteps) {
+        console.log("Preventing Enter submission, advancing to next step");
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    }
+  };
+
+  // Handle form submission with strict validation
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log("=== Form Submit Triggered ===");
+    console.log("Current step:", step);
+    console.log("Total steps:", totalSteps);
+    
+    // Prevent submission if not on final step
+    if (step !== totalSteps) {
+      console.log("❌ Preventing premature submission - not on final step");
+      return false;
+    }
+
+    console.log("✅ On final step, proceeding with validation");
+
+    // Validate final step before submitting
+    const isValid = await validateStep();
+    if (!isValid) {
+      console.log("❌ Final step validation failed");
+      return false;
+    }
+
+    console.log("✅ Validation passed, submitting form");
+
+    // Get form data and call onSubmit directly
+    const formData = form.getValues();
+    await onSubmit(formData);
+  };
+
   // Main atomic submission
   const onSubmit = async (data: QuickOnboardingForm) => {
+    // Prevent submission if not on final step
+    if (step !== totalSteps) {
+      console.log("Preventing premature submission, current step:", step);
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Prepare services array
+      // Prepare services array with images
       const services = selectedServiceTypes.map((serviceType) => ({
         name: servicesConfig[serviceType].name,
         serviceType: servicesConfig[serviceType].serviceType,
         eventType: servicesConfig[serviceType].eventType,
         priceEnum: servicesConfig[serviceType].priceEnum,
         cost: servicesConfig[serviceType].cost,
+        images: servicesConfig[serviceType].images || [], // Include service images
       }));
 
       // Single atomic API call
@@ -311,6 +382,7 @@ export default function QuickOnboarding() {
           businessName: data.businessName,
           location: data.location,
           bio: data.bio,
+          profilePicture: profilePicture || undefined, // Include profile picture
           services: services,
         }),
       });
@@ -366,7 +438,10 @@ export default function QuickOnboarding() {
           </div>
         </div>
 
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form 
+          onSubmit={handleSubmit}
+          onKeyDown={handleKeyDown}
+        >
           {/* Step 1: Account Credentials */}
           {step === 1 && (
             <Card>
@@ -499,7 +574,7 @@ export default function QuickOnboarding() {
                 </div>
 
                 <div>
-                  <Label htmlFor="bio">Business Bio * (min 50 characters)</Label>
+                  <Label htmlFor="bio">Business Bio *</Label>
                   <Textarea
                     id="bio"
                     {...form.register("bio")}
@@ -516,11 +591,21 @@ export default function QuickOnboarding() {
                   </p>
                 </div>
 
+                <div>
+                  <ImageUpload
+                    label="Profile Picture (Optional)"
+                    currentImageUrl={profilePicture}
+                    onImageUploaded={(url) => setProfilePicture(url)}
+                    onImageDeleted={() => setProfilePicture("")}
+                    folder="profile-pictures"
+                    className="mt-4"
+                  />
+                </div>
+
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    Additional details like phone number, website, and profile
-                    picture can be added later from your dashboard.
+                    Additional details like phone number and website can be added later from your dashboard.
                   </AlertDescription>
                 </Alert>
               </CardContent>
@@ -691,6 +776,18 @@ export default function QuickOnboarding() {
                             )
                           }
                           placeholder="0.00"
+                        />
+                      </div>
+
+                      <div>
+                        <MultiImageUpload
+                          label="Service Images (Optional)"
+                          currentImages={config?.images || []}
+                          onImagesChange={(urls) =>
+                            updateServiceConfig(serviceType, "images", urls)
+                          }
+                          folder="service-images"
+                          maxImages={5}
                         />
                       </div>
                     </CardContent>

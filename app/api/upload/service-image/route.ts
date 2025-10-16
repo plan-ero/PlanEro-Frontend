@@ -8,10 +8,8 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth();
 
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
+    // Allow unauthenticated uploads for quick onboarding
+    // Backend will handle authorization if needed
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
@@ -37,20 +35,29 @@ export async function POST(request: NextRequest) {
       body: backendFormData,
     });
 
-    const data = await response.json();
-
-    if (response.ok) {
-      return NextResponse.json(data);
-    } else {
+    if (!response.ok) {
+      // Try to get error message from response
+      let errorMessage = "Failed to upload service image";
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorData.message || errorMessage;
+      } catch (e) {
+        errorMessage = `Upload failed with status ${response.status}`;
+      }
+      
+      console.error("Backend upload error:", errorMessage);
       return NextResponse.json(
-        { error: data.error || "Failed to upload service image" },
+        { error: errorMessage },
         { status: response.status },
       );
     }
+
+    const data = await response.json();
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Error uploading service image:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: error instanceof Error ? error.message : "Internal server error" },
       { status: 500 },
     );
   }

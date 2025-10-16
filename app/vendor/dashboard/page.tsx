@@ -225,8 +225,9 @@ export default function VendorDashboard() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Hidden: Total Views and Inquiries (hardcoded statistics) */}
+        {/* <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Views</CardTitle>
             <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/30">
@@ -254,7 +255,7 @@ export default function VendorDashboard() {
               Customer inquiries
             </p>
           </CardContent>
-        </Card>
+        </Card> */}
 
         <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950/20 dark:to-amber-900/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

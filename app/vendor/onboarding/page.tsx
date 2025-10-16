@@ -39,7 +39,7 @@ const vendorOnboardingSchema = z.object({
   location: z.string().min(2, "Location is required"),
   bio: z
     .string()
-    .min(50, "Bio must be at least 50 characters")
+    .min(1, "Bio is required")
     .max(1000, "Bio must be less than 1000 characters"),
   websiteUrl: z
     .string()
@@ -342,7 +342,6 @@ export default function VendorOnboarding() {
                       )}
                       <p className="text-xs text-muted-foreground">
                         {watchedValues.bio?.length || 0}/1000 characters
-                        (minimum 50)
                       </p>
                     </div>
 
