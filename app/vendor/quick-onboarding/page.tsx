@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,11 +23,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  AlertCircle,
   CheckCircle,
   User,
   Building2,
@@ -38,19 +36,16 @@ import {
   Utensils,
   Palette,
   Car,
-  Heart,
   Gift,
   Mic,
   Sparkles,
   Cake,
   Crown,
   Check,
+  AlertCircle,
 } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { LoadingSpinner } from "@/components/loading-spinner";
-import ImageUpload from "@/components/image-upload";
-import MultiImageUpload from "@/components/multi-image-upload";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 // Service Types Enum
 enum ServiceType {
@@ -109,69 +104,61 @@ const serviceTypeIcons: { [key: string]: any } = {
   VENUE: Building2,
 };
 
-// Main form schema
-const quickOnboardingSchema = z.object({
-  // User fields
-  name: z
-    .string()
-    .min(1, "Full name is required")
-    .max(50, "Name must be less than 50 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  username: z
-    .string()
-    .min(3, "Username must be at least 3 characters long")
-    .max(20, "Username must be less than 20 characters")
-    .regex(
-      /^[a-zA-Z0-9_]+$/,
-      "Username can only contain letters, numbers, and underscores",
-    ),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters long")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
-      "Password must contain at least one lowercase letter, one uppercase letter, and one digit",
-    ),
+// Main form schema - ONLY REQUIRED FIELDS
+const quickOnboardingSchema = z
+  .object({
+    // User credentials
+    name: z
+      .string()
+      .min(1, "Full name is required")
+      .max(50, "Name must be less than 50 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    username: z
+      .string()
+      .min(3, "Username must be at least 3 characters long")
+      .max(20, "Username must be less than 20 characters")
+      .regex(
+        /^[a-zA-Z0-9_]+$/,
+        "Username can only contain letters, numbers, and underscores",
+      ),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters long")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
+        "Password must contain at least one lowercase letter, one uppercase letter, and one digit",
+      ),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
 
-  // Vendor fields
-  businessName: z
-    .string()
-    .min(2, "Business name must be at least 2 characters"),
-  location: z.string().min(2, "Location is required"),
-  bio: z
-    .string()
-    .min(50, "Bio must be at least 50 characters")
-    .max(1000, "Bio must be less than 1000 characters"),
-  websiteUrl: z
-    .string()
-    .url("Please enter a valid URL")
-    .optional()
-    .or(z.literal("")),
-  profilePictureUrl: z.string().optional(),
-  phoneNumber: z.string().optional(),
+    // Vendor info (required only)
+    businessName: z
+      .string()
+      .min(2, "Business name must be at least 2 characters"),
+    location: z.string().min(2, "Location is required"),
+    bio: z
+      .string()
+      .min(50, "Bio must be at least 50 characters")
+      .max(1000, "Bio must be less than 1000 characters"),
 
-  // Service types selection
-  selectedServiceTypes: z
-    .array(z.nativeEnum(ServiceType))
-    .min(1, "Select at least one service type"),
-});
-
-// Dynamic service schema for each selected type
-const dynamicServiceSchema = z.object({
-  name: z.string().min(2, "Service name must be at least 2 characters"),
-  serviceType: z.nativeEnum(ServiceType),
-  eventType: z.nativeEnum(EventType),
-  priceEnum: z.nativeEnum(PriceEnum),
-  availability: z.boolean().default(true),
-  cost: z.number().min(0, "Cost must be a positive number"),
-  metadata: z.string().optional(),
-  images: z.array(z.string()).optional(),
-});
+    // Service types selection
+    selectedServiceTypes: z
+      .array(z.nativeEnum(ServiceType))
+      .min(1, "Select at least one service type"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type QuickOnboardingForm = z.infer<typeof quickOnboardingSchema>;
-type ServiceFormData = z.infer<typeof dynamicServiceSchema>;
 
-interface ServiceConfig extends ServiceFormData {}
+interface ServiceConfig {
+  name: string;
+  serviceType: ServiceType;
+  eventType: EventType;
+  priceEnum: PriceEnum;
+  cost: number;
+}
 
 export default function QuickOnboarding() {
   const router = useRouter();
@@ -191,12 +178,10 @@ export default function QuickOnboarding() {
       email: "",
       username: "",
       password: "",
+      confirmPassword: "",
       businessName: "",
       location: "",
       bio: "",
-      websiteUrl: "",
-      profilePictureUrl: "",
-      phoneNumber: "",
       selectedServiceTypes: [],
     },
   });
@@ -222,10 +207,7 @@ export default function QuickOnboarding() {
           serviceType: serviceType,
           eventType: EventType.WEDDING,
           priceEnum: PriceEnum.MODERATE,
-          availability: true,
           cost: 0,
-          metadata: "",
-          images: [],
         },
       }));
     }
@@ -246,52 +228,28 @@ export default function QuickOnboarding() {
     }));
   };
 
-  // Handle image uploads for vendor profile
-  const handleVendorImageUploaded = (url: string) => {
-    form.setValue("profilePictureUrl", url);
-    toast.success("Profile picture uploaded!");
-  };
-
-  const handleVendorImageDeleted = () => {
-    form.setValue("profilePictureUrl", "");
-  };
-
-  // Handle service image uploads
-  const handleServiceImagesUploaded = (
-    serviceType: ServiceType,
-    urls: string[],
-  ) => {
-    updateServiceConfig(serviceType, "images", urls);
-  };
-
   // Validate current step
   const validateStep = async () => {
-    const values = form.getValues();
-
     switch (step) {
       case 1:
-        // Validate user fields
-        const userFields = ["name", "email", "username", "password"];
-        const userErrors = await form.trigger(
+        const userFields = [
+          "name",
+          "email",
+          "username",
+          "password",
+          "confirmPassword",
+        ];
+        return await form.trigger(
           userFields as Array<keyof QuickOnboardingForm>,
         );
-        return userErrors;
 
       case 2:
-        // Validate vendor fields
-        const vendorFields = [
-          "businessName",
-          "location",
-          "bio",
-          "phoneNumber",
-        ];
-        const vendorErrors = await form.trigger(
+        const vendorFields = ["businessName", "location", "bio"];
+        return await form.trigger(
           vendorFields as Array<keyof QuickOnboardingForm>,
         );
-        return vendorErrors;
 
       case 3:
-        // Validate service types selection
         if (selectedServiceTypes.length === 0) {
           toast.error("Please select at least one service type");
           return false;
@@ -299,7 +257,6 @@ export default function QuickOnboarding() {
         return true;
 
       case 4:
-        // Validate all service configurations
         for (const serviceType of selectedServiceTypes) {
           const config = servicesConfig[serviceType];
           if (!config || !config.name || config.cost <= 0) {
@@ -316,7 +273,7 @@ export default function QuickOnboarding() {
     }
   };
 
-  // Navigation handlers
+  // Navigation
   const nextStep = async () => {
     const isValid = await validateStep();
     if (isValid && step < totalSteps) {
@@ -328,14 +285,22 @@ export default function QuickOnboarding() {
     if (step > 1) setStep(step - 1);
   };
 
-  // Main submission handler
+  // Main atomic submission
   const onSubmit = async (data: QuickOnboardingForm) => {
     setLoading(true);
 
     try {
-      // Step 1: Register User
-      console.log("Step 1: Registering user...");
-      const registerResponse = await fetch("/api/auth/register", {
+      // Prepare services array
+      const services = selectedServiceTypes.map((serviceType) => ({
+        name: servicesConfig[serviceType].name,
+        serviceType: servicesConfig[serviceType].serviceType,
+        eventType: servicesConfig[serviceType].eventType,
+        priceEnum: servicesConfig[serviceType].priceEnum,
+        cost: servicesConfig[serviceType].cost,
+      }));
+
+      // Single atomic API call
+      const response = await fetch("/api/vendors/quick-onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -343,86 +308,26 @@ export default function QuickOnboarding() {
           email: data.email,
           username: data.username,
           password: data.password,
-          role: "VENDOR",
-        }),
-      });
-
-      if (!registerResponse.ok) {
-        const error = await registerResponse.json();
-        throw new Error(error.error || "User registration failed");
-      }
-
-      const registerData = await registerResponse.json();
-      const token = registerData.token;
-
-      console.log("User registered successfully");
-
-      // Step 2: Create/Update Vendor Profile
-      console.log("Step 2: Creating vendor profile...");
-      const vendorResponse = await fetch("/api/vendors/onboard", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
           businessName: data.businessName,
           location: data.location,
           bio: data.bio,
-          websiteUrl: data.websiteUrl,
-          profilePictureUrl: data.profilePictureUrl,
-          phoneNumber: data.phoneNumber,
-          email: data.email,
+          services: services,
         }),
       });
 
-      if (!vendorResponse.ok) {
-        const error = await vendorResponse.json();
-        throw new Error(error.error || "Vendor profile creation failed");
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Onboarding failed");
       }
 
-      const vendorData = await vendorResponse.json();
-      console.log("Vendor profile created successfully");
+      const result = await response.json();
 
-      // Step 3: Create Services
-      console.log("Step 3: Creating services...");
-      const servicePromises = selectedServiceTypes.map(async (serviceType) => {
-        const serviceConfig = servicesConfig[serviceType];
-        return fetch("/api/vendors/services", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name: serviceConfig.name,
-            serviceType: serviceConfig.serviceType,
-            eventType: serviceConfig.eventType,
-            priceEnum: serviceConfig.priceEnum,
-            availability: serviceConfig.availability,
-            cost: serviceConfig.cost,
-            metadata: serviceConfig.metadata || "",
-            images: serviceConfig.images || [],
-          }),
-        });
-      });
-
-      const serviceResponses = await Promise.all(servicePromises);
-
-      // Check if all services were created successfully
-      const failedServices = serviceResponses.filter((res) => !res.ok);
-      if (failedServices.length > 0) {
-        console.warn(
-          `${failedServices.length} service(s) failed to create, but continuing...`,
-        );
-      }
-
-      console.log("Services created successfully");
-
-      toast.success("Onboarding completed successfully!");
+      toast.success(
+        `Onboarding completed! ${result.servicesCreated} service(s) created.`,
+      );
       toast.success("You can now sign in with your credentials");
 
-      // Redirect to signin page
+      // Redirect to signin
       setTimeout(() => {
         router.push("/auth/signin");
       }, 2000);
@@ -443,7 +348,8 @@ export default function QuickOnboarding() {
             Quick Vendor Onboarding
           </h1>
           <p className="text-gray-600 dark:text-gray-300">
-            Complete your profile in {totalSteps} easy steps
+            Complete your profile in {totalSteps} easy steps - Only essential
+            information required
           </p>
         </div>
 
@@ -461,16 +367,16 @@ export default function QuickOnboarding() {
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          {/* Step 1: User Information */}
+          {/* Step 1: Account Credentials */}
           {step === 1 && (
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <User className="h-6 w-6 text-purple-600" />
-                  <CardTitle>Account Information</CardTitle>
+                  <CardTitle>Account Credentials</CardTitle>
                 </div>
                 <CardDescription>
-                  Create your account to get started
+                  Create your login credentials
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -534,11 +440,26 @@ export default function QuickOnboarding() {
                     Must contain uppercase, lowercase, and number
                   </p>
                 </div>
+
+                <div>
+                  <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    {...form.register("confirmPassword")}
+                    placeholder="••••••••"
+                  />
+                  {form.formState.errors.confirmPassword && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {form.formState.errors.confirmPassword.message}
+                    </p>
+                  )}
+                </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Step 2: Vendor Information */}
+          {/* Step 2: Business Information */}
           {step === 2 && (
             <Card>
               <CardHeader>
@@ -546,9 +467,7 @@ export default function QuickOnboarding() {
                   <Building2 className="h-6 w-6 text-purple-600" />
                   <CardTitle>Business Information</CardTitle>
                 </div>
-                <CardDescription>
-                  Tell us about your business
-                </CardDescription>
+                <CardDescription>Essential business details</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -580,20 +499,11 @@ export default function QuickOnboarding() {
                 </div>
 
                 <div>
-                  <Label htmlFor="phoneNumber">Phone Number</Label>
-                  <Input
-                    id="phoneNumber"
-                    {...form.register("phoneNumber")}
-                    placeholder="+1 (555) 123-4567"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="bio">Business Bio *</Label>
+                  <Label htmlFor="bio">Business Bio * (min 50 characters)</Label>
                   <Textarea
                     id="bio"
                     {...form.register("bio")}
-                    placeholder="Tell us about your business, experience, and what makes you unique... (minimum 50 characters)"
+                    placeholder="Tell us about your business, experience, and what makes you unique..."
                     rows={5}
                   />
                   {form.formState.errors.bio && (
@@ -601,32 +511,18 @@ export default function QuickOnboarding() {
                       {form.formState.errors.bio.message}
                     </p>
                   )}
+                  <p className="text-xs text-gray-500 mt-1">
+                    {form.watch("bio")?.length || 0}/1000 characters
+                  </p>
                 </div>
 
-                <div>
-                  <Label htmlFor="websiteUrl">Website URL</Label>
-                  <Input
-                    id="websiteUrl"
-                    {...form.register("websiteUrl")}
-                    placeholder="https://www.yourwebsite.com"
-                  />
-                  {form.formState.errors.websiteUrl && (
-                    <p className="text-sm text-red-500 mt-1">
-                      {form.formState.errors.websiteUrl.message}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <Label>Profile Picture</Label>
-                  <ImageUpload
-                    label="Profile Picture"
-                    currentImageUrl={form.watch("profilePictureUrl")}
-                    onImageUploaded={handleVendorImageUploaded}
-                    onImageDeleted={handleVendorImageDeleted}
-                    folder="profile-pictures"
-                  />
-                </div>
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    Additional details like phone number, website, and profile
+                    picture can be added later from your dashboard.
+                  </AlertDescription>
+                </Alert>
               </CardContent>
             </Card>
           )}
@@ -660,7 +556,7 @@ export default function QuickOnboarding() {
                             : "border-gray-200 dark:border-gray-700 hover:border-purple-300"
                         }`}
                       >
-                        {/* Custom checkbox visual - no state management */}
+                        {/* Custom checkbox visual */}
                         <div
                           className={`h-4 w-4 shrink-0 rounded-sm border flex items-center justify-center transition-colors ${
                             isSelected
@@ -686,7 +582,7 @@ export default function QuickOnboarding() {
                     <CheckCircle className="h-4 w-4" />
                     <AlertDescription>
                       Selected {selectedServiceTypes.length} service type(s).
-                      You'll configure details in the next step.
+                      Configure details in the next step.
                     </AlertDescription>
                   </Alert>
                 )}
@@ -707,12 +603,10 @@ export default function QuickOnboarding() {
                       <div className="flex items-center gap-2">
                         <Icon className="h-6 w-6 text-purple-600" />
                         <CardTitle>
-                          {serviceType.replace(/_/g, " ")} - Service Details
+                          {serviceType.replace(/_/g, " ")} - Configure Service
                         </CardTitle>
                       </div>
-                      <CardDescription>
-                        Configure your {serviceType.replace(/_/g, " ")} service
-                      </CardDescription>
+                      <CardDescription>Required service details</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
@@ -799,39 +693,6 @@ export default function QuickOnboarding() {
                           placeholder="0.00"
                         />
                       </div>
-
-                      <div>
-                        <Label>Description / Metadata</Label>
-                        <Textarea
-                          value={config?.metadata || ""}
-                          onChange={(e) =>
-                            updateServiceConfig(
-                              serviceType,
-                              "metadata",
-                              e.target.value,
-                            )
-                          }
-                          placeholder="Additional details about this service..."
-                          rows={3}
-                        />
-                      </div>
-
-                      <div>
-                        <Label>Service Images (Max 5)</Label>
-                        <MultiImageUpload
-                          label="Service Images"
-                          currentImages={config?.images || []}
-                          onImagesChange={(urls) =>
-                            handleServiceImagesUploaded(serviceType, urls)
-                          }
-                          maxImages={5}
-                          folder="service-images"
-                        />
-                      </div>
-
-                      {index < selectedServiceTypes.length - 1 && (
-                        <Separator className="mt-6" />
-                      )}
                     </CardContent>
                   </Card>
                 );
@@ -871,6 +732,17 @@ export default function QuickOnboarding() {
             )}
           </div>
         </form>
+
+        {/* Back to signin link */}
+        <div className="text-center mt-6 text-sm text-gray-600 dark:text-gray-400">
+          Already have an account?{" "}
+          <Link
+            href="/auth/signin"
+            className="text-purple-600 hover:underline font-medium"
+          >
+            Sign in
+          </Link>
+        </div>
       </div>
     </div>
   );
