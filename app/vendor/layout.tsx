@@ -71,11 +71,7 @@ export default function VendorLayout({
   }
 
   if (!session?.user) {
-    return (
-      <div className="min-h-screen bg-background">
-        {children}
-      </div>
-    );
+    return <div className="min-h-screen bg-background">{children}</div>;
   }
 
   const SidebarContent = () => (
@@ -92,7 +88,11 @@ export default function VendorLayout({
             const Icon = item.icon;
 
             return (
-              <Link key={item.name} href={item.href} onClick={() => setSidebarOpen(false)}>
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setSidebarOpen(false)}
+              >
                 <div
                   className={cn(
                     "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
@@ -115,11 +115,7 @@ export default function VendorLayout({
       {/* Footer */}
       <div className="p-4 space-y-2">
         <Link href="/" onClick={() => setSidebarOpen(false)}>
-          <Button
-            variant="outline"
-            className="w-full justify-start"
-            size="sm"
-          >
+          <Button variant="outline" className="w-full justify-start" size="sm">
             <Home className="h-4 w-4 mr-2" />
             Back to Site
           </Button>
@@ -173,9 +169,7 @@ export default function VendorLayout({
           </Sheet>
         </div>
 
-        <div className="flex-1 overflow-auto">
-          {children}
-        </div>
+        <div className="flex-1 overflow-auto">{children}</div>
       </div>
     </div>
   );

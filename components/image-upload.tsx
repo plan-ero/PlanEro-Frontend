@@ -36,7 +36,7 @@ export default function ImageUpload({
   const [preview, setPreview] = useState<string | null>(
     currentImageUrl || null,
   );
-//   const [showUrlInput, setShowUrlInput] = useState(false);
+  //   const [showUrlInput, setShowUrlInput] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -132,7 +132,10 @@ export default function ImageUpload({
       }
     } catch (error) {
       console.error("Error uploading image:", error);
-      const errorMessage = error instanceof Error ? error.message : "Network error. Please try again.";
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Network error. Please try again.";
       toast.error(errorMessage);
       setPreview(currentImageUrl || null);
       console.log("=== ImageUpload.uploadFile END (EXCEPTION) ===");
@@ -307,7 +310,7 @@ export default function ImageUpload({
             </div>
           ) : (
             <>
-              {(
+              {
                 <div
                   className="h-48 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors cursor-pointer flex flex-col items-center justify-center space-y-3 p-6"
                   onClick={triggerFileSelect}
@@ -343,7 +346,7 @@ export default function ImageUpload({
                     </>
                   )}
                 </div>
-              )}
+              }
             </>
           )}
         </CardContent>

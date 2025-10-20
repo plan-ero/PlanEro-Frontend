@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       } catch (e) {
         errorMessage = `Upload failed with status ${response.status}`;
       }
-      
+
       console.error("Backend upload error:", errorMessage);
       return NextResponse.json(
         { error: errorMessage },
@@ -57,7 +57,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error uploading service image:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Internal server error" },
+      {
+        error: error instanceof Error ? error.message : "Internal server error",
+      },
       { status: 500 },
     );
   }

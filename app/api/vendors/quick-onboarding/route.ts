@@ -9,16 +9,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Call backend quick onboarding endpoint
-    const backendRes = await fetch(
-      `${API_BASE_URL}/vendors/quick-onboarding`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
+    const backendRes = await fetch(`${API_BASE_URL}/vendors/quick-onboarding`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify(body),
+    });
 
     if (!backendRes.ok) {
       const errorData = await backendRes

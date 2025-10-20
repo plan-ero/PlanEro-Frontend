@@ -107,11 +107,11 @@ export default function MultiImageUpload({
 
       if (response.ok) {
         const data = await response.json();
-        
+
         if (!data.url) {
           throw new Error("No URL returned from upload");
         }
-        
+
         const newImages = [...images, data.url];
         setImages(newImages);
         onImagesChange(newImages);
@@ -131,7 +131,10 @@ export default function MultiImageUpload({
       }
     } catch (error) {
       console.error(`Error uploading ${file.name}:`, error);
-      const errorMessage = error instanceof Error ? error.message : "Network error. Please try again.";
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Network error. Please try again.";
       toast.error(`${file.name}: ${errorMessage}`);
     } finally {
       setUploading(false);
