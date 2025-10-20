@@ -446,27 +446,27 @@ export default function QuickOnboarding() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-purple-900 dark:to-gray-900 py-12 px-4">
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-purple-900 dark:to-gray-900 py-6 md:py-12 px-4">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                <div className="text-center mb-6 md:mb-8">
+                    <h1 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
                         Quick Vendor Onboarding
                     </h1>
-                    <p className="text-gray-600 dark:text-gray-300">
+                    <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 px-2">
                         Complete your profile in {totalSteps} easy steps - Only essential
                         information required
                     </p>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="mb-8">
+                <div className="mb-6 md:mb-8">
                     <Progress value={progress} className="h-2" />
-                    <div className="flex justify-between mt-2">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="flex justify-between mt-2 text-xs md:text-sm">
+                        <span className="text-gray-600 dark:text-gray-400">
                             Step {step} of {totalSteps}
                         </span>
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                        <span className="text-gray-600 dark:text-gray-400">
                             {Math.round(progress)}% Complete
                         </span>
                     </div>
