@@ -36,7 +36,7 @@ export default function ImageUpload({
   const [preview, setPreview] = useState<string | null>(
     currentImageUrl || null,
   );
-  const [showUrlInput, setShowUrlInput] = useState(false);
+//   const [showUrlInput, setShowUrlInput] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -124,7 +124,7 @@ export default function ImageUpload({
         } catch (e) {
           errorMessage = `Upload failed with status ${response.status}`;
         }
-        
+
         toast.error(errorMessage);
         setPreview(currentImageUrl || null);
         console.log("=== ImageUpload.uploadFile END (FAILED) ===");
@@ -240,13 +240,13 @@ export default function ImageUpload({
 
     // Reset URL input
     setImageUrl("");
-    setShowUrlInput(false);
+    // setShowUrlInput(false);
     toast.success("Image URL added successfully!");
   };
 
   const handleCancelUrl = () => {
     setImageUrl("");
-    setShowUrlInput(false);
+    // setShowUrlInput(false);
   };
 
   return (
@@ -307,7 +307,7 @@ export default function ImageUpload({
             </div>
           ) : (
             <>
-              {!showUrlInput ? (
+              {(
                 <div
                   className="h-48 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors cursor-pointer flex flex-col items-center justify-center space-y-3 p-6"
                   onClick={triggerFileSelect}
@@ -328,7 +328,7 @@ export default function ImageUpload({
                           PNG, JPG, GIF up to {maxSizeMB}MB
                         </p>
                       </div>
-                      <Button
+                      {/* <Button
                         type="button"
                         variant="outline"
                         size="sm"
@@ -339,45 +339,9 @@ export default function ImageUpload({
                       >
                         <LinkIcon className="mr-2 h-4 w-4" />
                         Or add by URL
-                      </Button>
+                      </Button> */}
                     </>
                   )}
-                </div>
-              ) : (
-                <div className="p-6 space-y-4">
-                  <div>
-                    <Label htmlFor="singleImageUrl">Image URL</Label>
-                    <Input
-                      id="singleImageUrl"
-                      type="url"
-                      placeholder="https://example.com/image.jpg"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          handleAddUrl();
-                        }
-                      }}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      onClick={handleAddUrl}
-                      className="flex-1"
-                    >
-                      Add Image
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleCancelUrl}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
                 </div>
               )}
             </>
