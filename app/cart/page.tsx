@@ -61,7 +61,7 @@ export default function CartPage() {
                           {item.type}
                         </p>
                         <p className="text-lg font-bold">
-                          ${item.price.toLocaleString()}
+                          ₹{item.price.toLocaleString()}
                         </p>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -112,7 +112,7 @@ export default function CartPage() {
                       {item.name} x{item.quantity}
                     </span>
                     <span>
-                      ${(item.price * item.quantity).toLocaleString()}
+                      ₹{(item.price * item.quantity).toLocaleString()}
                     </span>
                   </div>
                 ))}

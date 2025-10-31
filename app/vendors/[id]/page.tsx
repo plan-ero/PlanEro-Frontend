@@ -476,7 +476,7 @@ export default function VendorDetailPage() {
                                   <div className="flex items-center gap-1">
                                     <DollarSign className="h-3 w-3 text-green-600" />
                                     <span className="text-sm font-semibold text-green-600">
-                                      ${service.cost.toFixed(2)}
+                                      ₹{service.cost.toFixed(2)}
                                     </span>
                                   </div>
                                   {service.totalRating !== undefined &&

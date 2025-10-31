@@ -232,6 +232,76 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Eligibility Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto"
+          >
+            <h2 className="text-3xl font-bold mb-6 text-center">Eligibility</h2>
+            
+            <Card className="mb-6">
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-semibold mb-4">For Clients</h3>
+                <ul className="space-y-3 text-muted-foreground">
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                    <span>You must be at least 18 years old or have reached the age of majority in your jurisdiction to use PlanEro's services</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                    <span>You must provide accurate and complete information when creating your account</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                    <span>You agree to comply with all applicable laws and regulations when using our platform</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-semibold mb-4">For Vendors</h3>
+                <ul className="space-y-3 text-muted-foreground">
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                    <span>You must be at least 18 years old and legally authorized to operate a business in your jurisdiction</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                    <span>You must possess all necessary licenses, permits, insurance, and certifications required for your services</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                    <span>You must provide accurate information about your services, pricing, and availability</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                    <span>You agree to maintain professional standards and honor all bookings made through the platform</span>
+                  </li>
+                  <li className="flex items-start">
+                    <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                    <span>You must comply with all local, state, and national laws and regulations</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <p className="text-center text-sm text-muted-foreground mt-6">
+              For more detailed information, please review our{" "}
+              <Link href="/terms-and-conditions" className="text-primary hover:underline">
+                Terms and Conditions
+              </Link>
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">

@@ -334,7 +334,7 @@ export default function ServiceDetailPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="text-3xl font-bold text-primary">
-                          ${service.cost.toFixed(2)}
+                          ₹{service.cost.toFixed(2)}
                         </div>
                         <Badge
                           variant={
@@ -539,7 +539,7 @@ export default function ServiceDetailPage() {
                     Starting Price
                   </span>
                   <span className="text-sm font-medium">
-                    ${service.cost.toFixed(2)}
+                    ₹{service.cost.toFixed(2)}
                   </span>
                 </div>
               </CardContent>

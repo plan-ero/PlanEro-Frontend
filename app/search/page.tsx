@@ -313,7 +313,7 @@ export default function SearchPage() {
           <div className="flex items-center justify-between">
             <div>
               <span className="text-xl font-bold text-primary">
-                ${item.price.toLocaleString()}
+                ₹{item.price.toLocaleString()}
               </span>
               <span className="text-sm text-muted-foreground ml-1">
                 {item.type === "venue"

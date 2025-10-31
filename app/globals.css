@@ -37,9 +37,10 @@
   --sidebar-accent-foreground: oklch(0.3015 0.0572 282.4176);
   --sidebar-border: oklch(0.9115 0.0216 285.9625);
   --sidebar-ring: oklch(0.5417 0.179 288.0332);
-  --font-sans: Inter, sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: JetBrains Mono, monospace;
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-playfair), Georgia, serif;
+  --font-display: var(--font-montserrat), system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
   --radius: 0.5rem;
   --shadow-2xs: 0px 4px 10px 0px hsl(240 30% 25% / 0.06);
   --shadow-xs: 0px 4px 10px 0px hsl(240 30% 25% / 0.06);
@@ -186,7 +187,7 @@
   height: 100vh;
 }
 
-.lenis.lenis-smooth {
+/* .lenis.lenis-smooth {
   scroll-behavior: auto !important;
 }
 
@@ -196,7 +197,7 @@
 
 .lenis.lenis-stopped {
   overflow: hidden;
-}
+} */
 
 .lenis.lenis-scrolling iframe {
   pointer-events: none;
@@ -234,4 +235,94 @@
     linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px),
     linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px);
   background-size: 40px 40px;
+}
+
+/* Performance Optimizations */
+
+/* Use GPU acceleration for animations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* Smooth scrolling with reduced motion support */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Optimize font rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Reduce layout shift with aspect ratio boxes */
+.aspect-ratio-box {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+
+.aspect-ratio-box > * {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Optimize image loading with blur placeholder */
+.image-blur {
+  filter: blur(20px);
+  transform: scale(1.1);
+  transition: filter 0.3s, transform 0.3s;
+}
+
+.image-loaded {
+  filter: blur(0);
+  transform: scale(1);
+}
+
+/* Contain layout changes */
+.layout-contain {
+  contain: layout style paint;
+}
+
+/* Performance-friendly shadows */
+.shadow-optimized {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+/* Reduce paint area */
+.backface-hidden {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Content visibility for offscreen content */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+/* Font Utilities */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+/* Heading defaults with elegant serif font */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }

@@ -223,7 +223,7 @@ export default function VenuesPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="text-lg font-bold">
-                      ${venue.cost.toLocaleString()}
+                      ₹{venue.cost.toLocaleString()}
                     </span>
                     <span className="text-sm text-muted-foreground ml-1">
                       / event

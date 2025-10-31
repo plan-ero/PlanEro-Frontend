@@ -49,6 +49,9 @@ const vendorOnboardingSchema = z.object({
   profilePictureUrl: z.string().optional(),
   phoneNumber: z.string().optional(),
   isPublished: z.boolean().default(false),
+  acceptTerms: z.boolean().refine((val) => val === true, {
+    message: "You must accept the Terms and Conditions",
+  }),
 });
 
 type VendorOnboardingForm = z.infer<typeof vendorOnboardingSchema>;
@@ -78,6 +81,7 @@ export default function VendorOnboarding() {
       isPublished: false,
       profilePictureUrl: "",
       phoneNumber: "",
+      acceptTerms: false,
     },
   });
 
@@ -440,6 +444,49 @@ export default function VendorOnboarding() {
                       />
                     </div>
 
+                    {/* Eligibility Information */}
+                    <Alert className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+                      <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      <AlertDescription className="text-blue-900 dark:text-blue-100">
+                        <strong className="font-semibold">Eligibility Requirements:</strong>
+                        <ul className="mt-2 ml-4 list-disc space-y-1 text-sm">
+                          <li>You must be at least 18 years old or have reached the age of majority in your jurisdiction</li>
+                          <li>You must possess all necessary licenses, permits, and insurance required to operate your business legally</li>
+                          <li>You must provide accurate and complete information about your services</li>
+                          <li>You must maintain professional standards and honor all bookings made through the platform</li>
+                        </ul>
+                      </AlertDescription>
+                    </Alert>
+
+                    {/* Terms and Conditions Checkbox */}
+                    <div className="flex items-start space-x-3 p-4 border rounded-lg">
+                      <input
+                        type="checkbox"
+                        id="acceptTerms"
+                        {...register("acceptTerms")}
+                        className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                      />
+                      <div className="flex-1">
+                        <Label htmlFor="acceptTerms" className="font-medium cursor-pointer">
+                          I accept the{" "}
+                          <a
+                            href="/terms-and-conditions"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
+                          >
+                            Terms and Conditions
+                          </a>
+                          {" "}*
+                        </Label>
+                        {errors.acceptTerms && (
+                          <p className="text-sm text-destructive mt-1">
+                            {errors.acceptTerms.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
                     <Alert>
                       <AlertCircle className="h-4 w-4" />
                       <AlertDescription>
@@ -483,7 +530,7 @@ export default function VendorOnboarding() {
                   Next
                 </Button>
               ) : (
-                <Button type="submit" disabled={loading || !emailVerified}>
+                <Button type="submit" disabled={loading || !emailVerified || !watchedValues.acceptTerms}>
                   {loading ? (
                     <LoadingSpinner size="sm" className="mr-2" />
                   ) : null}

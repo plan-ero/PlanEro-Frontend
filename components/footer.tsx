@@ -150,6 +150,14 @@ export function Footer() {
                   Terms of Service
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/terms-and-conditions"
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  Terms and Conditions
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

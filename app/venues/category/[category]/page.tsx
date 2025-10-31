@@ -345,7 +345,7 @@ export default function CategoryPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-2xl font-bold">
-                        ${venue.price.toLocaleString()}
+                        ₹{venue.price.toLocaleString()}
                       </span>
                       <span className="text-sm text-muted-foreground ml-1">
                         / event

@@ -85,14 +85,9 @@ export function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center space-x-1 sm:space-x-2 mr-2 sm:mr-4 md:mr-7"
+            className="flex items-center font-extrabold sm:text-lg md:text-2xl text-foreground mr-2 sm:mr-4 md:mr-7"
           >
-            <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-gradient-to-r from-primary to-primary/80 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xs">PE</span>
-            </div>
-            <span className="font-bold text-base sm:text-lg md:text-xl text-foreground">
-              Planero
-            </span>
+            <span className="font-medium">Plan</span><span className="text-primary">Ero.</span>
           </Link>
 
           {/* Desktop Navigation */}

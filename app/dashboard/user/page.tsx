@@ -351,7 +351,7 @@ function BookingCard({
         </div>
 
         <div className="flex items-center justify-between mt-4">
-          <p className="font-bold">${booking.price.toLocaleString()}</p>
+          <p className="font-bold">₹{booking.price.toLocaleString()}</p>
 
           {booking.status === "upcoming" ? (
             <Button

@@ -581,7 +581,7 @@ export default function VendorServices() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="cost">Cost (USD) *</Label>
+                  <Label htmlFor="cost">Cost (INR ₹) *</Label>
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -780,7 +780,7 @@ export default function VendorServices() {
                         </div>
                         <div>
                           <span className="text-lg font-bold text-gray-900">
-                            ${service.cost.toFixed(2)}
+                            ₹{service.cost.toFixed(2)}
                           </span>
                           <p className="text-xs text-gray-500">
                             Starting price

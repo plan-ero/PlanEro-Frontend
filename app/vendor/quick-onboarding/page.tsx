@@ -800,7 +800,7 @@ export default function QuickOnboarding() {
                       </div>
 
                       <div>
-                        <Label>Cost (USD) *</Label>
+                        <Label>Cost (INR ₹) *</Label>
                         <Input
                           type="number"
                           min="0"

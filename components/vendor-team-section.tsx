@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRef } from "react";
 import {
   Camera,
   ChefHat,
@@ -12,6 +13,8 @@ import {
   Cake,
   Sparkles,
   ArrowRight,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 const vendorTeam = [
@@ -84,6 +87,26 @@ const vendorTeam = [
 ];
 
 export function VendorTeamSection() {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({
+        left: -400,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({
+        left: 400,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -92,7 +115,7 @@ export function VendorTeamSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
             <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
@@ -110,79 +133,101 @@ export function VendorTeamSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {vendorTeam.map((vendor, index) => {
-            const IconComponent = vendor.icon;
-            return (
-              <motion.div
-                key={vendor.id}
-                initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Card className="group hover:shadow-2xl transition-all duration-500 h-full shadow-lg bg-card/80 hover:bg-card/95 hover:backdrop-blur-xl overflow-hidden relative border border-border/50 hover:border-primary/30">
-                  {/* Background Image */}
-                  <div
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20 group-hover:opacity-40 transition-all duration-500"
-                    style={{ backgroundImage: `url(${vendor.image})` }}
-                  />
+        {/* Horizontal Scrolling Container with Buttons */}
+        <div className="relative flex items-center gap-4">
+          {/* Left Navigation Button - Always Visible */}
+          <Button
+            variant="outline"
+            size="icon"
+            className="flex-shrink-0 h-12 w-12 rounded-full bg-background/95 backdrop-blur-sm shadow-xl border-2 hover:bg-background hover:scale-110 transition-all z-20"
+            onClick={scrollLeft}
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </Button>
 
-                  {/* Gradient Overlay */}
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${vendor.color} opacity-0 group-hover:opacity-30 transition-all duration-500`}
-                  />
-
-                  {/* Backdrop Blur Overlay */}
-                  <div className="absolute inset-0 bg-background/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500" />
-
-                  <CardContent className="p-8 text-center relative z-10">
-                    {/* Icon Container */}
-                    <div className="mb-6 relative">
-                      <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg relative backdrop-blur-sm group-hover:backdrop-blur-xl">
-                        <IconComponent className="h-10 w-10 text-primary group-hover:scale-110 transition-all duration-300" />
-
-                        {/* Glow Effect */}
-                        <div
-                          className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${vendor.color} opacity-0 group-hover:opacity-30 transition-all duration-500`}
-                        />
-                      </div>
-                    </div>
-
-                    <h3 className="text-lg sm:text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-300">
-                      {vendor.name}
-                    </h3>
-                    <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed line-clamp-2">
-                      {vendor.description}
-                    </p>
-                    <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-3 py-1 mb-6 backdrop-blur-sm">
-                      <div className="w-2 h-2 bg-primary rounded-full"></div>
-                      <p className="text-sm text-primary font-semibold">
-                        {vendor.count}
-                      </p>
-                    </div>
-
-                    <Button
-                      variant="outline"
-                      asChild
-                      className="w-full bg-transparent border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 py-3 font-semibold hover:backdrop-blur-xl"
-                    >
+          {/* Card Strip Container - Reduced Width */}
+          <div className="relative flex-1 overflow-hidden">
+            <div 
+              ref={scrollContainerRef} 
+              className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
+              onWheel={(e) => e.preventDefault()}
+              style={{ overscrollBehavior: 'contain' }}
+            >
+              <div className="flex gap-6 px-4">
+              {vendorTeam.map((vendor, index) => {
+                const IconComponent = vendor.icon;
+                return (
+                  <motion.div
+                    key={vendor.id}
+                    initial={{ opacity: 0, x: 50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="flex-shrink-0 w-80"
+                  >
+                    <Card className="group/card hover:shadow-2xl transition-all duration-500 h-full shadow-lg overflow-hidden border border-border/50 hover:border-primary/50 cursor-pointer">
                       <Link href={vendor.href}>
-                        Find {vendor.name}
-                        <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                        {/* Image Card - Prominent Image Display */}
+                        <div className="relative h-64 overflow-hidden">
+                          <div
+                            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 group-hover/card:scale-110"
+                            style={{ backgroundImage: `url(${vendor.image})` }}
+                          />
+                          {/* Subtle gradient overlay for text readability */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+
+                          {/* Icon Badge on Image */}
+                          <div className="absolute top-4 left-4 w-12 h-12 bg-card/90 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover/card:scale-110 transition-all duration-300">
+                            <IconComponent className="h-6 w-6 text-primary" />
+                          </div>
+
+                          {/* Count Badge */}
+                          <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg">
+                            <p className="text-xs font-semibold text-foreground">
+                              {vendor.count}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Content Below Image */}
+                        <CardContent className="p-6 bg-card">
+                          <h3 className="text-xl font-bold mb-2 group-hover/card:text-primary transition-colors duration-300">
+                            {vendor.name}
+                          </h3>
+                          <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                            {vendor.description}
+                          </p>
+
+                          <Button
+                            variant="outline"
+                            className="w-full bg-transparent border-2 group-hover/card:bg-primary group-hover/card:text-primary-foreground group-hover/card:border-primary transition-all duration-300"
+                          >
+                            Find {vendor.name}
+                            <ArrowRight className="h-4 w-4 ml-2 group-hover/card:translate-x-1 transition-transform duration-300" />
+                          </Button>
+                        </CardContent>
                       </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
+                    </Card>
+                  </motion.div>
+                );
+              })}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Navigation Button - Always Visible */}
+          <Button
+            variant="outline"
+            size="icon"
+            className="flex-shrink-0 h-12 w-12 rounded-full bg-background/95 backdrop-blur-sm shadow-xl border-2 hover:bg-background hover:scale-110 transition-all z-20"
+            onClick={scrollRight}
+          >
+            <ChevronRight className="h-6 w-6" />
+          </Button>
         </div>
 
         <motion.div
-          className="text-center mt-16"
+          className="text-center mt-12"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.8 }}
@@ -200,6 +245,16 @@ export function VendorTeamSection() {
           </Button>
         </motion.div>
       </div>
+
+      <style jsx global>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </section>
   );
 }

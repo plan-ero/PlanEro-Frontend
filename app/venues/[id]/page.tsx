@@ -395,7 +395,7 @@ export default function VenueDetailPage() {
             <CardContent className="p-6">
               <div className="mb-6">
                 <div className="text-3xl font-bold mb-2">
-                  ${venue.price.toLocaleString()}
+                  ₹{venue.price.toLocaleString()}
                   <span className="text-lg font-normal text-muted-foreground ml-2">
                     / event
                   </span>
@@ -412,7 +412,7 @@ export default function VenueDetailPage() {
                   className="rounded-md border"
                   disabled={(date) => {
                     const dateStr = date.toISOString().split("T")[0];
-                    return venue.availability[dateStr] === false;
+                    return (venue.availability as Record<string, boolean>)[dateStr] === false;
                   }}
                 />
               </div>
