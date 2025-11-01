@@ -14,7 +14,7 @@ import { Suspense } from "react";
 import { Header } from "@/components/header";
 
 // Optimized font loading with display swap for better performance
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin"],
   display: 'swap',
   variable: '--font-inter',
@@ -22,7 +22,7 @@ const inter = Inter({
   fallback: ['system-ui', 'arial'],
 });
 
-const playfair = Playfair_Display({ 
+const playfair = Playfair_Display({
   subsets: ["latin"],
   display: 'swap',
   variable: '--font-playfair',
@@ -31,7 +31,7 @@ const playfair = Playfair_Display({
   fallback: ['Georgia', 'serif'],
 });
 
-const montserrat = Montserrat({ 
+const montserrat = Montserrat({
   subsets: ["latin"],
   display: 'swap',
   variable: '--font-montserrat',

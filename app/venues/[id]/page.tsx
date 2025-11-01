@@ -271,7 +271,7 @@ export default function VenueDetailPage() {
 
             {/* Thumbnail Navigation */}
             {venue.images.length > 1 && (
-              <div className="flex space-x-2 mt-4 overflow-x-auto">
+              <div className="flex space-x-2 mt-4 overflow-x-hidden">
                 {venue.images.map((image, index) => (
                   <button
                     key={index}

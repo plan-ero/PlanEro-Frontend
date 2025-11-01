@@ -85,7 +85,7 @@ export function OrganizersSection() {
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
-        left: -400,
+        left: -350,
         behavior: "smooth",
       });
     }
@@ -94,7 +94,7 @@ export function OrganizersSection() {
   const scrollRight = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
-        left: 400,
+        left: 350,
         behavior: "smooth",
       });
     }
@@ -140,10 +140,15 @@ export function OrganizersSection() {
 
           {/* Card Strip Container - Reduced Width */}
           <div className="relative flex-1 overflow-hidden">
-            <div 
-              ref={scrollContainerRef} 
-              className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
-              onWheel={(e) => e.preventDefault()}
+            <div
+              ref={scrollContainerRef}
+              className="overflow-x-hidden scrollbar-hide pb-4 scroll-smooth"
+              onWheel={(e) => {
+                // Only prevent horizontal scrolling, allow vertical
+                if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+                  e.preventDefault();
+                }
+              }}
               style={{ overscrollBehavior: 'contain' }}
             >
               <div className="flex gap-6 px-4">

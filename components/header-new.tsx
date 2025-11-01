@@ -31,6 +31,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { MegaMenu } from "@/components/mega-menu";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -85,12 +86,12 @@ export function Header() {
             </motion.div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          {/* Desktop Navigation with Mega Menu */}
+          <MegaMenu />
+
+          {/* Additional Links */}
+          <nav className="hidden lg:flex items-center space-x-1 ml-2">
             {[
-              { href: "/venues", label: "Venues" },
-              { href: "/services", label: "Services" },
-              { href: "/vendors", label: "Vendors" },
               { href: "/about", label: "About" },
             ].map((item) => (
               <Link
@@ -308,34 +309,29 @@ export function Header() {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0, x: "-100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "-100%" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden border-t bg-background/95 backdrop-blur-sm"
+            className="fixed inset-0 top-16 md:hidden bg-background/98 backdrop-blur-sm z-50 overflow-y-auto"
           >
-            <div className="container mx-auto px-4 py-6 space-y-6">
-              {/* Mobile Navigation */}
-              <nav className="space-y-1">
-                {[
-                  { href: "/venues", label: "Venues" },
-                  { href: "/services", label: "Services" },
-                  { href: "/vendors", label: "Vendors" },
-                  { href: "/about", label: "About" },
-                ].map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
+            <div className="min-h-full">
+              {/* Mobile Navigation with Mega Menu */}
+              <MegaMenu isMobile onClose={() => setIsMenuOpen(false)} />
+
+              {/* Additional Mobile Links */}
+              <div className="container mx-auto px-4 py-4 border-t border-border">
+                <Link
+                  href="/about"
+                  className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  About
+                </Link>
+              </div>
 
               {/* Mobile Actions */}
-              <div className="flex flex-col space-y-4 pt-4 border-t border-border/50">
+              <div className="container mx-auto px-4 flex flex-col space-y-4 py-4 border-t border-border/50">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-muted-foreground">
                     Settings

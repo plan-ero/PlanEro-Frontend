@@ -2,19 +2,21 @@ import crypto from 'crypto';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
   images: {
-    // Enable image optimization for better performance
     unoptimized: false,
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'partyslate.imgix.net',
         port: '',
         pathname: '/**',
       },
@@ -27,90 +29,41 @@ const nextConfig = {
     ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    imageSizes: [32, 48, 64, 96, 128, 256, 384],
+    qualities: [75, 80, 90, 95],
   },
-  // Enable standalone output for Docker
-  output: "standalone",
-  // Optimize production build
+  //   output: "standalone",
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
+    // This is a key optimization that works with Turbopack
   },
-  // Enable SWC minification for faster builds
-  swcMinify: true,
-  // Compress responses
+  reactCompiler: true,
   compress: true,
-  // Optimize fonts
-  optimizeFonts: true,
-  // Reduce JavaScript bundle size
   productionBrowserSourceMaps: false,
-  // Modern build target
   experimental: {
-    optimizePackageImports: ['framer-motion', 'lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
-    // Enable PPR for better performance
-    ppr: false,
-    // Optimize CSS
-    optimizeCss: true,
+    // This optimization works with Turbopack
+    optimizePackageImports: [
+      'framer-motion',
+      'lucide-react',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+    ],
+    // This flag is specific to Turbopack
+    turbopackFileSystemCacheForDev: true,
   },
-  // Webpack optimizations
-  webpack: (config, { dev, isServer }) => {
-    // Reduce bundle size
-    if (!dev && !isServer) {
-      config.optimization = {
-        ...config.optimization,
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            default: false,
-            vendors: false,
-            framework: {
-              chunks: 'all',
-              name: 'framework',
-              test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription)[\\/]/,
-              priority: 40,
-              enforce: true,
-            },
-            lib: {
-              test(module) {
-                return (
-                  module.size() > 160000 &&
-                  /node_modules[/\\]/.test(module.identifier())
-                );
-              },
-              name(module) {
-                const hash = crypto.createHash('sha1');
-                hash.update(module.identifier());
-                return hash.digest('hex').substring(0, 8);
-              },
-              priority: 30,
-              minChunks: 1,
-              reuseExistingChunk: true,
-            },
-            commons: {
-              name: 'commons',
-              minChunks: 2,
-              priority: 20,
-            },
-            shared: {
-              name(module, chunks) {
-                return `shared-${crypto
-                  .createHash('sha1')
-                  .update(chunks.map((c) => c.name).join('_'))
-                  .digest('hex')
-                  .substring(0, 8)}`;
-              },
-              priority: 10,
-              minChunks: 2,
-              reuseExistingChunk: true,
-            },
-          },
-          maxInitialRequests: 25,
-          minSize: 20000,
-        },
-      };
-    }
-    return config;
-  },
-  // Headers for better caching and security
+
+  // This is the new flag for PPR, which Turbopack supports
+  cacheComponents: true,
+
+  //
+  // ⛔️ The 'webpack' function has been removed. ⛔️
+  //
+  // Turbopack is the default bundler in Next.js 16
+  // and does not use this configuration. It handles
+  // code splitting and chunking automatically.
+  //
+
+  // Headers configuration remains the same
   async headers() {
     return [
       {

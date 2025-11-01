@@ -1,3 +1,4 @@
+"use cache";
 import type { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -11,9 +12,9 @@ export const metadata: Metadata = {
 };
 
 // Force static generation
-export const dynamic = 'force-static';
+// export const dynamic = 'force-static';
 
-export default function TermsAndConditionsPage() {
+export default async function TermsAndConditionsPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">

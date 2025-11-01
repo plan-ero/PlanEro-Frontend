@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Filters, FilterState } from "@/components/filters";
@@ -29,12 +30,17 @@ interface Venue {
   vendorId: string;
 }
 
-export default function VenuesPage() {
+function VenuesContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Initialize filters from URL search params
   const [filters, setFilters] = useState<FilterState>({
-    query: "",
-    type: "venue",
-    location: "",
-    category: "",
+    query: searchParams.get("search") || "",
+    type: "venue" as "venue" | "vendor" | "all", // Always venue for this page
+    location: searchParams.get("location") || "",
+    category: searchParams.get("category") || "",
   });
 
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -45,14 +51,28 @@ export default function VenuesPage() {
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const { user } = useAuth();
 
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filters.query) params.set("search", filters.query);
+    if (filters.category) params.set("category", filters.category);
+    if (filters.location) params.set("location", filters.location);
+    // Don't include type in URL since it's always "venue" for this page
+
+    const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    router.replace(newUrl, { scroll: false });
+  }, [filters, pathname, router]);
+
   // Fetch venues from API
   useEffect(() => {
     const fetchVenues = async () => {
       try {
         setLoading(true);
         const params = new URLSearchParams();
-        if (filters.category) params.append("category", filters.category);
+        // Use eventType for category filtering (backend expects this)
+        if (filters.category) params.append("eventType", filters.category);
         if (filters.query) params.append("search", filters.query);
+        if (filters.location) params.append("location", filters.location);
 
         const response = await fetch(`/api/venues?${params.toString()}`);
         if (!response.ok) {
@@ -71,7 +91,7 @@ export default function VenuesPage() {
     };
 
     fetchVenues();
-  }, [filters.category, filters.query]);
+  }, [filters.category, filters.query, filters.location]);
 
   // Frontend filtering for location (if needed)
   const filteredVenues = venues.filter((venue) => {
@@ -253,5 +273,19 @@ export default function VenuesPage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function VenuesPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center items-center min-h-[400px]">
+          <LoadingSpinner />
+        </div>
+      </div>
+    }>
+      <VenuesContent />
+    </Suspense>
   );
 }

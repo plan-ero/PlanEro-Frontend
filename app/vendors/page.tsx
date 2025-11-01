@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -55,21 +56,38 @@ interface VendorsResponse {
   };
 }
 
-export default function VendorsPage() {
+function VendorsContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [locationFilter, setLocationFilter] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [locationFilter, setLocationFilter] = useState(searchParams.get("location") || "all");
+  const [categoryFilter, setCategoryFilter] = useState(searchParams.get("category") || "all");
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalVendors, setTotalVendors] = useState(0);
 
   const pageSize = 12;
 
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("search", searchQuery);
+    if (locationFilter && locationFilter !== "all") params.set("location", locationFilter);
+    if (categoryFilter && categoryFilter !== "all") params.set("category", categoryFilter);
+    if (currentPage > 1) params.set("page", currentPage.toString());
+
+    const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    router.replace(newUrl, { scroll: false });
+  }, [searchQuery, locationFilter, categoryFilter, currentPage, pathname, router]);
+
   useEffect(() => {
     fetchVendors();
-  }, [currentPage, searchQuery, locationFilter]);
+  }, [currentPage, searchQuery, locationFilter, categoryFilter]);
 
   const fetchVendors = async () => {
     try {
@@ -484,5 +502,19 @@ export default function VendorsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function VendorsPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center items-center min-h-[400px]">
+          <LoadingSpinner />
+        </div>
+      </div>
+    }>
+      <VendorsContent />
+    </Suspense>
   );
 }

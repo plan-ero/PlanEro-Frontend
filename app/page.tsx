@@ -1,9 +1,9 @@
+"use cache";
 import type { Metadata } from "next";
 import { HeroSection } from "@/components/hero-section";
 import { CategoriesSection } from "@/components/categories-section";
 import { OrganizersSection } from "@/components/organizers-section";
 import { VendorTeamSection } from "@/components/vendor-team-section";
-import { EntertainmentSection } from "@/components/entertainment-section";
 
 export const metadata: Metadata = {
   title: "Find Your Perfect Venue",
@@ -18,16 +18,15 @@ export const metadata: Metadata = {
 };
 
 // Force static generation for better performance
-export const dynamic = 'force-static';
-export const revalidate = 3600; // Revalidate every hour
+// export const dynamic = 'force-static';
+// export const revalidate = 3600; // Revalidate every hour
 
-export default function HomePage() {
+export default async function HomePage() {
   return (
     <main>
       <HeroSection />
       <CategoriesSection />
       <VendorTeamSection />
-      <EntertainmentSection />
       <OrganizersSection />
     </main>
   );

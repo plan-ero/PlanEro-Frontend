@@ -4,7 +4,7 @@ import { getToken } from "next-auth/jwt";
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8080";
 
 // Mark this route as dynamic
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {

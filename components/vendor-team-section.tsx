@@ -12,6 +12,11 @@ import {
   Car,
   Cake,
   Sparkles,
+  Music,
+  Disc,
+  Mic,
+  Mic2,
+  Wand2,
   ArrowRight,
   ChevronLeft,
   ChevronRight,
@@ -84,6 +89,62 @@ const vendorTeam = [
       "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     color: "from-slate-500 to-gray-600",
   },
+  // Entertainment Services
+  {
+    id: "wedding-band",
+    name: "Wedding Band",
+    icon: Music,
+    description: "Live music bands for wedding ceremonies",
+    count: "80+ bands",
+    href: "/services/wedding-band",
+    image:
+      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-purple-500 to-violet-600",
+  },
+  {
+    id: "dj",
+    name: "DJ",
+    icon: Disc,
+    description: "Professional DJs for all event types",
+    count: "150+ DJs",
+    href: "/services/dj",
+    image:
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-blue-500 to-indigo-600",
+  },
+  {
+    id: "singer",
+    name: "Singer",
+    icon: Mic,
+    description: "Solo singers and vocal performers",
+    count: "120+ singers",
+    href: "/services/singer",
+    image:
+      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-pink-500 to-rose-600",
+  },
+  {
+    id: "anchor",
+    name: "Anchor",
+    icon: Mic2,
+    description: "Event hosts and emcees",
+    count: "90+ anchors",
+    href: "/services/anchor",
+    image:
+      "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-green-500 to-emerald-600",
+  },
+  {
+    id: "magician",
+    name: "Magician",
+    icon: Wand2,
+    description: "Magicians and illusionists",
+    count: "60+ magicians",
+    href: "/services/magician",
+    image:
+      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    color: "from-amber-500 to-orange-600",
+  },
 ];
 
 export function VendorTeamSection() {
@@ -92,7 +153,7 @@ export function VendorTeamSection() {
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
-        left: -400,
+        left: -360,
         behavior: "smooth",
       });
     }
@@ -101,7 +162,7 @@ export function VendorTeamSection() {
   const scrollRight = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
-        left: 400,
+        left: 360,
         behavior: "smooth",
       });
     }
@@ -120,15 +181,15 @@ export function VendorTeamSection() {
           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
             <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
             <span className="text-primary font-medium text-sm">
-              BUILD YOUR TEAM
+              VENDORS & ENTERTAINMENT
             </span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            Build Your Vendor Team
+            Build Your Perfect Event Team
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Assemble the perfect team of professionals for your event. From
-            photographers to caterers, find all the vendors you need in one
+            photographers and caterers to DJs and live entertainment, find all the vendors you need in one
             place.
           </p>
         </motion.div>
@@ -147,10 +208,15 @@ export function VendorTeamSection() {
 
           {/* Card Strip Container - Reduced Width */}
           <div className="relative flex-1 overflow-hidden">
-            <div 
-              ref={scrollContainerRef} 
-              className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
-              onWheel={(e) => e.preventDefault()}
+            <div
+              ref={scrollContainerRef}
+              className="overflow-x-hidden scrollbar-hide pb-4 scroll-smooth"
+              onWheel={(e) => {
+                // Only prevent horizontal scrolling, allow vertical
+                if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+                  e.preventDefault();
+                }
+              }}
               style={{ overscrollBehavior: 'contain' }}
             >
               <div className="flex gap-6 px-4">

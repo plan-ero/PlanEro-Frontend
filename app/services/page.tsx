@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -164,7 +165,10 @@ const eventTypeOptions = [
   },
 ];
 
-export default function ServicesPage() {
+function ServicesContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const { data: session } = useSession();
   const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
   const { addItem } = useCart();
@@ -172,11 +176,23 @@ export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [serviceTypeFilter, setServiceTypeFilter] = useState("all");
-  const [eventTypeFilter, setEventTypeFilter] = useState("all");
-  const [priceFilter, setPriceFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [serviceTypeFilter, setServiceTypeFilter] = useState(searchParams.get("type") || "all");
+  const [eventTypeFilter, setEventTypeFilter] = useState(searchParams.get("event") || "all");
+  const [priceFilter, setPriceFilter] = useState(searchParams.get("price") || "all");
   const [showEventTypeSelection, setShowEventTypeSelection] = useState(true);
+
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("search", searchQuery);
+    if (serviceTypeFilter && serviceTypeFilter !== "all") params.set("type", serviceTypeFilter);
+    if (eventTypeFilter && eventTypeFilter !== "all") params.set("event", eventTypeFilter);
+    if (priceFilter && priceFilter !== "all") params.set("price", priceFilter);
+
+    const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    router.replace(newUrl, { scroll: false });
+  }, [searchQuery, serviceTypeFilter, eventTypeFilter, priceFilter, pathname, router]);
 
   useEffect(() => {
     fetchServices();
@@ -674,5 +690,19 @@ export default function ServicesPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ServicesPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center items-center min-h-[400px]">
+          <LoadingSpinner />
+        </div>
+      </div>
+    }>
+      <ServicesContent />
+    </Suspense>
   );
 }

@@ -243,7 +243,7 @@ export default function AboutPage() {
             className="max-w-4xl mx-auto"
           >
             <h2 className="text-3xl font-bold mb-6 text-center">Eligibility</h2>
-            
+
             <Card className="mb-6">
               <CardContent className="pt-6">
                 <h3 className="text-xl font-semibold mb-4">For Clients</h3>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Filters, FilterState } from "@/components/filters";
@@ -137,18 +137,34 @@ const mockResults = [
   },
 ];
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  
   const [filters, setFilters] = useState<FilterState>({
-    query: searchParams.get("q") || "",
-    type: "all",
-    location: "",
-    category: "",
+    query: searchParams.get("q") || searchParams.get("search") || "",
+    type: (searchParams.get("type") as "venue" | "vendor" | "all") || "all",
+    location: searchParams.get("location") || "",
+    category: searchParams.get("category") || "",
   });
   const [results, setResults] = useState(mockResults);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [sortBy, setSortBy] = useState("relevance");
+  const [sortBy, setSortBy] = useState(searchParams.get("sort") || "relevance");
   const [showFilters, setShowFilters] = useState(false);
+
+  // Update URL when filters or sort change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filters.query) params.set("q", filters.query);
+    if (filters.type && filters.type !== "all") params.set("type", filters.type);
+    if (filters.location) params.set("location", filters.location);
+    if (filters.category) params.set("category", filters.category);
+    if (sortBy && sortBy !== "relevance") params.set("sort", sortBy);
+
+    const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    router.replace(newUrl, { scroll: false });
+  }, [filters, sortBy, pathname, router]);
 
   useEffect(() => {
     // Filter results based on current filters
@@ -485,5 +501,21 @@ export default function SearchPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex justify-center items-center min-h-[400px]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        </div>
+      </main>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }

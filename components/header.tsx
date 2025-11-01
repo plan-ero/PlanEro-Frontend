@@ -30,6 +30,7 @@ import {
   Sun,
   Moon,
   Monitor,
+  X,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -43,6 +44,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCart } from "@/hooks/use-cart";
+import { MegaMenu } from "@/components/mega-menu";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function Header() {
   const router = useRouter();
@@ -51,6 +54,7 @@ export function Header() {
   const { items } = useCart();
   const [searchQuery, setSearchQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Handle scroll effect
   useEffect(() => {
@@ -90,26 +94,11 @@ export function Header() {
             <span className="font-medium">Plan</span><span className="text-primary">Ero.</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
-            <Link
-              href="/venues"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Venues
-            </Link>
-            <Link
-              href="/services"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Services
-            </Link>
-            <Link
-              href="/vendors"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Vendors
-            </Link>
+          {/* Desktop Navigation with Mega Menu */}
+          <MegaMenu />
+          
+          {/* Additional Links */}
+          <nav className="hidden lg:flex items-center space-x-4 lg:space-x-6 ml-2">
             <Link
               href="/about"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -314,171 +303,168 @@ export function Header() {
             )}
 
             {/* Mobile Menu */}
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="md:hidden">
-                  <Menu className="h-4 w-4" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-72 sm:w-80">
-                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                <div className="mt-6 space-y-6">
-                  <div className="space-y-3">
-                    <h3 className="text-lg font-semibold">Navigation</h3>
-                    <nav className="space-y-2">
-                      <Link
-                        href="/venues"
-                        className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-                      >
-                        Venues
-                      </Link>
-                      <Link
-                        href="/services"
-                        className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-                      >
-                        Services
-                      </Link>
-                      <Link
-                        href="/vendors"
-                        className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-                      >
-                        Vendors
-                      </Link>
-                      <Link
-                        href="/about"
-                        className="block px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-                      >
-                        About
-                      </Link>
-                    </nav>
-                  </div>
-
-                  <div className="space-y-3">
-                    <h3 className="text-lg font-semibold">Quick Actions</h3>
-                    <div className="space-y-2">
-                      {session && (
-                        <>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-start"
-                            asChild
-                          >
-                            <Link href="/favorites">
-                              <Heart className="mr-2 h-4 w-4" />
-                              Favorites
-                            </Link>
-                          </Button>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-start"
-                            asChild
-                          >
-                            <Link href="/cart">
-                              <ShoppingCart className="mr-2 h-4 w-4" />
-                              Cart ({items.length})
-                            </Link>
-                          </Button>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-start"
-                            asChild
-                          >
-                            <Link href="/dashboard">
-                              <User className="mr-2 h-4 w-4" />
-                              Dashboard
-                            </Link>
-                          </Button>
-                        </>
-                      )}
-
-                      {/* Theme Toggle */}
-                      <div className="pt-2">
-                        <h4 className="text-sm font-medium mb-2">Theme</h4>
-                        <div className="grid grid-cols-3 gap-2">
-                          <Button
-                            variant={theme === "light" ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setTheme("light")}
-                          >
-                            <Sun className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant={theme === "dark" ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setTheme("dark")}
-                          >
-                            <Moon className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant={theme === "system" ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setTheme("system")}
-                          >
-                            <Monitor className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Authentication for Mobile */}
-                  {!session && (
-                    <div className="space-y-3">
-                      <h3 className="text-lg font-semibold">Account</h3>
-                      <div className="space-y-2">
-                        <Button className="w-full" onClick={() => signIn()}>
-                          <LogIn className="mr-2 h-4 w-4" />
-                          Sign In
-                        </Button>
-                        <Button variant="outline" className="w-full" asChild>
-                          <Link href="/auth/signup">
-                            <UserPlus className="mr-2 h-4 w-4" />
-                            Sign Up
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {session && (
-                    <div className="space-y-3">
-                      <h3 className="text-lg font-semibold">Account</h3>
-                      <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage
-                            src={session.user?.image || "/placeholder-user.jpg"}
-                            alt={session.user?.name || "User"}
-                          />
-                          <AvatarFallback>
-                            {session.user?.name?.charAt(0)?.toUpperCase() ||
-                              "U"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">
-                            {session.user?.name || "User"}
-                          </p>
-                          <p className="text-sm text-muted-foreground truncate">
-                            {session.user?.email}
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start"
-                        onClick={() => signOut()}
-                      >
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Sign Out
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </SheetContent>
-            </Sheet>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="md:hidden"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? (
+                <X className="h-4 w-4 transition-transform duration-200" />
+              ) : (
+                <Menu className="h-4 w-4 transition-transform duration-200" />
+              )}
+            </Button>
           </div>
         </div>
       </div>
+
+      {/* Full-width Mobile Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: "-100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "-100%" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="fixed inset-0 top-12 sm:top-14 md:top-16 md:hidden bg-background/98 backdrop-blur-sm z-50 overflow-y-auto"
+          >
+            <div className="min-h-full">
+              {/* Mobile Navigation with Mega Menu */}
+              <MegaMenu isMobile onClose={() => setIsMenuOpen(false)} />
+
+              {/* Additional Mobile Links */}
+              <div className="container mx-auto px-4 py-4 border-t border-border">
+                <Link
+                  href="/about"
+                  className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  About
+                </Link>
+              </div>
+
+              {/* Mobile Actions */}
+              <div className="container mx-auto px-4 py-4 border-t border-border space-y-4">
+                {session && (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      asChild
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Link href="/favorites">
+                        <Heart className="mr-2 h-4 w-4" />
+                        Favorites
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      asChild
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Link href="/cart">
+                        <ShoppingCart className="mr-2 h-4 w-4" />
+                        Cart ({items.length})
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      asChild
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Link href="/dashboard">
+                        <User className="mr-2 h-4 w-4" />
+                        Dashboard
+                      </Link>
+                    </Button>
+                  </>
+                )}
+
+                {/* Theme Toggle */}
+                <div className="pt-2">
+                  <h4 className="text-sm font-medium mb-2">Theme</h4>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button
+                      variant={theme === "light" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setTheme("light")}
+                    >
+                      <Sun className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={theme === "dark" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setTheme("dark")}
+                    >
+                      <Moon className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={theme === "system" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setTheme("system")}
+                    >
+                      <Monitor className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Authentication for Mobile */}
+                {!session ? (
+                  <div className="space-y-2 pt-4">
+                    <Button className="w-full" onClick={() => signIn()}>
+                      <LogIn className="mr-2 h-4 w-4" />
+                      Sign In
+                    </Button>
+                    <Button variant="outline" className="w-full" asChild>
+                      <Link href="/auth/signup" onClick={() => setIsMenuOpen(false)}>
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Sign Up
+                      </Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3 pt-4">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage
+                          src={session.user?.image || "/placeholder-user.jpg"}
+                          alt={session.user?.name || "User"}
+                        />
+                        <AvatarFallback>
+                          {session.user?.name?.charAt(0)?.toUpperCase() || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">
+                          {session.user?.name || "User"}
+                        </p>
+                        <p className="text-sm text-muted-foreground truncate">
+                          {session.user?.email}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      onClick={() => {
+                        signOut();
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign Out
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

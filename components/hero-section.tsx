@@ -1,271 +1,145 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import {
-  Search,
-  Crown,
-  CheckCircle2,
-  Calendar,
-  Users,
-  Award,
-  Sparkles,
-  ArrowRight,
-} from "lucide-react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 
-const features = [
+const heroImages = [
   {
-    icon: Calendar,
-    title: "1000+ Events",
-    description: "Successfully planned and executed",
+    src: "https://partyslate.imgix.net/photos/2704252/photo-1c8c8cd9-c588-42fe-8f92-89fc38ed3deb.jpg?ixlib=js-3.8.0&auto=compress%2Cformat&bg=fff&w=2400",
+    alt: "Elegant wedding celebration",
+    topText: "discover",
+    mainText: "DREAM VENUES",
   },
   {
-    icon: Users,
-    title: "500+ Vendors",
-    description: "Verified and trusted partners",
+    src: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80",
+    alt: "Beautiful event decoration",
+    topText: "find",
+    mainText: "PERFECT VENDORS",
   },
   {
-    icon: Award,
-    title: "98% Satisfaction",
-    description: "From our happy clients",
+    src: "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80",
+    alt: "Romantic venue setup",
+    topText: "explore",
+    mainText: "STUNNING DECORATIONS",
   },
-];
-
-const benefits = [
-  "Browse thousands of verified vendors",
-  "Compare prices and packages instantly",
-  "Read authentic reviews from real customers",
-  "Book services with confidence",
+  {
+    src: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80",
+    alt: "Vibrant event entertainment",
+    topText: "experience",
+    mainText: "LIVE ENTERTAINMENT",
+  },
 ];
 
 export function HeroSection() {
   const router = useRouter();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center -mt-16 overflow-hidden bg-gradient-to-br from-background via-secondary/10 to-background">
-      {/* Animated Background Pattern */}
-      <div className="absolute inset-0 overflow-hidden opacity-20">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
-      </div>
+    <section className="relative -mt-16">
+      {/* Rotating Background Images with Fade Effect */}
+      <div className="relative h-[500px]">
+        <AnimatePresence initial={false}>
+          <motion.div
+            key={currentImageIndex}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={heroImages[currentImageIndex].src}
+              alt={heroImages[currentImageIndex].alt}
+              fill
+              priority={currentImageIndex === 0}
+              quality={90}
+              className="object-cover"
+              sizes="100vw"
+            />
+          </motion.div>
+        </AnimatePresence>
 
-      {/* Content Container */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Column - Main Content */}
-          <div className="space-y-8">
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 backdrop-blur-sm">
-                <Sparkles className="h-4 w-4 text-primary" />
-                <span className="text-sm font-semibold text-primary">
-                  India's Trusted Event Planning Platform
-                </span>
-              </div>
-            </motion.div>
-
-            {/* Heading */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="space-y-4"
-            >
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight">
-                <span className="bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
-                  Plan Your Perfect
-                </span>
-                <br />
-                <span className="text-primary">Event with Ease</span>
-              </h1>
-              <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-xl">
-                From weddings to corporate events, discover and book the best
-                venues, vendors, and services all in one place. Make your
-                celebration unforgettable.
-              </p>
-            </motion.div>
-
-            {/* Benefits List */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="space-y-3"
-            >
-              {benefits.map((benefit, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                  <span className="text-base text-foreground/80">{benefit}</span>
-                </div>
-              ))}
-            </motion.div>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-4"
-            >
-              <Button
-                size="lg"
-                className="text-lg px-8 py-6 shadow-2xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:scale-105 group"
-                onClick={() => router.push("/search")}
+        {/* Text Overlay on Image */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            {/* Dynamic Top Text */}
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={`top-${currentImageIndex}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.6 }}
+                className="text-xs sm:text-sm tracking-[0.3em] text-white mb-2 font-light uppercase drop-shadow-lg"
               >
-                <Search className="h-5 w-5 mr-2" />
-                Start Planning
-                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
+                {heroImages[currentImageIndex].topText}
+              </motion.p>
+            </AnimatePresence>
 
-              <Button
-                variant="outline"
-                size="lg"
-                className="text-lg px-8 py-6 border-2 hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105"
-                onClick={() => router.push("/vendor/onboarding")}
+            {/* Dynamic Main Heading */}
+            <AnimatePresence mode="wait">
+              <motion.h1
+                key={`main-${currentImageIndex}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.6 }}
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white drop-shadow-lg"
               >
-                <Crown className="h-5 w-5 mr-2" />
-                Join as Vendor
-              </Button>
-            </motion.div>
-          </div>
-
-          {/* Right Column - Features & Image */}
-          <div className="space-y-6">
-            {/* Feature Cards */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4"
-            >
-              {features.map((feature, index) => {
-                const Icon = feature.icon;
-                return (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
-                  >
-                    <Card className="p-6 hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 hover:border-primary/50 bg-card/50 backdrop-blur-sm">
-                      <div className="flex items-center gap-4">
-                        <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                          <Icon className="h-6 w-6 text-primary" />
-                        </div>
-                        <div>
-                          <h3 className="font-bold text-lg mb-1">
-                            {feature.title}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {feature.description}
-                          </p>
-                        </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-
-            {/* Hero Image */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.4 }}
-              className="relative rounded-3xl overflow-hidden shadow-2xl h-[400px] group"
-            >
-              <Image
-                src="/hero-banner.jpg"
-                alt="Event celebration"
-                fill
-                priority
-                quality={90}
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                fetchPriority="high"
-              />
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-
-              {/* Floating Badge */}
-              <div className="absolute bottom-6 left-6 right-6">
-                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-xl">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">
-                        Trusted by thousands
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <div className="flex -space-x-2">
-                          {[1, 2, 3, 4].map((i) => (
-                            <div
-                              key={i}
-                              className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-purple-500 border-2 border-white"
-                            />
-                          ))}
-                        </div>
-                        <span className="text-sm font-semibold">
-                          +10,000 clients
-                        </span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center gap-1 text-yellow-500 mb-1">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                          <svg
-                            key={i}
-                            className="w-4 h-4 fill-current"
-                            viewBox="0 0 20 20"
-                          >
-                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                          </svg>
-                        ))}
-                      </div>
-                      <p className="text-sm font-semibold">4.9/5 Rating</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+                {heroImages[currentImageIndex].mainText}
+              </motion.h1>
+            </AnimatePresence>
           </div>
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 0.6 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 hidden lg:block"
-      >
+      {/* Modal Card - Positioned at boundary */}
+      <div className="relative -mt-24 z-10 w-full px-4 sm:px-6 lg:px-8">
         <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-          className="flex flex-col items-center text-muted-foreground"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="max-w-lg mx-auto"
         >
-          <p className="text-xs uppercase tracking-wider mb-2 font-medium">
-            Scroll to explore
-          </p>
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-          </svg>
+            <div className="bg-card border border-border text-center rounded-lg shadow-2xl p-6 sm:p-8">
+              <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3">
+                Plan Your Dream Event
+              </h2>
+              <p className="text-sm sm:text-base text-muted-foreground mb-6 leading-relaxed">
+                Weddings, galas, birthdays, and more. Find venues, vendors, and ideas you can't find anywhere else.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button
+                  size="default"
+                  className="px-6 py-5 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all hover:scale-105"
+                  onClick={() => router.push("/search")}
+                >
+                  START PLANNING
+                </Button>
+                <Button
+                  size="default"
+                  variant="outline"
+                  className="px-6 py-5 text-base font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105"
+                  onClick={() => router.push("/vendor")}
+                >
+                  JOIN AS VENDOR
+                </Button>
+              </div>
+            </div>
         </motion.div>
-      </motion.div>
+      </div>
     </section>
   );
 }
