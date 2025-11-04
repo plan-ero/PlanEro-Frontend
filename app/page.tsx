@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { HeroSection } from "@/components/hero-section";
 import { CategoriesSection } from "@/components/categories-section";
+import { FeaturedIdeaSlates } from "@/components/featured-idea-slates";
 import { OrganizersSection } from "@/components/organizers-section";
 import { VendorTeamSection } from "@/components/vendor-team-section";
 
@@ -28,6 +29,7 @@ export default async function HomePage() {
       <CategoriesSection />
       <VendorTeamSection />
       <OrganizersSection />
+      <FeaturedIdeaSlates />
     </main>
   );
 }

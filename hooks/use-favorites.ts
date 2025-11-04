@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 interface FavoriteItem {
   id: string;
   name: string;
-  price: number;
+  price?: number;
   image: string;
   type: "venue" | "service";
 }

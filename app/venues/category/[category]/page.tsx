@@ -17,6 +17,7 @@ import { useFavorites } from "@/hooks/use-favorites";
 import { useAuth } from "@/hooks/use-auth";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { getPriceDisplay } from "@/lib/utils";
 
 // Mock venues data organized by category
 const venuesByCategory: Record<string, any[]> = {
@@ -345,7 +346,8 @@ export default function CategoryPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-2xl font-bold">
-                        ₹{venue.price.toLocaleString()}
+                        {venue.priceEnum ? getPriceDisplay(venue.priceEnum) : 
+                         venue.price ? `₹${venue.price.toLocaleString()}` : "Price on request"}
                       </span>
                       <span className="text-sm text-muted-foreground ml-1">
                         / event

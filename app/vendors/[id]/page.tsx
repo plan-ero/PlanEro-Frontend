@@ -36,6 +36,7 @@ import {
   DollarSign,
   Tag,
 } from "lucide-react";
+import { getPriceDisplay } from "@/lib/utils";
 
 interface Vendor {
   id: number;
@@ -60,7 +61,6 @@ interface Service {
   eventType: string;
   priceEnum: string;
   availability: boolean;
-  cost: number;
   metadata?: string;
   images?: string[];
   vendorId: number;
@@ -433,7 +433,7 @@ export default function VendorDetailPage() {
                     <LoadingSpinner />
                   </div>
                 ) : services.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                     {services.map((service) => {
                       const ServiceIcon =
                         serviceTypeIcons[service.serviceType] || Tag;
@@ -444,15 +444,15 @@ export default function VendorDetailPage() {
                         >
                           <CardContent className="p-4">
                             <div className="flex items-start gap-3">
-                              <div className="p-2 bg-primary/10 rounded-lg">
+                              <div className="p-2 bg-primary/10 rounded-lg shrink-0">
                                 <ServiceIcon className="h-5 w-5 text-primary" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <h4 className="font-medium text-sm mb-1 line-clamp-1">
+                                <h4 className="font-medium text-sm mb-1 line-clamp-2 leading-relaxed">
                                   {service.name}
                                 </h4>
-                                <div className="flex items-center gap-2 mb-2">
-                                  <Badge variant="outline" className="text-xs">
+                                <div className="flex flex-wrap items-center gap-1 mb-2">
+                                  <Badge variant="outline" className="text-xs shrink-0">
                                     {service.serviceType.replace(/_/g, " ")}
                                   </Badge>
                                   <Badge
@@ -463,8 +463,8 @@ export default function VendorDetailPage() {
                                     }
                                     className={
                                       service.availability
-                                        ? "bg-green-100 text-green-800 border-green-200 text-xs"
-                                        : "text-xs"
+                                        ? "bg-green-100 text-green-800 border-green-200 text-xs shrink-0"
+                                        : "text-xs shrink-0"
                                     }
                                   >
                                     {service.availability
@@ -472,11 +472,11 @@ export default function VendorDetailPage() {
                                       : "Unavailable"}
                                   </Badge>
                                 </div>
-                                <div className="flex items-center justify-between">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                   <div className="flex items-center gap-1">
-                                    <DollarSign className="h-3 w-3 text-green-600" />
-                                    <span className="text-sm font-semibold text-green-600">
-                                      ₹{service.cost.toFixed(2)}
+                                    <DollarSign className="h-3 w-3 text-green-600 shrink-0" />
+                                    <span className="text-sm font-semibold text-green-600 truncate">
+                                      {getPriceDisplay(service.priceEnum)}
                                     </span>
                                   </div>
                                   {service.totalRating !== undefined &&
@@ -487,7 +487,7 @@ export default function VendorDetailPage() {
                                         readonly
                                         size="sm"
                                       />
-                                      <span className="text-xs text-muted-foreground">
+                                      <span className="text-xs text-muted-foreground whitespace-nowrap">
                                         ({service.numberOfRatings})
                                       </span>
                                     </div>

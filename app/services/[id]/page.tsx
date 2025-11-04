@@ -15,6 +15,7 @@ import { useFavorites } from "@/hooks/use-favorites";
 import { useCart } from "@/hooks/use-cart";
 import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
+import { getPriceDisplay, PriceEnum } from "@/lib/utils";
 import {
   ArrowLeft,
   Camera,
@@ -70,13 +71,6 @@ enum EventType {
   EXHIBITION = "EXHIBITION",
 }
 
-enum PriceEnum {
-  INEXPENSIVE = "INEXPENSIVE",
-  AFFORDABLE = "AFFORDABLE",
-  MODERATE = "MODERATE",
-  LUXURY = "LUXURY",
-}
-
 const serviceTypeIcons = {
   [ServiceType.PHOTOGRAPHER]: Camera,
   [ServiceType.PHOTO_VIDEOGRAPHER]: Camera,
@@ -121,7 +115,6 @@ interface Service {
   eventType: EventType;
   priceEnum: PriceEnum;
   availability: boolean;
-  cost: number;
   metadata?: string;
   images?: string[];
   vendorId: number;
@@ -170,7 +163,6 @@ export default function ServiceDetailPage() {
       addToFavorites({
         id: serviceId,
         name: service.name,
-        price: service.cost,
         image: service.images?.[0] || "/placeholder.jpg",
         type: "service",
       });
@@ -189,7 +181,6 @@ export default function ServiceDetailPage() {
     addItem({
       id: serviceId,
       name: service.name,
-      price: service.cost,
       image: service.images?.[0] || "/placeholder.jpg",
       type: "service",
       quantity: 1,
@@ -334,7 +325,7 @@ export default function ServiceDetailPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="text-3xl font-bold text-primary">
-                          ₹{service.cost.toFixed(2)}
+                          {getPriceDisplay(service.priceEnum)}
                         </div>
                         <Badge
                           variant={
@@ -539,7 +530,7 @@ export default function ServiceDetailPage() {
                     Price
                   </span>
                   <span className="text-sm font-medium">
-                    ₹{service.cost.toFixed(2)}
+                    {getPriceDisplay(service.priceEnum)}
                   </span>
                 </div>
               </CardContent>

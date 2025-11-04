@@ -61,7 +61,7 @@ export default function CartPage() {
                           {item.type}
                         </p>
                         <p className="text-lg font-bold">
-                          ₹{item.price.toLocaleString()}
+                          {item.price ? `₹${item.price.toLocaleString()}` : "Price on request"}
                         </p>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -112,7 +112,7 @@ export default function CartPage() {
                       {item.name} x{item.quantity}
                     </span>
                     <span>
-                      ₹{(item.price * item.quantity).toLocaleString()}
+                      {item.price ? `₹${(item.price * item.quantity).toLocaleString()}` : "Price on request"}
                     </span>
                   </div>
                 ))}
@@ -120,7 +120,7 @@ export default function CartPage() {
               <div className="border-t pt-4">
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
-                  <span>${total.toLocaleString()}</span>
+                  <span>₹{total.toLocaleString()}</span>
                 </div>
               </div>
               <Button className="w-full mt-6" size="lg">

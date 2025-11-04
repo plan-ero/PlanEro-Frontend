@@ -46,6 +46,7 @@ import {
     Tag,
     ImageIcon,
 } from "lucide-react";
+import { getPriceDisplay, PriceEnum } from "@/lib/utils";
 
 enum ServiceType {
     PHOTOGRAPHER = "PHOTOGRAPHER",
@@ -75,13 +76,6 @@ enum EventType {
     HOLIDAY_PARTY = "HOLIDAY_PARTY",
     CONFERENCE = "CONFERENCE",
     EXHIBITION = "EXHIBITION",
-}
-
-enum PriceEnum {
-    INEXPENSIVE = "INEXPENSIVE",
-    AFFORDABLE = "AFFORDABLE",
-    MODERATE = "MODERATE",
-    LUXURY = "LUXURY",
 }
 
 const serviceTypeIcons = {
@@ -115,7 +109,6 @@ interface Service {
     eventType: EventType;
     priceEnum: PriceEnum;
     availability: boolean;
-    cost: number;
     metadata?: string;
     images?: string[];
     vendorId: number;
@@ -350,7 +343,6 @@ function ServicesContent() {
             addToFavorites({
                 id: serviceId,
                 name: service.name,
-                price: service.cost,
                 image: service.images?.[0] || "/placeholder.jpg",
                 type: "service",
             });
@@ -372,7 +364,6 @@ function ServicesContent() {
         addItem({
             id: service.id.toString(),
             name: service.name,
-            price: service.cost,
             image: service.images?.[0] || "/placeholder.jpg",
             type: "service",
             quantity: 1,
@@ -509,8 +500,8 @@ function ServicesContent() {
                                         className="pl-10"
                                     />
                                 </div>
-                                <Button 
-                                    onClick={handleManualSearch} 
+                                <Button
+                                    onClick={handleManualSearch}
                                     className="px-6"
                                     disabled={dataLoading}
                                 >
@@ -671,7 +662,7 @@ function ServicesContent() {
                                                 </div>
                                                 <div>
                                                     <span className="text-base sm:text-lg font-bold text-gray-900">
-                                                        ₹{service.cost.toFixed(2)}
+                                                        {getPriceDisplay(service.priceEnum)}
                                                     </span>
                                                 </div>
                                             </div>

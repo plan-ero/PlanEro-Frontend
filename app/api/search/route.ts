@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
                   return service.metadata || "Location not specified";
                 }
               })()) : "Location not specified",
-            price: service.cost || 0,
+            priceEnum: service.priceEnum || "MODERATE",
             image: service.images?.[0] || "/placeholder.svg",
             description: service.metadata || service.name,
             rating: service.totalRating || 0,
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
             name: vendor.businessName || vendor.email,
             category: "vendor",
             location: vendor.location || "Location not specified",
-            price: 0, // Vendors don't have a single price
+            priceEnum: "MODERATE", // Default price range for vendors
             image: vendor.profilePictureUrl || "/placeholder-user.jpg",
             description: vendor.businessName || vendor.email,
             rating: 0, // TODO: Add vendor ratings when available
@@ -118,12 +118,6 @@ export async function GET(request: NextRequest) {
     // Sort results
     if (sortBy) {
       switch (sortBy) {
-        case "price-low":
-          results.sort((a, b) => (a.price || 0) - (b.price || 0));
-          break;
-        case "price-high":
-          results.sort((a, b) => (b.price || 0) - (a.price || 0));
-          break;
         case "rating":
           results.sort((a, b) => (b.rating || 0) - (a.rating || 0));
           break;

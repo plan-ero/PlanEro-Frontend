@@ -277,7 +277,7 @@ export default function UserDashboardPage() {
             <p className="text-4xl font-bold">
               $
               {bookings
-                .reduce((sum, booking) => sum + booking.price, 0)
+                .reduce((sum, booking) => sum + (booking.price || 0), 0)
                 .toLocaleString()}
             </p>
           </CardContent>
@@ -351,7 +351,9 @@ function BookingCard({
         </div>
 
         <div className="flex items-center justify-between mt-4">
-          <p className="font-bold">₹{booking.price.toLocaleString()}</p>
+          <p className="font-bold">
+            {booking.price ? `₹${booking.price.toLocaleString()}` : "Price not available"}
+          </p>
 
           {booking.status === "upcoming" ? (
             <Button

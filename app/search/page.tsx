@@ -30,6 +30,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { SearchResultSkeleton, GridSkeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { getPriceDisplay } from "@/lib/utils";
 
 // Mock data removed - now using real API
 /* const mockResults = [
@@ -407,14 +408,7 @@ function SearchContent() {
           <div className="flex items-center justify-between">
             <div>
               <span className="text-xl font-bold text-primary">
-                ₹{item.price.toLocaleString()}
-              </span>
-              <span className="text-sm text-muted-foreground ml-1">
-                {item.type === "venue"
-                  ? "/event"
-                  : item.category === "caterers"
-                    ? "/person"
-                    : "/service"}
+                {getPriceDisplay(item.priceEnum)}
               </span>
             </div>
             <div className="flex gap-2">
@@ -507,9 +501,7 @@ function SearchContent() {
               className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
             >
               <option value="relevance">Sort by Relevance</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="rating">Highest Rated</option>
+              <option value="rating">Rating: High to Low</option>
               <option value="reviews">Most Reviewed</option>
             </select>
           </div>

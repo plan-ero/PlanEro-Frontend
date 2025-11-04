@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 interface CartItem {
   id: string;
   name: string;
-  price: number;
+  price?: number;
   image: string;
   type: "venue" | "service";
   quantity: number;
@@ -85,7 +85,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const total = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + (item.price || 0) * item.quantity,
     0,
   );
 

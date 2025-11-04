@@ -68,6 +68,7 @@ import { LoadingSpinner } from "@/components/loading-spinner";
 import { StarRating } from "@/components/ui/star-rating";
 import MultiImageUpload from "@/components/multi-image-upload";
 import toast from "react-hot-toast";
+import { getPriceDisplay, PriceEnum } from "@/lib/utils";
 
 // Service Types Enum based on backend
 enum ServiceType {
@@ -99,14 +100,6 @@ enum EventType {
   HOLIDAY_PARTY = "HOLIDAY_PARTY",
   CONFERENCE = "CONFERENCE",
   EXHIBITION = "EXHIBITION",
-}
-
-// Price Enum based on backend
-enum PriceEnum {
-  INEXPENSIVE = "INEXPENSIVE",
-  AFFORDABLE = "AFFORDABLE",
-  MODERATE = "MODERATE",
-  LUXURY = "LUXURY",
 }
 
 const serviceTypeIcons = {
@@ -152,7 +145,6 @@ const serviceSchema = z.object({
   eventType: z.nativeEnum(EventType),
   priceEnum: z.nativeEnum(PriceEnum),
   availability: z.boolean().default(true),
-  cost: z.number().min(0, "Cost must be a positive number"),
   metadata: z.string().optional(),
   images: z.array(z.string()).optional(),
 });
@@ -166,7 +158,6 @@ interface Service {
   eventType: EventType;
   priceEnum: PriceEnum;
   availability: boolean;
-  cost: number;
   metadata?: string;
   images?: string[];
   vendorId: number;
@@ -191,7 +182,6 @@ export default function VendorServices() {
       eventType: EventType.WEDDING,
       priceEnum: PriceEnum.MODERATE,
       availability: true,
-      cost: 0,
       metadata: "",
       images: [],
     },
@@ -416,7 +406,6 @@ export default function VendorServices() {
       eventType: service.eventType,
       priceEnum: service.priceEnum,
       availability: service.availability,
-      cost: service.cost,
       metadata: service.metadata || "",
       images: serviceImages,
     });
@@ -431,7 +420,6 @@ export default function VendorServices() {
       eventType: EventType.WEDDING,
       priceEnum: PriceEnum.MODERATE,
       availability: true,
-      cost: 0,
       metadata: "",
       images: [],
     });
@@ -578,27 +566,6 @@ export default function VendorServices() {
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="cost">Cost (INR ₹) *</Label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="cost"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      placeholder="0.00"
-                      className="pl-10"
-                      {...form.register("cost", { valueAsNumber: true })}
-                    />
-                  </div>
-                  {form.formState.errors.cost && (
-                    <p className="text-sm text-red-500">
-                      {form.formState.errors.cost.message}
-                    </p>
-                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -780,7 +747,7 @@ export default function VendorServices() {
                         </div>
                         <div>
                           <span className="text-lg font-bold text-gray-900">
-                            ₹{service.cost.toFixed(2)}
+                            {getPriceDisplay(service.priceEnum)}
                           </span>
                         </div>
                       </div>

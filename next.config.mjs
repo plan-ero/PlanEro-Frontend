@@ -52,6 +52,8 @@ const nextConfig = {
     turbopackFileSystemCacheForDev: true,
     // Enable View Transitions API support
     viewTransition: true,
+    // Reduce CSS chunks to minimize preload warnings
+    optimizeCss: true,
   },
 
   // This is the new flag for PPR, which Turbopack supports

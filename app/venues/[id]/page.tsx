@@ -28,6 +28,7 @@ import { useFavorites } from "@/hooks/use-favorites";
 import { useAuth } from "@/hooks/use-auth";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { getPriceDisplay, PriceEnum } from "@/lib/utils";
 
 // Mock venue data - replace with actual API call
 const getVenueById = (id: string) => {
@@ -37,7 +38,7 @@ const getVenueById = (id: string) => {
       name: "Elegant Garden Venue",
       location: "Beverly Hills, CA",
       address: "123 Garden Lane, Beverly Hills, CA 90210",
-      price: 5000,
+      priceEnum: PriceEnum.LUXURY,
       images: [
         "https://us.123rf.com/450wm/machthay/machthay2407/machthay240700279/231406089-wedding-ceremony-decoration-with-flowers-and-garlands-thailand.jpg?ver=6",
         "https://us.123rf.com/450wm/machthay/machthay2407/machthay240700279/231406089-wedding-ceremony-decoration-with-flowers-and-garlands-thailand.jpg?ver=6",
@@ -93,7 +94,7 @@ const getVenueById = (id: string) => {
       name: "Modern Rooftop Space",
       location: "Manhattan, NY",
       address: "456 Sky Tower, Manhattan, NY 10001",
-      price: 8000,
+      priceEnum: PriceEnum.LUXURY,
       images: [
         "https://us.123rf.com/450wm/machthay/machthay2407/machthay240700279/231406089-wedding-ceremony-decoration-with-flowers-and-garlands-thailand.jpg?ver=6",
         "https://us.123rf.com/450wm/machthay/machthay2407/machthay240700279/231406089-wedding-ceremony-decoration-with-flowers-and-garlands-thailand.jpg?ver=6",
@@ -180,7 +181,6 @@ export default function VenueDetailPage() {
     addItem({
       id: venue.id,
       name: venue.name,
-      price: venue.price,
       image: venue.images[0],
       type: "venue",
       quantity: 1,
@@ -201,7 +201,6 @@ export default function VenueDetailPage() {
       addToFavorites({
         id: venue.id,
         name: venue.name,
-        price: venue.price,
         image: venue.images[0],
         type: "venue",
       });
@@ -395,7 +394,7 @@ export default function VenueDetailPage() {
             <CardContent className="p-6">
               <div className="mb-6">
                 <div className="text-3xl font-bold mb-2">
-                  ₹{venue.price.toLocaleString()}
+                  {getPriceDisplay(venue.priceEnum)}
                   <span className="text-lg font-normal text-muted-foreground ml-2">
                     / event
                   </span>
