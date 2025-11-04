@@ -17,32 +17,34 @@ import { ViewTransitions } from "./view-transitions";
 // Optimized font loading with display swap for better performance
 const inter = Inter({
   subsets: ["latin"],
-  display: 'swap',
-  variable: '--font-inter',
+  display: "swap",
+  variable: "--font-inter",
   preload: true,
-  fallback: ['system-ui', 'arial'],
+  fallback: ["system-ui", "arial"],
 });
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
-  display: 'swap',
-  variable: '--font-playfair',
-  weight: ['400', '500', '600', '700', '800', '900'],
+  display: "swap",
+  variable: "--font-playfair",
+  weight: ["400", "500", "600", "700", "800", "900"],
   preload: true,
-  fallback: ['Georgia', 'serif'],
+  fallback: ["Georgia", "serif"],
 });
 
 const montserrat = Montserrat({
   subsets: ["latin"],
-  display: 'swap',
-  variable: '--font-montserrat',
-  weight: ['300', '400', '500', '600', '700', '800'],
+  display: "swap",
+  variable: "--font-montserrat",
+  weight: ["300", "400", "500", "600", "700", "800"],
   preload: true,
-  fallback: ['system-ui', 'arial'],
+  fallback: ["system-ui", "arial"],
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+  ),
   title: {
     default: "PlanEro - Find Your Perfect Venue",
     template: "%s | PlanEro",
@@ -107,7 +109,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${playfair.variable} ${montserrat.variable}`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${inter.variable} ${playfair.variable} ${montserrat.variable}`}
+    >
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#000000" />
@@ -127,14 +133,14 @@ export default function RootLayout({
               <CartProvider>
                 <ViewTransitions>
                   {/* <SmoothScrollProvider> */}
-                    <div className="min-h-screen flex flex-col justify-between">
-                      <Header />
-                      <Suspense fallback={<LoadingSpinner />}>
-                        {children}
-                      </Suspense>
-                      <Footer />
-                    </div>
-                    <Toaster position="top-right" />
+                  <div className="min-h-screen flex flex-col justify-between">
+                    <Header />
+                    <Suspense fallback={<LoadingSpinner />}>
+                      {children}
+                    </Suspense>
+                    <Footer />
+                  </div>
+                  <Toaster position="top-right" />
                   {/* </SmoothScrollProvider> */}
                 </ViewTransitions>
               </CartProvider>

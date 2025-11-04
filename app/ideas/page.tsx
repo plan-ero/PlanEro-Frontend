@@ -4,7 +4,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Search } from "lucide-react";
 import Image from "next/image";
 
@@ -105,7 +111,14 @@ const allIdeaSlates: IdeaSlate[] = [
   },
 ];
 
-const categories = ["All", "Wedding", "Corporate", "Birthday", "Baby Shower", "Anniversary"];
+const categories = [
+  "All",
+  "Wedding",
+  "Corporate",
+  "Birthday",
+  "Baby Shower",
+  "Anniversary",
+];
 
 export default function IdeasPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -116,14 +129,19 @@ export default function IdeasPage() {
     let filtered = allIdeaSlates;
 
     if (selectedCategory !== "All") {
-      filtered = filtered.filter(slate => slate.category === selectedCategory);
+      filtered = filtered.filter(
+        (slate) => slate.category === selectedCategory,
+      );
     }
 
     if (searchTerm.trim()) {
-      filtered = filtered.filter(slate =>
-        slate.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        slate.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        slate.author.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (slate) =>
+          slate.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          slate.tags.some((tag) =>
+            tag.toLowerCase().includes(searchTerm.toLowerCase()),
+          ) ||
+          slate.author.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -146,7 +164,8 @@ export default function IdeasPage() {
             <span className="text-black">Idea Slates</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Discover curated collections of event inspiration from our expert team
+            Discover curated collections of event inspiration from our expert
+            team
           </p>
         </div>
 
@@ -167,7 +186,10 @@ export default function IdeasPage() {
                 </Button>
               </div>
             </div>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <Select
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            >
               <SelectTrigger className="md:w-48">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
@@ -185,7 +207,8 @@ export default function IdeasPage() {
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-sm text-muted-foreground">
-            Showing {filteredSlates.length} idea slate{filteredSlates.length !== 1 ? 's' : ''}
+            Showing {filteredSlates.length} idea slate
+            {filteredSlates.length !== 1 ? "s" : ""}
           </p>
         </div>
 
@@ -193,7 +216,10 @@ export default function IdeasPage() {
         {filteredSlates.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredSlates.map((slate) => (
-              <Card key={slate.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer">
+              <Card
+                key={slate.id}
+                className="overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+              >
                 <CardContent className="p-0">
                   {/* Image Grid */}
                   <div className="grid grid-cols-2 gap-1 aspect-square">
@@ -247,7 +273,9 @@ export default function IdeasPage() {
         ) : (
           <div className="text-center py-12">
             <div className="max-w-md mx-auto">
-              <h3 className="text-lg font-semibold mb-2">No idea slates found</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                No idea slates found
+              </h3>
               <p className="text-muted-foreground mb-4">
                 Try adjusting your search terms or category filter
               </p>

@@ -145,8 +145,10 @@ function SearchContent() {
 
   // Extract URL params IMMEDIATELY and discard searchParams reference
   const rawSearchParams = useSearchParams();
-  const searchQuery = rawSearchParams?.get("q") || rawSearchParams?.get("search") || "";
-  const typeParam = (rawSearchParams?.get("type") as "venue" | "vendor" | "all") || "all";
+  const searchQuery =
+    rawSearchParams?.get("q") || rawSearchParams?.get("search") || "";
+  const typeParam =
+    (rawSearchParams?.get("type") as "venue" | "vendor" | "all") || "all";
   const locationParam = rawSearchParams?.get("location") || "";
   const categoryParam = rawSearchParams?.get("category") || "";
   const sortParam = rawSearchParams?.get("sort") || "relevance";
@@ -158,7 +160,9 @@ function SearchContent() {
 
   // Local state for filters
   const [searchInput, setSearchInput] = useState("");
-  const [typeFilter, setTypeFilter] = useState<"venue" | "vendor" | "all">("all");
+  const [typeFilter, setTypeFilter] = useState<"venue" | "vendor" | "all">(
+    "all",
+  );
   const [locationFilter, setLocationFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [sortBy, setSortBy] = useState("relevance");
@@ -261,7 +265,8 @@ function SearchContent() {
         if (typeParam && typeParam !== "all") params.append("type", typeParam);
         if (locationParam) params.append("location", locationParam);
         if (categoryParam) params.append("category", categoryParam);
-        if (sortParam && sortParam !== "relevance") params.append("sortBy", sortParam);
+        if (sortParam && sortParam !== "relevance")
+          params.append("sortBy", sortParam);
 
         const response = await fetch(`/api/search?${params.toString()}`);
 
@@ -284,13 +289,7 @@ function SearchContent() {
     fetchResults();
   }, [searchQuery, typeParam, locationParam, categoryParam, sortParam]);
 
-  const ResultCard = ({
-    item,
-    index,
-  }: {
-    item: any;
-    index: number;
-  }) => (
+  const ResultCard = ({ item, index }: { item: any; index: number }) => (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
@@ -341,7 +340,10 @@ function SearchContent() {
               <span className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
                 {item.category
                   .split("-")
-                  .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .map(
+                    (word: string) =>
+                      word.charAt(0).toUpperCase() + word.slice(1),
+                  )
                   .join(" ")}
               </span>
             </div>
@@ -390,11 +392,13 @@ function SearchContent() {
           {/* Tags */}
           {item.tags && item.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-4">
-              {item.tags.slice(0, viewMode === "grid" ? 2 : 4).map((tag: string) => (
-                <Badge key={tag} variant="outline" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
+              {item.tags
+                .slice(0, viewMode === "grid" ? 2 : 4)
+                .map((tag: string) => (
+                  <Badge key={tag} variant="outline" className="text-xs">
+                    {tag}
+                  </Badge>
+                ))}
               {item.tags.length > (viewMode === "grid" ? 2 : 4) && (
                 <Badge variant="outline" className="text-xs">
                   +{item.tags.length - (viewMode === "grid" ? 2 : 4)} more
@@ -438,7 +442,10 @@ function SearchContent() {
           <div className="h-12 w-32 bg-muted animate-pulse rounded-md" />
           <div className="h-12 w-24 bg-muted animate-pulse rounded-md" />
         </div>
-        <GridSkeleton count={9} CardComponent={() => <SearchResultSkeleton viewMode="grid" />} />
+        <GridSkeleton
+          count={9}
+          CardComponent={() => <SearchResultSkeleton viewMode="grid" />}
+        />
       </main>
     );
   }
@@ -485,9 +492,7 @@ function SearchContent() {
             >
               <SlidersHorizontal className="h-4 w-4" />
               Filters
-              {(typeFilter !== "all" ||
-                locationFilter ||
-                categoryFilter) && (
+              {(typeFilter !== "all" || locationFilter || categoryFilter) && (
                 <Badge variant="destructive" className="ml-2 px-1 py-0 text-xs">
                   !
                 </Badge>
@@ -541,8 +546,10 @@ function SearchContent() {
                 <Filters
                   onFilterChange={(newFilters) => {
                     if (newFilters.type) handleTypeChange(newFilters.type);
-                    if (newFilters.location !== undefined) handleLocationChange(newFilters.location);
-                    if (newFilters.category !== undefined) handleCategoryChange(newFilters.category);
+                    if (newFilters.location !== undefined)
+                      handleLocationChange(newFilters.location);
+                    if (newFilters.category !== undefined)
+                      handleCategoryChange(newFilters.category);
                   }}
                   className="shadow-lg"
                 />

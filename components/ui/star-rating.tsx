@@ -33,7 +33,9 @@ export function StarRating({
   };
 
   return (
-    <div className={cn("flex items-center gap-1 flex-shrink-0 min-w-0", className)}>
+    <div
+      className={cn("flex items-center gap-1 flex-shrink-0 min-w-0", className)}
+    >
       <div className="flex items-center gap-0.5 flex-shrink-0">
         {Array.from({ length: maxRating }, (_, index) => {
           const filled = index < Math.floor(rating);

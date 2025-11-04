@@ -27,7 +27,7 @@ import { VenueCardSkeleton, GridSkeleton } from "@/components/ui/skeleton";
 
 const venueCategories = [
   "wedding",
-  "anniversary-engagement", 
+  "anniversary-engagement",
   "corporate",
   "college-fests",
   "house-private-party",
@@ -157,7 +157,11 @@ function VenuesContent() {
       setError(null);
       const params = new URLSearchParams();
       // Only send eventType if category is selected and not empty
-      if (categoryParam && categoryParam.trim() !== "" && categoryParam !== "all") {
+      if (
+        categoryParam &&
+        categoryParam.trim() !== "" &&
+        categoryParam !== "all"
+      ) {
         params.append("eventType", categoryParam);
       }
       if (searchQuery) params.append("search", searchQuery);
@@ -169,13 +173,16 @@ function VenuesContent() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Failed to fetch venues (${response.status})`);
+        throw new Error(
+          errorData.error || `Failed to fetch venues (${response.status})`,
+        );
       }
 
       const data = await response.json();
       setVenues(Array.isArray(data) ? data : []);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to load venues";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to load venues";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -283,10 +290,7 @@ function VenuesContent() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <Select
-              value={categoryFilter}
-              onValueChange={handleCategoryChange}
-            >
+            <Select value={categoryFilter} onValueChange={handleCategoryChange}>
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
@@ -296,17 +300,16 @@ function VenuesContent() {
                   <SelectItem key={category} value={category}>
                     {category
                       .split("-")
-                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1),
+                      )
                       .join(" ")}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            <Select
-              value={locationFilter}
-              onValueChange={handleLocationChange}
-            >
+            <Select value={locationFilter} onValueChange={handleLocationChange}>
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Location" />
               </SelectTrigger>
@@ -320,9 +323,11 @@ function VenuesContent() {
               </SelectContent>
             </Select>
 
-            {(searchInput || categoryFilter !== "all" || locationFilter !== "all") && (
-              <Button 
-                variant="ghost" 
+            {(searchInput ||
+              categoryFilter !== "all" ||
+              locationFilter !== "all") && (
+              <Button
+                variant="ghost"
                 size="icon"
                 onClick={clearAllFilters}
                 className="shrink-0"
@@ -344,102 +349,104 @@ function VenuesContent() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {venues.map((venue, index) => (
-          <motion.div
-            key={venue.id}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: index * 0.1 }}
-          >
-            <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="relative">
-                <img
-                  src={venue.images?.[0] || "/placeholder.svg"}
-                  alt={venue.name}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  style={{ viewTransitionName: `venue-image-${venue.id}` }}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/placeholder.svg";
-                  }}
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={`absolute top-2 right-2 bg-white/80 hover:bg-white ${
-                    isFavorite(venue.id) ? "text-red-500" : "text-gray-600"
-                  }`}
-                  onClick={() => handleToggleFavorite(venue)}
-                >
-                  <Heart
-                    className={`h-4 w-4 ${isFavorite(venue.id) ? "fill-current" : ""}`}
+            <motion.div
+              key={venue.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+            >
+              <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="relative">
+                  <img
+                    src={venue.images?.[0] || "/placeholder.svg"}
+                    alt={venue.name}
+                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    style={{ viewTransitionName: `venue-image-${venue.id}` }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/placeholder.svg";
+                    }}
                   />
-                </Button>
-              </div>
-              <CardContent className="p-4">
-                <div className="mb-2">
-                  <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                    {venue.eventType}
-                  </span>
-                </div>
-                <TransitionLink href={`/services/${venue.id}`}>
-                  <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors">
-                    {venue.name}
-                  </h3>
-                </TransitionLink>
-                {venue.metadata && (
-                  <div className="flex items-center text-sm text-muted-foreground mb-2">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {(() => {
-                      try {
-                        return (
-                          JSON.parse(venue.metadata)?.location ||
-                          "Location not specified"
-                        );
-                      } catch {
-                        return venue.metadata || "Location not specified";
-                      }
-                    })()}
-                  </div>
-                )}
-                <p className="text-sm text-muted-foreground mb-3">
-                  {venue.description}
-                </p>
-
-                {/* Rating Display */}
-                {venue.averageRating && (
-                  <div className="flex items-center text-sm text-muted-foreground mb-3">
-                    <Star className="h-4 w-4 mr-1 fill-yellow-400 text-yellow-400" />
-                    <span>{venue.averageRating.toFixed(1)}</span>
-                    {venue.totalReviews && (
-                      <span className="ml-1">
-                        ({venue.totalReviews} reviews)
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-lg font-bold">
-                      {venue.priceEnum ? getPriceDisplay(venue.priceEnum) : "Price on request"}
-                    </span>
-                    <span className="text-sm text-muted-foreground ml-1">
-                      / event
-                    </span>
-                  </div>
                   <Button
-                    size="sm"
-                    onClick={() => handleAddToCart(venue)}
-                    className="flex items-center gap-2"
-                    disabled={!venue.availability}
+                    variant="ghost"
+                    size="icon"
+                    className={`absolute top-2 right-2 bg-white/80 hover:bg-white ${
+                      isFavorite(venue.id) ? "text-red-500" : "text-gray-600"
+                    }`}
+                    onClick={() => handleToggleFavorite(venue)}
                   >
-                    <ShoppingCart className="h-4 w-4" />
-                    {venue.availability ? "Add to Cart" : "Unavailable"}
+                    <Heart
+                      className={`h-4 w-4 ${isFavorite(venue.id) ? "fill-current" : ""}`}
+                    />
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+                <CardContent className="p-4">
+                  <div className="mb-2">
+                    <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                      {venue.eventType}
+                    </span>
+                  </div>
+                  <TransitionLink href={`/services/${venue.id}`}>
+                    <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors">
+                      {venue.name}
+                    </h3>
+                  </TransitionLink>
+                  {venue.metadata && (
+                    <div className="flex items-center text-sm text-muted-foreground mb-2">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {(() => {
+                        try {
+                          return (
+                            JSON.parse(venue.metadata)?.location ||
+                            "Location not specified"
+                          );
+                        } catch {
+                          return venue.metadata || "Location not specified";
+                        }
+                      })()}
+                    </div>
+                  )}
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {venue.description}
+                  </p>
+
+                  {/* Rating Display */}
+                  {venue.averageRating && (
+                    <div className="flex items-center text-sm text-muted-foreground mb-3">
+                      <Star className="h-4 w-4 mr-1 fill-yellow-400 text-yellow-400" />
+                      <span>{venue.averageRating.toFixed(1)}</span>
+                      {venue.totalReviews && (
+                        <span className="ml-1">
+                          ({venue.totalReviews} reviews)
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-lg font-bold">
+                        {venue.priceEnum
+                          ? getPriceDisplay(venue.priceEnum)
+                          : "Price on request"}
+                      </span>
+                      <span className="text-sm text-muted-foreground ml-1">
+                        / event
+                      </span>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => handleAddToCart(venue)}
+                      className="flex items-center gap-2"
+                      disabled={!venue.availability}
+                    >
+                      <ShoppingCart className="h-4 w-4" />
+                      {venue.availability ? "Add to Cart" : "Unavailable"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
       )}
 

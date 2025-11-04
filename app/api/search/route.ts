@@ -9,7 +9,10 @@ export async function GET(request: NextRequest) {
     const location = searchParams.get("location");
     const sortBy = searchParams.get("sortBy");
 
-    const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
+    const backendUrl =
+      process.env.BACKEND_URL ||
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      "http://localhost:8080";
 
     let results: any[] = [];
 
@@ -25,7 +28,7 @@ export async function GET(request: NextRequest) {
             method: "GET",
             headers: { "Content-Type": "application/json" },
             cache: "no-store",
-          }
+          },
         );
 
         if (servicesResponse.ok) {
@@ -35,15 +38,21 @@ export async function GET(request: NextRequest) {
             id: service.id?.toString(),
             type: service.serviceType === "VENUE" ? "venue" : "service",
             name: service.name,
-            category: service.eventType?.toLowerCase() || service.serviceType?.toLowerCase(),
-            location: service.metadata ?
-              ((() => {
-                try {
-                  return JSON.parse(service.metadata)?.location || "Location not specified";
-                } catch {
-                  return service.metadata || "Location not specified";
-                }
-              })()) : "Location not specified",
+            category:
+              service.eventType?.toLowerCase() ||
+              service.serviceType?.toLowerCase(),
+            location: service.metadata
+              ? (() => {
+                  try {
+                    return (
+                      JSON.parse(service.metadata)?.location ||
+                      "Location not specified"
+                    );
+                  } catch {
+                    return service.metadata || "Location not specified";
+                  }
+                })()
+              : "Location not specified",
             priceEnum: service.priceEnum || "MODERATE",
             image: service.images?.[0] || "/placeholder.svg",
             description: service.metadata || service.name,
@@ -73,7 +82,7 @@ export async function GET(request: NextRequest) {
             method: "GET",
             headers: { "Content-Type": "application/json" },
             cache: "no-store",
-          }
+          },
         );
 
         if (vendorsResponse.ok) {
@@ -102,16 +111,17 @@ export async function GET(request: NextRequest) {
 
     // Apply frontend filters
     if (category && category !== "all") {
-      results = results.filter((result) =>
-        result.category?.toLowerCase().includes(category.toLowerCase()) ||
-        result.serviceType?.toLowerCase().includes(category.toLowerCase()) ||
-        result.eventType?.toLowerCase().includes(category.toLowerCase())
+      results = results.filter(
+        (result) =>
+          result.category?.toLowerCase().includes(category.toLowerCase()) ||
+          result.serviceType?.toLowerCase().includes(category.toLowerCase()) ||
+          result.eventType?.toLowerCase().includes(category.toLowerCase()),
       );
     }
 
     if (location) {
       results = results.filter((result) =>
-        result.location?.toLowerCase().includes(location.toLowerCase())
+        result.location?.toLowerCase().includes(location.toLowerCase()),
       );
     }
 
@@ -130,13 +140,15 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    console.log(`Search returned ${results.length} results for query: "${query}", type: ${type}`);
+    console.log(
+      `Search returned ${results.length} results for query: "${query}", type: ${type}`,
+    );
     return NextResponse.json(results);
   } catch (error) {
     console.error("Error in search API:", error);
     return NextResponse.json(
       { error: "Internal server error while searching" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

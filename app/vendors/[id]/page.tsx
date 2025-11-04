@@ -452,7 +452,10 @@ export default function VendorDetailPage() {
                                   {service.name}
                                 </h4>
                                 <div className="flex flex-wrap items-center gap-1 mb-2">
-                                  <Badge variant="outline" className="text-xs shrink-0">
+                                  <Badge
+                                    variant="outline"
+                                    className="text-xs shrink-0"
+                                  >
                                     {service.serviceType.replace(/_/g, " ")}
                                   </Badge>
                                   <Badge

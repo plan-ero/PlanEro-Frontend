@@ -168,66 +168,68 @@ export function CategoriesSection() {
                   e.preventDefault();
                 }
               }}
-              style={{ overscrollBehavior: 'contain' }}
+              style={{ overscrollBehavior: "contain" }}
             >
               <div className="flex gap-6 px-4">
-              {categories.map((category, index) => {
-                const IconComponent = category.icon;
-                return (
-                  <motion.div
-                    key={category.id}
-                    initial={{ opacity: 0, x: 50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    className="flex-shrink-0 w-80"
-                  >
-                    <Card className="group/card hover:shadow-2xl transition-all duration-500 h-full shadow-lg overflow-hidden border border-border/50 hover:border-primary/50 cursor-pointer">
-                      <Link href={category.href}>
-                        {/* Image Card - Prominent Image Display */}
-                        <div className="relative h-64 overflow-hidden">
-                          <div
-                            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 group-hover/card:scale-110"
-                            style={{ backgroundImage: `url(${category.image})` }}
-                          />
-                          {/* Subtle gradient overlay for text readability */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                {categories.map((category, index) => {
+                  const IconComponent = category.icon;
+                  return (
+                    <motion.div
+                      key={category.id}
+                      initial={{ opacity: 0, x: 50 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                      className="flex-shrink-0 w-80"
+                    >
+                      <Card className="group/card hover:shadow-2xl transition-all duration-500 h-full shadow-lg overflow-hidden border border-border/50 hover:border-primary/50 cursor-pointer">
+                        <Link href={category.href}>
+                          {/* Image Card - Prominent Image Display */}
+                          <div className="relative h-64 overflow-hidden">
+                            <div
+                              className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 group-hover/card:scale-110"
+                              style={{
+                                backgroundImage: `url(${category.image})`,
+                              }}
+                            />
+                            {/* Subtle gradient overlay for text readability */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
-                          {/* Icon Badge on Image */}
-                          <div className="absolute top-4 left-4 w-12 h-12 bg-card/90 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover/card:scale-110 transition-all duration-300">
-                            <IconComponent className="h-6 w-6 text-primary" />
+                            {/* Icon Badge on Image */}
+                            <div className="absolute top-4 left-4 w-12 h-12 bg-card/90 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover/card:scale-110 transition-all duration-300">
+                              <IconComponent className="h-6 w-6 text-primary" />
+                            </div>
+
+                            {/* Count Badge */}
+                            <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg">
+                              <p className="text-xs font-semibold text-foreground">
+                                {category.count}
+                              </p>
+                            </div>
                           </div>
 
-                          {/* Count Badge */}
-                          <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg">
-                            <p className="text-xs font-semibold text-foreground">
-                              {category.count}
+                          {/* Content Below Image */}
+                          <CardContent className="p-6 bg-card">
+                            <h3 className="text-xl font-bold mb-2 group-hover/card:text-primary transition-colors duration-300">
+                              {category.name}
+                            </h3>
+                            <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                              {category.description}
                             </p>
-                          </div>
-                        </div>
 
-                        {/* Content Below Image */}
-                        <CardContent className="p-6 bg-card">
-                          <h3 className="text-xl font-bold mb-2 group-hover/card:text-primary transition-colors duration-300">
-                            {category.name}
-                          </h3>
-                          <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                            {category.description}
-                          </p>
-
-                          <Button
-                            variant="outline"
-                            className="w-full bg-transparent border-2 group-hover/card:bg-primary group-hover/card:text-primary-foreground group-hover/card:border-primary transition-all duration-300"
-                          >
-                            Explore {category.name}
-                            <ArrowRight className="h-4 w-4 ml-2 group-hover/card:translate-x-1 transition-transform duration-300" />
-                          </Button>
-                        </CardContent>
-                      </Link>
-                    </Card>
-                  </motion.div>
-                );
-              })}
+                            <Button
+                              variant="outline"
+                              className="w-full bg-transparent border-2 group-hover/card:bg-primary group-hover/card:text-primary-foreground group-hover/card:border-primary transition-all duration-300"
+                            >
+                              Explore {category.name}
+                              <ArrowRight className="h-4 w-4 ml-2 group-hover/card:translate-x-1 transition-transform duration-300" />
+                            </Button>
+                          </CardContent>
+                        </Link>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           </div>

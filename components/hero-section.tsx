@@ -112,32 +112,33 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="max-w-lg mx-auto"
         >
-            <div className="bg-card border border-border text-center rounded-lg shadow-2xl p-6 sm:p-8">
-              <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3">
-                Plan Your Dream Event
-              </h2>
-              <p className="text-sm sm:text-base text-muted-foreground mb-6 leading-relaxed">
-                Weddings, galas, birthdays, and more. Find venues, vendors, and ideas you can't find anywhere else.
-              </p>
+          <div className="bg-card border border-border text-center rounded-lg shadow-2xl p-6 sm:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3">
+              Plan Your Dream Event
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground mb-6 leading-relaxed">
+              Weddings, galas, birthdays, and more. Find venues, vendors, and
+              ideas you can't find anywhere else.
+            </p>
 
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button
-                  size="default"
-                  className="px-6 py-5 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all hover:scale-105"
-                  onClick={() => router.push("/search")}
-                >
-                  START PLANNING
-                </Button>
-                <Button
-                  size="default"
-                  variant="outline"
-                  className="px-6 py-5 text-base font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105"
-                  onClick={() => router.push("/vendor/quick-onboarding")}
-                >
-                  JOIN AS VENDOR
-                </Button>
-              </div>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button
+                size="default"
+                className="px-6 py-5 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all hover:scale-105"
+                onClick={() => router.push("/search")}
+              >
+                START PLANNING
+              </Button>
+              <Button
+                size="default"
+                variant="outline"
+                className="px-6 py-5 text-base font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105"
+                onClick={() => router.push("/vendor/quick-onboarding")}
+              >
+                JOIN AS VENDOR
+              </Button>
             </div>
+          </div>
         </motion.div>
       </div>
     </section>

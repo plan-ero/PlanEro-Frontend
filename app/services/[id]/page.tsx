@@ -526,9 +526,7 @@ export default function ServiceDetailPage() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">
-                    Price
-                  </span>
+                  <span className="text-sm text-muted-foreground">Price</span>
                   <span className="text-sm font-medium">
                     {getPriceDisplay(service.priceEnum)}
                   </span>

@@ -97,8 +97,10 @@ function VendorsContent() {
 
     // Rebuild params: new searchInput + current URL params for filters
     if (searchInput) params.set("search", searchInput);
-    if (locationParam && locationParam !== "all") params.set("location", locationParam);
-    if (categoryParam && categoryParam !== "all") params.set("category", categoryParam);
+    if (locationParam && locationParam !== "all")
+      params.set("location", locationParam);
+    if (categoryParam && categoryParam !== "all")
+      params.set("category", categoryParam);
     // Reset to page 1 when search changes
 
     replace(`${pathname}?${params.toString()}`, { scroll: false });
@@ -120,7 +122,8 @@ function VendorsContent() {
     // Rebuild params from current state
     if (searchInput) params.set("search", searchInput);
     if (location && location !== "all") params.set("location", location);
-    if (categoryFilter && categoryFilter !== "all") params.set("category", categoryFilter);
+    if (categoryFilter && categoryFilter !== "all")
+      params.set("category", categoryFilter);
     // Reset to page 1 when filter changes
 
     replace(`${pathname}?${params.toString()}`, { scroll: false });
@@ -132,7 +135,8 @@ function VendorsContent() {
 
     // Rebuild params from current state
     if (searchInput) params.set("search", searchInput);
-    if (locationFilter && locationFilter !== "all") params.set("location", locationFilter);
+    if (locationFilter && locationFilter !== "all")
+      params.set("location", locationFilter);
     if (category && category !== "all") params.set("category", category);
     // Reset to page 1 when filter changes
 
@@ -145,8 +149,10 @@ function VendorsContent() {
 
     // Rebuild params from current state
     if (searchInput) params.set("search", searchInput);
-    if (locationFilter && locationFilter !== "all") params.set("location", locationFilter);
-    if (categoryFilter && categoryFilter !== "all") params.set("category", categoryFilter);
+    if (locationFilter && locationFilter !== "all")
+      params.set("location", locationFilter);
+    if (categoryFilter && categoryFilter !== "all")
+      params.set("category", categoryFilter);
     if (page > 1) params.set("page", page.toString());
 
     replace(`${pathname}?${params.toString()}`, { scroll: false });
@@ -362,7 +368,9 @@ function VendorsContent() {
                             alt={
                               vendor?.businessName || vendor?.email || "Vendor"
                             }
-                            style={{ viewTransitionName: `vendor-avatar-${vendor?.id}` }}
+                            style={{
+                              viewTransitionName: `vendor-avatar-${vendor?.id}`,
+                            }}
                           />
                           <AvatarFallback className="text-lg">
                             {getInitials(

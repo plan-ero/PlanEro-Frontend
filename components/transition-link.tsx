@@ -9,7 +9,11 @@ interface TransitionLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   children: React.ReactNode;
 }
 
-export function TransitionLink({ href, children, ...props }: TransitionLinkProps) {
+export function TransitionLink({
+  href,
+  children,
+  ...props
+}: TransitionLinkProps) {
   const router = useRouter();
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {

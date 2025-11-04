@@ -411,7 +411,11 @@ export default function VenueDetailPage() {
                   className="rounded-md border"
                   disabled={(date) => {
                     const dateStr = date.toISOString().split("T")[0];
-                    return (venue.availability as Record<string, boolean>)[dateStr] === false;
+                    return (
+                      (venue.availability as Record<string, boolean>)[
+                        dateStr
+                      ] === false
+                    );
                   }}
                 />
               </div>

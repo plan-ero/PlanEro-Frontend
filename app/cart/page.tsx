@@ -61,7 +61,9 @@ export default function CartPage() {
                           {item.type}
                         </p>
                         <p className="text-lg font-bold">
-                          {item.price ? `₹${item.price.toLocaleString()}` : "Price on request"}
+                          {item.price
+                            ? `₹${item.price.toLocaleString()}`
+                            : "Price on request"}
                         </p>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -112,7 +114,9 @@ export default function CartPage() {
                       {item.name} x{item.quantity}
                     </span>
                     <span>
-                      {item.price ? `₹${(item.price * item.quantity).toLocaleString()}` : "Price on request"}
+                      {item.price
+                        ? `₹${(item.price * item.quantity).toLocaleString()}`
+                        : "Price on request"}
                     </span>
                   </div>
                 ))}

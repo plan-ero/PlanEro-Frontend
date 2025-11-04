@@ -92,9 +92,7 @@ export function Header() {
 
           {/* Additional Links */}
           <nav className="hidden lg:flex items-center space-x-1 ml-2">
-            {[
-              { href: "/about", label: "About" },
-            ].map((item) => (
+            {[{ href: "/about", label: "About" }].map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

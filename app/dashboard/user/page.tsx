@@ -352,7 +352,9 @@ function BookingCard({
 
         <div className="flex items-center justify-between mt-4">
           <p className="font-bold">
-            {booking.price ? `₹${booking.price.toLocaleString()}` : "Price not available"}
+            {booking.price
+              ? `₹${booking.price.toLocaleString()}`
+              : "Price not available"}
           </p>
 
           {booking.status === "upcoming" ? (

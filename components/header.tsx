@@ -91,7 +91,8 @@ export function Header() {
             href="/"
             className="flex items-center font-extrabold sm:text-lg md:text-2xl text-foreground mr-2 sm:mr-4 md:mr-7"
           >
-            <span className="font-medium">Plan</span><span className="text-primary">Ero.</span>
+            <span className="font-medium">Plan</span>
+            <span className="text-primary">Ero.</span>
           </Link>
 
           {/* Desktop Navigation with Mega Menu */}
@@ -420,7 +421,10 @@ export function Header() {
                       Sign In
                     </Button>
                     <Button variant="outline" className="w-full" asChild>
-                      <Link href="/auth/signup" onClick={() => setIsMenuOpen(false)}>
+                      <Link
+                        href="/auth/signup"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
                         <UserPlus className="mr-2 h-4 w-4" />
                         Sign Up
                       </Link>

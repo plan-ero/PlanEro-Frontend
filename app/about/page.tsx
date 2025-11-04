@@ -250,15 +250,24 @@ export default function AboutPage() {
                 <ul className="space-y-3 text-muted-foreground">
                   <li className="flex items-start">
                     <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
-                    <span>You must be at least 18 years old or have reached the age of majority in your jurisdiction to use PlanEro's services</span>
+                    <span>
+                      You must be at least 18 years old or have reached the age
+                      of majority in your jurisdiction to use PlanEro's services
+                    </span>
                   </li>
                   <li className="flex items-start">
                     <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
-                    <span>You must provide accurate and complete information when creating your account</span>
+                    <span>
+                      You must provide accurate and complete information when
+                      creating your account
+                    </span>
                   </li>
                   <li className="flex items-start">
                     <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
-                    <span>You agree to comply with all applicable laws and regulations when using our platform</span>
+                    <span>
+                      You agree to comply with all applicable laws and
+                      regulations when using our platform
+                    </span>
                   </li>
                 </ul>
               </CardContent>
@@ -270,23 +279,38 @@ export default function AboutPage() {
                 <ul className="space-y-3 text-muted-foreground">
                   <li className="flex items-start">
                     <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
-                    <span>You must be at least 18 years old and legally authorized to operate a business in your jurisdiction</span>
+                    <span>
+                      You must be at least 18 years old and legally authorized
+                      to operate a business in your jurisdiction
+                    </span>
                   </li>
                   <li className="flex items-start">
                     <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
-                    <span>You must possess all necessary licenses, permits, insurance, and certifications required for your services</span>
+                    <span>
+                      You must possess all necessary licenses, permits,
+                      insurance, and certifications required for your services
+                    </span>
                   </li>
                   <li className="flex items-start">
                     <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
-                    <span>You must provide accurate information about your services, pricing, and availability</span>
+                    <span>
+                      You must provide accurate information about your services,
+                      pricing, and availability
+                    </span>
                   </li>
                   <li className="flex items-start">
                     <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
-                    <span>You agree to maintain professional standards and honor all bookings made through the platform</span>
+                    <span>
+                      You agree to maintain professional standards and honor all
+                      bookings made through the platform
+                    </span>
                   </li>
                   <li className="flex items-start">
                     <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
-                    <span>You must comply with all local, state, and national laws and regulations</span>
+                    <span>
+                      You must comply with all local, state, and national laws
+                      and regulations
+                    </span>
                   </li>
                 </ul>
               </CardContent>
@@ -294,7 +318,10 @@ export default function AboutPage() {
 
             <p className="text-center text-sm text-muted-foreground mt-6">
               For more detailed information, please review our{" "}
-              <Link href="/terms-and-conditions" className="text-primary hover:underline">
+              <Link
+                href="/terms-and-conditions"
+                className="text-primary hover:underline"
+              >
                 Terms and Conditions
               </Link>
             </p>

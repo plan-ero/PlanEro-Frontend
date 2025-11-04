@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from "crypto";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -9,32 +9,32 @@ const nextConfig = {
     unoptimized: false,
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-        port: '',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        port: "",
+        pathname: "/**",
       },
       {
-        protocol: 'https',
-        hostname: 'partyslate.imgix.net',
-        port: '',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "partyslate.imgix.net",
+        port: "",
+        pathname: "/**",
       },
       {
-        protocol: 'https',
-        hostname: '**.amazonaws.com',
-        port: '',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "**.amazonaws.com",
+        port: "",
+        pathname: "/**",
       },
     ],
-    formats: ['image/avif', 'image/webp'],
+    formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [32, 48, 64, 96, 128, 256, 384],
     qualities: [75, 80, 90, 95],
   },
   //   output: "standalone",
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === "production",
     // This is a key optimization that works with Turbopack
   },
   reactCompiler: true,
@@ -43,10 +43,10 @@ const nextConfig = {
   experimental: {
     // This optimization works with Turbopack
     optimizePackageImports: [
-      'framer-motion',
-      'lucide-react',
-      '@radix-ui/react-dialog',
-      '@radix-ui/react-dropdown-menu',
+      "framer-motion",
+      "lucide-react",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-dropdown-menu",
     ],
     // This flag is specific to Turbopack
     turbopackFileSystemCacheForDev: true,
@@ -71,20 +71,20 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/:all*(svg|jpg|jpeg|png|webp|avif|gif|ico)',
+        source: "/:all*(svg|jpg|jpeg|png|webp|avif|gif|ico)",
         headers: [
           {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },
       {
-        source: '/_next/static/:path*',
+        source: "/_next/static/:path*",
         headers: [
           {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },

@@ -149,90 +149,92 @@ export function OrganizersSection() {
                   e.preventDefault();
                 }
               }}
-              style={{ overscrollBehavior: 'contain' }}
+              style={{ overscrollBehavior: "contain" }}
             >
               <div className="flex gap-6 px-4">
-              {organizers.map((organizer, index) => {
-                const IconComponent = organizer.icon;
-                return (
-                  <motion.div
-                    key={organizer.id}
-                    initial={{ opacity: 0, x: 50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    className="flex-shrink-0 w-80"
-                  >
-                    <Card className="group/card hover:shadow-2xl transition-all duration-500 h-full shadow-lg overflow-hidden border border-border/50 hover:border-primary/50 cursor-pointer">
-                      <Link href={organizer.href}>
-                        {/* Image Card - Prominent Image Display */}
-                        <div className="relative h-64 overflow-hidden">
-                          <div
-                            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 group-hover/card:scale-110"
-                            style={{ backgroundImage: `url(${organizer.image})` }}
-                          />
-                          {/* Subtle gradient overlay for text readability */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                {organizers.map((organizer, index) => {
+                  const IconComponent = organizer.icon;
+                  return (
+                    <motion.div
+                      key={organizer.id}
+                      initial={{ opacity: 0, x: 50 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                      className="flex-shrink-0 w-80"
+                    >
+                      <Card className="group/card hover:shadow-2xl transition-all duration-500 h-full shadow-lg overflow-hidden border border-border/50 hover:border-primary/50 cursor-pointer">
+                        <Link href={organizer.href}>
+                          {/* Image Card - Prominent Image Display */}
+                          <div className="relative h-64 overflow-hidden">
+                            <div
+                              className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 group-hover/card:scale-110"
+                              style={{
+                                backgroundImage: `url(${organizer.image})`,
+                              }}
+                            />
+                            {/* Subtle gradient overlay for text readability */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
-                          {/* Icon Badge on Image */}
-                          <div className="absolute top-4 left-4 w-12 h-12 bg-card/90 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover/card:scale-110 transition-all duration-300">
-                            <IconComponent className="h-6 w-6 text-primary" />
+                            {/* Icon Badge on Image */}
+                            <div className="absolute top-4 left-4 w-12 h-12 bg-card/90 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover/card:scale-110 transition-all duration-300">
+                              <IconComponent className="h-6 w-6 text-primary" />
+                            </div>
+
+                            {/* Rating Badge */}
+                            <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg flex items-center gap-1">
+                              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                              <span className="text-xs font-semibold text-foreground">
+                                {organizer.rating}
+                              </span>
+                            </div>
                           </div>
 
-                          {/* Rating Badge */}
-                          <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg flex items-center gap-1">
-                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                            <span className="text-xs font-semibold text-foreground">
-                              {organizer.rating}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Content Below Image */}
-                        <CardContent className="p-6 bg-card">
-                          <h3 className="text-xl font-bold mb-2 group-hover/card:text-primary transition-colors duration-300">
-                            {organizer.name}
-                          </h3>
-                          <p className="text-muted-foreground text-sm leading-relaxed mb-3">
-                            {organizer.description}
-                          </p>
-
-                          {/* Features */}
-                          <div className="mb-4">
-                            <ul className="space-y-1">
-                              {organizer.features.map((feature, idx) => (
-                                <li
-                                  key={idx}
-                                  className="flex items-center text-xs text-muted-foreground"
-                                >
-                                  <div className="w-1.5 h-1.5 bg-primary rounded-full mr-2"></div>
-                                  {feature}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-
-                          {/* Count Badge */}
-                          <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-3 py-1 mb-4 backdrop-blur-sm">
-                            <div className="w-2 h-2 bg-primary rounded-full"></div>
-                            <p className="text-xs text-primary font-semibold">
-                              {organizer.count}
+                          {/* Content Below Image */}
+                          <CardContent className="p-6 bg-card">
+                            <h3 className="text-xl font-bold mb-2 group-hover/card:text-primary transition-colors duration-300">
+                              {organizer.name}
+                            </h3>
+                            <p className="text-muted-foreground text-sm leading-relaxed mb-3">
+                              {organizer.description}
                             </p>
-                          </div>
 
-                          <Button
-                            variant="outline"
-                            className="w-full bg-transparent border-2 group-hover/card:bg-primary group-hover/card:text-primary-foreground group-hover/card:border-primary transition-all duration-300"
-                          >
-                            Learn More
-                            <ArrowRight className="h-4 w-4 ml-2 group-hover/card:translate-x-1 transition-transform duration-300" />
-                          </Button>
-                        </CardContent>
-                      </Link>
-                    </Card>
-                  </motion.div>
-                );
-              })}
+                            {/* Features */}
+                            <div className="mb-4">
+                              <ul className="space-y-1">
+                                {organizer.features.map((feature, idx) => (
+                                  <li
+                                    key={idx}
+                                    className="flex items-center text-xs text-muted-foreground"
+                                  >
+                                    <div className="w-1.5 h-1.5 bg-primary rounded-full mr-2"></div>
+                                    {feature}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Count Badge */}
+                            <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-3 py-1 mb-4 backdrop-blur-sm">
+                              <div className="w-2 h-2 bg-primary rounded-full"></div>
+                              <p className="text-xs text-primary font-semibold">
+                                {organizer.count}
+                              </p>
+                            </div>
+
+                            <Button
+                              variant="outline"
+                              className="w-full bg-transparent border-2 group-hover/card:bg-primary group-hover/card:text-primary-foreground group-hover/card:border-primary transition-all duration-300"
+                            >
+                              Learn More
+                              <ArrowRight className="h-4 w-4 ml-2 group-hover/card:translate-x-1 transition-transform duration-300" />
+                            </Button>
+                          </CardContent>
+                        </Link>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           </div>

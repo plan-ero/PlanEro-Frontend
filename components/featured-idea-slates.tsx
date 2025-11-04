@@ -25,7 +25,8 @@ const featuredSlates: IdeaSlate[] = [
     author: "Amanda",
     itemCount: 16,
     category: "Wedding",
-    description: "Create magical moments with sophisticated winter décor and romantic settings",
+    description:
+      "Create magical moments with sophisticated winter décor and romantic settings",
     icon: Heart,
     images: [
       "https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=300&fit=crop",
@@ -40,7 +41,8 @@ const featuredSlates: IdeaSlate[] = [
     author: "Jessica",
     itemCount: 19,
     category: "Corporate",
-    description: "Professional venues and services for impactful business gatherings",
+    description:
+      "Professional venues and services for impactful business gatherings",
     icon: Users,
     images: [
       "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
@@ -55,7 +57,8 @@ const featuredSlates: IdeaSlate[] = [
     author: "Amanda",
     itemCount: 12,
     category: "Birthday",
-    description: "Make every birthday unforgettable with these creative party inspirations",
+    description:
+      "Make every birthday unforgettable with these creative party inspirations",
     icon: Calendar,
     images: [
       "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=400&h=300&fit=crop",

@@ -23,15 +23,39 @@ const megaMenuData: MegaMenuItem[] = [
     href: "/venues",
     subcategories: [
       { name: "Hotel Venues", href: "/venues?category=hotel", count: "250+" },
-      { name: "Outdoor Venues", href: "/venues?category=outdoor", count: "180+" },
-      { name: "Restaurant Venues", href: "/venues?category=restaurant", count: "120+" },
-      { name: "Intimate Venues", href: "/venues?category=intimate", count: "90+" },
+      {
+        name: "Outdoor Venues",
+        href: "/venues?category=outdoor",
+        count: "180+",
+      },
+      {
+        name: "Restaurant Venues",
+        href: "/venues?category=restaurant",
+        count: "120+",
+      },
+      {
+        name: "Intimate Venues",
+        href: "/venues?category=intimate",
+        count: "90+",
+      },
       { name: "Barn Venues", href: "/venues?category=barn", count: "75+" },
-      { name: "Rooftop Venues", href: "/venues?category=rooftop", count: "60+" },
+      {
+        name: "Rooftop Venues",
+        href: "/venues?category=rooftop",
+        count: "60+",
+      },
       { name: "Museum Venues", href: "/venues?category=museum", count: "45+" },
       { name: "Winery Venues", href: "/venues?category=winery", count: "55+" },
-      { name: "Wedding Shower Venues", href: "/venues?category=shower", count: "100+" },
-      { name: "Rehearsal Dinner Venues", href: "/venues?category=rehearsal", count: "85+" },
+      {
+        name: "Wedding Shower Venues",
+        href: "/venues?category=shower",
+        count: "100+",
+      },
+      {
+        name: "Rehearsal Dinner Venues",
+        href: "/venues?category=rehearsal",
+        count: "85+",
+      },
       { name: "All Venues", href: "/venues", count: "1000+" },
     ],
   },
@@ -39,13 +63,25 @@ const megaMenuData: MegaMenuItem[] = [
     label: "Services",
     href: "/services",
     subcategories: [
-      { name: "Photo & Videographer", href: "/services?type=PHOTOGRAPHER", count: "200+" },
+      {
+        name: "Photo & Videographer",
+        href: "/services?type=PHOTOGRAPHER",
+        count: "200+",
+      },
       { name: "Decorator", href: "/services?type=DECORATOR", count: "150+" },
       { name: "Florist", href: "/services?type=FLORIST", count: "180+" },
       { name: "Caterer", href: "/services?type=CATERS", count: "220+" },
       { name: "Baker", href: "/services?type=BAKERS", count: "140+" },
-      { name: "Transportation", href: "/services?type=TRANSPORTATION", count: "90+" },
-      { name: "Wedding Band", href: "/services?type=WEDDING_BAND", count: "80+" },
+      {
+        name: "Transportation",
+        href: "/services?type=TRANSPORTATION",
+        count: "90+",
+      },
+      {
+        name: "Wedding Band",
+        href: "/services?type=WEDDING_BAND",
+        count: "80+",
+      },
       { name: "DJ", href: "/services?type=DJ", count: "150+" },
       { name: "Singer", href: "/services?type=SINGER", count: "120+" },
       { name: "Anchor", href: "/services?type=ANCHOR", count: "90+" },
@@ -57,11 +93,31 @@ const megaMenuData: MegaMenuItem[] = [
     href: "/vendors",
     subcategories: [
       { name: "All Vendors", href: "/vendors", count: "500+" },
-      { name: "Wedding Vendors", href: "/vendors?category=wedding", count: "300+" },
-      { name: "Corporate Event Vendors", href: "/vendors?category=corporate", count: "150+" },
-      { name: "Birthday Party Vendors", href: "/vendors?category=birthday", count: "120+" },
-      { name: "Verified Vendors", href: "/vendors?verified=true", count: "250+" },
-      { name: "Top Rated Vendors", href: "/vendors?sort=rating", count: "200+" },
+      {
+        name: "Wedding Vendors",
+        href: "/vendors?category=wedding",
+        count: "300+",
+      },
+      {
+        name: "Corporate Event Vendors",
+        href: "/vendors?category=corporate",
+        count: "150+",
+      },
+      {
+        name: "Birthday Party Vendors",
+        href: "/vendors?category=birthday",
+        count: "120+",
+      },
+      {
+        name: "Verified Vendors",
+        href: "/vendors?verified=true",
+        count: "250+",
+      },
+      {
+        name: "Top Rated Vendors",
+        href: "/vendors?sort=rating",
+        count: "200+",
+      },
     ],
   },
 ];
@@ -84,7 +140,7 @@ export function MegaMenu({ isMobile = false, onClose }: MegaMenuProps) {
               <button
                 onClick={() =>
                   setExpandedMobile(
-                    expandedMobile === item.label ? null : item.label
+                    expandedMobile === item.label ? null : item.label,
                   )
                 }
                 className="w-full flex items-center justify-between py-3 px-4 text-base font-semibold text-foreground hover:bg-muted/50 rounded-lg transition-all"

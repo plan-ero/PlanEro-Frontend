@@ -346,8 +346,11 @@ export default function CategoryPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-2xl font-bold">
-                        {venue.priceEnum ? getPriceDisplay(venue.priceEnum) : 
-                         venue.price ? `₹${venue.price.toLocaleString()}` : "Price on request"}
+                        {venue.priceEnum
+                          ? getPriceDisplay(venue.priceEnum)
+                          : venue.price
+                            ? `₹${venue.price.toLocaleString()}`
+                            : "Price on request"}
                       </span>
                       <span className="text-sm text-muted-foreground ml-1">
                         / event

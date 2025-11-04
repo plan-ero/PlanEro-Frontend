@@ -2,18 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Map frontend category values to backend EventType enum values
 const categoryToEventTypeMap: Record<string, string> = {
-  "wedding": "WEDDING",
+  wedding: "WEDDING",
   "anniversary-engagement": "ANNIVERSARY", // Map to closest match
-  "engagement": "ENGAGEMENT",
-  "corporate": "CORPORATE",
+  engagement: "ENGAGEMENT",
+  corporate: "CORPORATE",
   "college-fests": "CONFERENCE", // Map to closest match
   "house-private-party": "HOLIDAY_PARTY", // Map to closest match
-  "farewell": "GRADUATION", // Map to closest match
-  "reunion": "CONFERENCE", // Map to closest match
+  farewell: "GRADUATION", // Map to closest match
+  reunion: "CONFERENCE", // Map to closest match
   "baby-shower": "BABY_SHOWER",
-  "birthday": "BIRTHDAY",
-  "conference": "CONFERENCE",
-  "exhibition": "EXHIBITION",
+  birthday: "BIRTHDAY",
+  conference: "CONFERENCE",
+  exhibition: "EXHIBITION",
 };
 
 export async function GET(request: NextRequest) {
@@ -31,11 +31,26 @@ export async function GET(request: NextRequest) {
     // Only add eventType if it exists and is valid
     if (eventType && eventType.trim() !== "") {
       // Try to map the category to a valid EventType
-      const mappedEventType = categoryToEventTypeMap[eventType.toLowerCase()] || eventType.toUpperCase();
+      const mappedEventType =
+        categoryToEventTypeMap[eventType.toLowerCase()] ||
+        eventType.toUpperCase();
 
       // Only add if it's a known mapping (skip invalid ones)
-      if (categoryToEventTypeMap[eventType.toLowerCase()] ||
-          ["WEDDING", "BIRTHDAY", "ANNIVERSARY", "CORPORATE", "ENGAGEMENT", "BABY_SHOWER", "GRADUATION", "HOLIDAY_PARTY", "CONFERENCE", "EXHIBITION"].includes(mappedEventType)) {
+      if (
+        categoryToEventTypeMap[eventType.toLowerCase()] ||
+        [
+          "WEDDING",
+          "BIRTHDAY",
+          "ANNIVERSARY",
+          "CORPORATE",
+          "ENGAGEMENT",
+          "BABY_SHOWER",
+          "GRADUATION",
+          "HOLIDAY_PARTY",
+          "CONFERENCE",
+          "EXHIBITION",
+        ].includes(mappedEventType)
+      ) {
         params.append("eventType", mappedEventType);
       } else {
         console.log(`Skipping unknown eventType: ${eventType}`);
@@ -59,7 +74,7 @@ export async function GET(request: NextRequest) {
         "Backend response error:",
         response.status,
         response.statusText,
-        errorText
+        errorText,
       );
 
       // If it's a validation error (500 with enum issue), return empty array instead of error

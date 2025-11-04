@@ -10,12 +10,12 @@ export enum PriceEnum {
   INEXPENSIVE = "INEXPENSIVE",
   AFFORDABLE = "AFFORDABLE",
   MODERATE = "MODERATE",
-  LUXURY = "LUXURY"
+  LUXURY = "LUXURY",
 }
 
 // Global price display utility function
 export function getPriceDisplay(priceEnum: PriceEnum | string): string {
-  const enumValue = typeof priceEnum === 'string' ? priceEnum : priceEnum;
+  const enumValue = typeof priceEnum === "string" ? priceEnum : priceEnum;
 
   switch (enumValue) {
     case PriceEnum.INEXPENSIVE:
