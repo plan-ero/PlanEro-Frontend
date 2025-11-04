@@ -1,5 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Map frontend category values to backend EventType enum values
+const categoryToEventTypeMap: Record<string, string> = {
+  "wedding": "WEDDING",
+  "anniversary-engagement": "ANNIVERSARY", // Map to closest match
+  "engagement": "ENGAGEMENT",
+  "corporate": "CORPORATE",
+  "college-fests": "CONFERENCE", // Map to closest match
+  "house-private-party": "HOLIDAY_PARTY", // Map to closest match
+  "farewell": "GRADUATION", // Map to closest match
+  "reunion": "CONFERENCE", // Map to closest match
+  "baby-shower": "BABY_SHOWER",
+  "birthday": "BIRTHDAY",
+  "conference": "CONFERENCE",
+  "exhibition": "EXHIBITION",
+};
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -11,25 +27,47 @@ export async function GET(request: NextRequest) {
     // Build query parameters for backend
     const params = new URLSearchParams();
     params.append("serviceType", "VENUE");
-    if (eventType) params.append("eventType", eventType);
 
-    const response = await fetch(
-      `${process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"}/services/public?${params.toString()}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        cache: "no-store",
+    // Only add eventType if it exists and is valid
+    if (eventType && eventType.trim() !== "") {
+      // Try to map the category to a valid EventType
+      const mappedEventType = categoryToEventTypeMap[eventType.toLowerCase()] || eventType.toUpperCase();
+
+      // Only add if it's a known mapping (skip invalid ones)
+      if (categoryToEventTypeMap[eventType.toLowerCase()] ||
+          ["WEDDING", "BIRTHDAY", "ANNIVERSARY", "CORPORATE", "ENGAGEMENT", "BABY_SHOWER", "GRADUATION", "HOLIDAY_PARTY", "CONFERENCE", "EXHIBITION"].includes(mappedEventType)) {
+        params.append("eventType", mappedEventType);
+      } else {
+        console.log(`Skipping unknown eventType: ${eventType}`);
+      }
+    }
+
+    const backendUrl = `${process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"}/services/public?${params.toString()}`;
+    console.log("Fetching venues from backend:", backendUrl);
+
+    const response = await fetch(backendUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      cache: "no-store",
+    });
 
     if (!response.ok) {
+      const errorText = await response.text();
       console.error(
         "Backend response error:",
         response.status,
         response.statusText,
+        errorText
       );
+
+      // If it's a validation error (500 with enum issue), return empty array instead of error
+      if (response.status === 500 && errorText.includes("EventType")) {
+        console.log("Invalid EventType, returning empty array");
+        return NextResponse.json([]);
+      }
+
       return NextResponse.json(
         { error: "Failed to fetch venues from backend" },
         { status: response.status },
@@ -37,6 +75,7 @@ export async function GET(request: NextRequest) {
     }
 
     let venues = await response.json();
+    console.log(`Successfully fetched ${venues.length} venues from backend`);
 
     // Apply frontend filtering for backward compatibility
     if (category && category !== "all") {

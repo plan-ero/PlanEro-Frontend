@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -16,6 +15,8 @@ import {
   Sliders,
   Clock,
 } from "lucide-react";
+import { SearchResultSkeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -91,11 +92,8 @@ const sortOptions = [
 ];
 
 export default function AdvancedSearchPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
   const [filters, setFilters] = useState<AdvancedFilters>({
-    query: searchParams?.get("q") || "",
+    query: "",
     category: "all",
     location: "all",
     priceRange: [0, 100000],
@@ -108,6 +106,8 @@ export default function AdvancedSearchPage() {
   });
 
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [results, setResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const handleFilterChange = (key: keyof AdvancedFilters, value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -138,25 +138,40 @@ export default function AdvancedSearchPage() {
     setActiveFilters([]);
   };
 
-  const handleSearch = () => {
-    const params = new URLSearchParams();
+  // Remove URL updating to prevent page reloads and focus loss
+  // The search will work purely with client-side state
 
-    if (filters.query) params.set("q", filters.query);
-    if (filters.category !== "all") params.set("category", filters.category);
-    if (filters.location !== "all") params.set("location", filters.location);
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 100000) {
-      params.set("price_min", filters.priceRange[0].toString());
-      params.set("price_max", filters.priceRange[1].toString());
+  // Manual search function - only triggered by Enter key or Search button
+  const performSearch = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      if (filters.query) params.append("query", filters.query);
+      if (filters.searchType !== "all") params.append("type", filters.searchType);
+      if (filters.location !== "all") params.append("location", filters.location);
+      if (filters.category !== "all") params.append("category", filters.category);
+      if (filters.sortBy !== "relevance") params.append("sortBy", filters.sortBy);
+
+      const response = await fetch(`/api/search?${params.toString()}`);
+
+      if (!response.ok) {
+        console.error("Search API error:", response.status);
+        setResults([]);
+        return;
+      }
+
+      const data = await response.json();
+      setResults(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      setResults([]);
+    } finally {
+      setLoading(false);
     }
-    if (filters.rating > 0) params.set("rating", filters.rating.toString());
-    if (filters.availability !== "all")
-      params.set("availability", filters.availability);
-    if (filters.amenities.length > 0)
-      params.set("amenities", filters.amenities.join(","));
-    if (filters.sortBy !== "relevance") params.set("sort", filters.sortBy);
-    if (filters.searchType !== "all") params.set("type", filters.searchType);
+  };
 
-    router.push(`/search?${params.toString()}`);
+  const handleSearch = () => {
+    performSearch();
   };
 
   const getActiveFiltersCount = () => {
@@ -171,8 +186,9 @@ export default function AdvancedSearchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 pt-24 pb-12">
-      <div className="container mx-auto px-4">
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 pt-24 pb-12">
+        <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -216,6 +232,11 @@ export default function AdvancedSearchPage() {
                       onChange={(e) =>
                         handleFilterChange("query", e.target.value)
                       }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          performSearch();
+                        }
+                      }}
                       className="pl-10 h-12 text-base"
                     />
                   </div>
@@ -575,6 +596,143 @@ export default function AdvancedSearchPage() {
             </motion.div>
           )}
 
+          {/* Search Results */}
+          {loading ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mt-12 space-y-4"
+            >
+              <h2 className="text-2xl font-bold mb-6">Searching...</h2>
+              {[1, 2, 3].map((i) => (
+                <SearchResultSkeleton key={i} />
+              ))}
+            </motion.div>
+          ) : results.length > 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mt-12"
+            >
+              <h2 className="text-2xl font-bold mb-6">
+                Found {results.length} result{results.length !== 1 ? "s" : ""}
+              </h2>
+              <div className="grid gap-6">
+                {results.map((result) => {
+                  const href = result.type === "vendor"
+                    ? `/vendors/${result.id}`
+                    : `/services/${result.id}`;
+
+                  return (
+                    <Link key={result.id} href={href}>
+                      <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer">
+                        <CardContent className="p-6">
+                      <div className="flex flex-col md:flex-row gap-6">
+                        {/* Image */}
+                        {result.image && (
+                          <div className="w-full md:w-48 h-48 rounded-lg overflow-hidden flex-shrink-0">
+                            <img
+                              src={result.image}
+                              alt={result.name}
+                              className="w-full h-full object-cover"
+                              style={{ viewTransitionName: `result-image-${result.id}` }}
+                            />
+                          </div>
+                        )}
+
+                        {/* Content */}
+                        <div className="flex-1 space-y-3">
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <h3 className="text-xl font-bold mb-1">
+                                {result.name}
+                              </h3>
+                              <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                                {result.category && (
+                                  <Badge variant="secondary">
+                                    {result.category}
+                                  </Badge>
+                                )}
+                                {result.type && (
+                                  <Badge
+                                    variant="outline"
+                                    className="capitalize"
+                                  >
+                                    {result.type}
+                                  </Badge>
+                                )}
+                                {result.location && (
+                                  <span className="flex items-center gap-1">
+                                    <MapPin className="h-3 w-3" />
+                                    {result.location}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Price */}
+                            {result.price && (
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-primary">
+                                  ₹{result.price.toLocaleString()}
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  {result.type === "vendor" ? "per event" : "onwards"}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Description */}
+                          {result.description && (
+                            <p className="text-muted-foreground line-clamp-2">
+                              {result.description}
+                            </p>
+                          )}
+
+                          {/* Rating and other info */}
+                          <div className="flex flex-wrap items-center gap-4 text-sm">
+                            {result.rating && (
+                              <div className="flex items-center gap-1">
+                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                <span className="font-semibold">
+                                  {result.rating}
+                                </span>
+                                {result.reviews && (
+                                  <span className="text-muted-foreground">
+                                    ({result.reviews} reviews)
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            {result.capacity && (
+                              <div className="flex items-center gap-1">
+                                <Users className="h-4 w-4" />
+                                <span>{result.capacity} guests</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+                  );
+                })}
+              </div>
+            </motion.div>
+          ) : filters.query || filters.category !== "all" || filters.location !== "all" ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mt-12 text-center py-12"
+            >
+              <div className="text-muted-foreground text-lg">
+                No results found. Try adjusting your filters.
+              </div>
+            </motion.div>
+          ) : null}
+
           {/* Quick Action Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -592,18 +750,20 @@ export default function AdvancedSearchPage() {
                 Search with Filters
               </Button>
 
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => router.push("/search")}
-                className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary hover:text-background transition-all duration-200"
-              >
-                Basic Search
-              </Button>
+              <Link href="/search">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary hover:text-background transition-all duration-200"
+                >
+                  Basic Search
+                </Button>
+              </Link>
             </div>
           </motion.div>
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

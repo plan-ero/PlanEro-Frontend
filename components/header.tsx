@@ -96,7 +96,7 @@ export function Header() {
 
           {/* Desktop Navigation with Mega Menu */}
           <MegaMenu />
-          
+
           {/* Additional Links */}
           <nav className="hidden lg:flex items-center space-x-4 lg:space-x-6 ml-2">
             <Link
@@ -303,9 +303,9 @@ export function Header() {
             )}
 
             {/* Mobile Menu */}
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="md:hidden"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >

@@ -12,6 +12,7 @@ import { Footer } from "@/components/footer";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { Suspense } from "react";
 import { Header } from "@/components/header";
+import { ViewTransitions } from "./view-transitions";
 
 // Optimized font loading with display swap for better performance
 const inter = Inter({
@@ -124,16 +125,18 @@ export default function RootLayout({
           <AuthProvider>
             <QueryProvider>
               <CartProvider>
-                {/* <SmoothScrollProvider> */}
-                  <div className="min-h-screen flex flex-col justify-between">
-                    <Header />
-                    <Suspense fallback={<LoadingSpinner />}>
-                      {children}
-                    </Suspense>
-                    <Footer />
-                  </div>
-                  <Toaster position="top-right" />
-                {/* </SmoothScrollProvider> */}
+                <ViewTransitions>
+                  {/* <SmoothScrollProvider> */}
+                    <div className="min-h-screen flex flex-col justify-between">
+                      <Header />
+                      <Suspense fallback={<LoadingSpinner />}>
+                        {children}
+                      </Suspense>
+                      <Footer />
+                    </div>
+                    <Toaster position="top-right" />
+                  {/* </SmoothScrollProvider> */}
+                </ViewTransitions>
               </CartProvider>
             </QueryProvider>
           </AuthProvider>

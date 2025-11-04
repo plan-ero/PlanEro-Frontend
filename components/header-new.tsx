@@ -4,6 +4,7 @@ import type React from "react";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { TransitionLink } from "@/components/transition-link";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -71,7 +72,7 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 lg:h-18">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 z-10">
+          <TransitionLink href="/" className="flex items-center space-x-2 z-10">
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -84,7 +85,7 @@ export function Header() {
                 PLANERO
               </span>
             </motion.div>
-          </Link>
+          </TransitionLink>
 
           {/* Desktop Navigation with Mega Menu */}
           <MegaMenu />
@@ -160,9 +161,9 @@ export function Header() {
               asChild
               className="hidden md:flex w-9 h-9 rounded-full hover:bg-muted/80 relative"
             >
-              <Link href="/favorites">
+              <TransitionLink href="/favorites">
                 <Heart className="h-4 w-4" />
-              </Link>
+              </TransitionLink>
             </Button>
 
             {/* Cart */}
@@ -172,14 +173,14 @@ export function Header() {
               asChild
               className="w-9 h-9 rounded-full hover:bg-muted/80 relative"
             >
-              <Link href="/cart">
+              <TransitionLink href="/cart">
                 <ShoppingCart className="h-4 w-4" />
                 {cartItemsCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary text-primary-foreground border-2 border-background">
                     {cartItemsCount}
                   </Badge>
                 )}
-              </Link>
+              </TransitionLink>
             </Button>
 
             {/* User Menu */}
@@ -354,9 +355,9 @@ export function Header() {
                       asChild
                       className="w-9 h-9 rounded-full"
                     >
-                      <Link href="/favorites">
+                      <TransitionLink href="/favorites">
                         <Heart className="h-4 w-4" />
-                      </Link>
+                      </TransitionLink>
                     </Button>
                   </div>
                 </div>

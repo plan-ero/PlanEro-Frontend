@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { TransitionLink } from "@/components/transition-link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ import {
 } from "@/components/ui/pagination";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { StarRating } from "@/components/ui/star-rating";
+import { VendorCardSkeleton, GridSkeleton } from "@/components/ui/skeleton";
 import { MapPin, Globe, Phone, Star, Search, Filter, Mail } from "lucide-react";
 
 interface Vendor {
@@ -57,37 +59,103 @@ interface VendorsResponse {
 }
 
 function VendorsContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
   const pathname = usePathname();
+  const { replace } = useRouter();
+
+  // Extract URL params IMMEDIATELY and discard searchParams reference
+  const rawSearchParams = useSearchParams();
+  const searchQuery = rawSearchParams?.get("search") || "";
+  const locationParam = rawSearchParams?.get("location") || "all";
+  const categoryParam = rawSearchParams?.get("category") || "all";
+  const pageParam = Number(rawSearchParams?.get("page")) || 1;
 
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
-  const [locationFilter, setLocationFilter] = useState(searchParams.get("location") || "all");
-  const [categoryFilter, setCategoryFilter] = useState(searchParams.get("category") || "all");
-  const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
+
+  // Local state for filters
+  const [searchInput, setSearchInput] = useState("");
+  const [locationFilter, setLocationFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalVendors, setTotalVendors] = useState(0);
 
   const pageSize = 12;
 
-  // Update URL when filters change
+  // Sync local state with URL params on mount/URL change
   useEffect(() => {
+    setSearchInput(searchQuery);
+    setLocationFilter(locationParam);
+    setCategoryFilter(categoryParam);
+    setCurrentPage(pageParam);
+  }, [searchQuery, locationParam, categoryParam, pageParam]);
+
+  // Manual search function
+  const handleManualSearch = () => {
     const params = new URLSearchParams();
-    if (searchQuery) params.set("search", searchQuery);
+
+    // Rebuild params: new searchInput + current URL params for filters
+    if (searchInput) params.set("search", searchInput);
+    if (locationParam && locationParam !== "all") params.set("location", locationParam);
+    if (categoryParam && categoryParam !== "all") params.set("category", categoryParam);
+    // Reset to page 1 when search changes
+
+    replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  // Handle Enter key in search input
+  const handleSearchKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleManualSearch();
+    }
+  };
+
+  // Direct URL update for filters (no debounce needed)
+  const handleLocationChange = (location: string) => {
+    setLocationFilter(location);
+    const params = new URLSearchParams();
+
+    // Rebuild params from current state
+    if (searchInput) params.set("search", searchInput);
+    if (location && location !== "all") params.set("location", location);
+    if (categoryFilter && categoryFilter !== "all") params.set("category", categoryFilter);
+    // Reset to page 1 when filter changes
+
+    replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setCategoryFilter(category);
+    const params = new URLSearchParams();
+
+    // Rebuild params from current state
+    if (searchInput) params.set("search", searchInput);
+    if (locationFilter && locationFilter !== "all") params.set("location", locationFilter);
+    if (category && category !== "all") params.set("category", category);
+    // Reset to page 1 when filter changes
+
+    replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    const params = new URLSearchParams();
+
+    // Rebuild params from current state
+    if (searchInput) params.set("search", searchInput);
     if (locationFilter && locationFilter !== "all") params.set("location", locationFilter);
     if (categoryFilter && categoryFilter !== "all") params.set("category", categoryFilter);
-    if (currentPage > 1) params.set("page", currentPage.toString());
+    if (page > 1) params.set("page", page.toString());
 
-    const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
-    router.replace(newUrl, { scroll: false });
-  }, [searchQuery, locationFilter, categoryFilter, currentPage, pathname, router]);
+    replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
+  // Fetch vendors when URL params change
   useEffect(() => {
     fetchVendors();
-  }, [currentPage, searchQuery, locationFilter, categoryFilter]);
+  }, [searchQuery, locationParam, categoryParam, pageParam]);
 
   const fetchVendors = async () => {
     try {
@@ -95,7 +163,7 @@ function VendorsContent() {
       setError(null);
 
       const params = new URLSearchParams({
-        pgNo: currentPage.toString(),
+        pgNo: pageParam.toString(),
         pgSize: pageSize.toString(),
       });
 
@@ -103,8 +171,8 @@ function VendorsContent() {
         params.append("search", searchQuery.trim());
       }
 
-      if (locationFilter && locationFilter !== "all") {
-        params.append("location", locationFilter);
+      if (locationParam && locationParam !== "all") {
+        params.append("location", locationParam);
       }
 
       console.log(
@@ -143,12 +211,7 @@ function VendorsContent() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setCurrentPage(1); // Reset to first page when searching
-    fetchVendors();
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    handleManualSearch();
   };
 
   const getInitials = (name: string) => {
@@ -162,8 +225,21 @@ function VendorsContent() {
 
   if (loading && vendors.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner />
+      <div className="min-h-screen bg-background">
+        <div className="bg-gradient-to-r from-primary/10 to-primary/5 py-16">
+          <div className="container mx-auto px-4">
+            <div className="h-12 w-64 bg-muted animate-pulse rounded-md mb-4" />
+            <div className="h-6 w-96 bg-muted animate-pulse rounded-md" />
+          </div>
+        </div>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex gap-4 mb-8 flex-wrap">
+            <div className="h-12 flex-1 bg-muted animate-pulse rounded-md" />
+            <div className="h-12 w-48 bg-muted animate-pulse rounded-md" />
+            <div className="h-12 w-48 bg-muted animate-pulse rounded-md" />
+          </div>
+          <GridSkeleton count={9} CardComponent={VendorCardSkeleton} />
+        </div>
       </div>
     );
   }
@@ -213,14 +289,14 @@ function VendorsContent() {
                 <Input
                   type="text"
                   placeholder="Search vendors by name, service, or specialty..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
                   className="pl-10 h-12"
                 />
               </div>
             </form>
 
-            <Select value={locationFilter} onValueChange={setLocationFilter}>
+            <Select value={locationFilter} onValueChange={handleLocationChange}>
               <SelectTrigger className="w-full md:w-48 h-12">
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="Filter by location" />
@@ -286,6 +362,7 @@ function VendorsContent() {
                             alt={
                               vendor?.businessName || vendor?.email || "Vendor"
                             }
+                            style={{ viewTransitionName: `vendor-avatar-${vendor?.id}` }}
                           />
                           <AvatarFallback className="text-lg">
                             {getInitials(
@@ -384,9 +461,9 @@ function VendorsContent() {
                       </div>
 
                       <Button asChild className="w-full mt-4">
-                        <Link href={`/vendors/${vendor?.id || ""}`}>
+                        <TransitionLink href={`/vendors/${vendor?.id || ""}`}>
                           View Profile
-                        </Link>
+                        </TransitionLink>
                       </Button>
                     </CardContent>
                   </Card>
@@ -408,9 +485,10 @@ function VendorsContent() {
                     </p>
                     <Button
                       onClick={() => {
-                        setSearchQuery("");
-                        setLocationFilter("all");
-                        setCurrentPage(1);
+                        setSearchInput("");
+                        handleLocationChange("all");
+                        handleCategoryChange("all");
+                        handlePageChange(1);
                       }}
                     >
                       Clear Filters
@@ -505,16 +583,4 @@ function VendorsContent() {
   );
 }
 
-export default function VendorsPage() {
-  return (
-    <Suspense fallback={
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center min-h-[400px]">
-          <LoadingSpinner />
-        </div>
-      </div>
-    }>
-      <VendorsContent />
-    </Suspense>
-  );
-}
+export default VendorsContent;

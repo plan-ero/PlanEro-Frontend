@@ -50,6 +50,8 @@ const nextConfig = {
     ],
     // This flag is specific to Turbopack
     turbopackFileSystemCacheForDev: true,
+    // Enable View Transitions API support
+    viewTransition: true,
   },
 
   // This is the new flag for PPR, which Turbopack supports

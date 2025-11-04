@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
+import React, { useState, useEffect, useMemo } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { TransitionLink } from "@/components/transition-link";
 import { Filters, FilterState } from "@/components/filters";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +14,7 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { LoadingSpinner } from "@/components/loading-spinner";
+import { VenueCardSkeleton, GridSkeleton } from "@/components/ui/skeleton";
 
 interface Venue {
   id: string;
@@ -31,67 +31,90 @@ interface Venue {
 }
 
 function VenuesContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
   const pathname = usePathname();
+  const { replace } = useRouter();
 
-  // Initialize filters from URL search params
-  const [filters, setFilters] = useState<FilterState>({
-    query: searchParams.get("search") || "",
-    type: "venue" as "venue" | "vendor" | "all", // Always venue for this page
-    location: searchParams.get("location") || "",
-    category: searchParams.get("category") || "",
-  });
+  // Use the hook approach for client-side navigation - extract immediately
+  const rawSearchParams = useSearchParams();
+  const searchQuery = rawSearchParams?.get("search") || "";
+  const categoryParam = rawSearchParams?.get("category") || "";
+  const locationParam = rawSearchParams?.get("location") || "";
+  // rawSearchParams goes out of scope after extraction
 
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Local state for filters
+  const [filters, setFilters] = useState<FilterState>({
+    query: "",
+    type: "venue" as "venue" | "vendor" | "all",
+    location: "",
+    category: "",
+  });
+
   const { addItem } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const { user } = useAuth();
 
-  // Update URL when filters change
+  // Sync local filters with URL params on mount/URL change
   useEffect(() => {
+    setFilters(prev => ({
+      ...prev,
+      query: searchQuery,
+      category: categoryParam,
+      location: locationParam,
+    }));
+  }, [searchQuery, categoryParam, locationParam]);
+
+  // Manual search function
+  const handleManualSearch = (query: string) => {
     const params = new URLSearchParams();
-    if (filters.query) params.set("search", filters.query);
-    if (filters.category) params.set("category", filters.category);
-    if (filters.location) params.set("location", filters.location);
-    // Don't include type in URL since it's always "venue" for this page
+    
+    // Build new URL with search query + current filters
+    if (query) params.set("search", query);
+    if (categoryParam) params.set("category", categoryParam);
+    if (locationParam) params.set("location", locationParam);
+    
+    replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
-    const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
-    router.replace(newUrl, { scroll: false });
-  }, [filters, pathname, router]);
-
-  // Fetch venues from API
+  // Fetch venues when URL params change
   useEffect(() => {
-    const fetchVenues = async () => {
-      try {
-        setLoading(true);
-        const params = new URLSearchParams();
-        // Use eventType for category filtering (backend expects this)
-        if (filters.category) params.append("eventType", filters.category);
-        if (filters.query) params.append("search", filters.query);
-        if (filters.location) params.append("location", filters.location);
-
-        const response = await fetch(`/api/venues?${params.toString()}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch venues");
-        }
-
-        const data = await response.json();
-        setVenues(data);
-      } catch (err) {
-        console.error("Error fetching venues:", err);
-        setError("Failed to load venues");
-        toast.error("Failed to load venues");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchVenues();
-  }, [filters.category, filters.query, filters.location]);
+  }, [searchQuery, categoryParam, locationParam]);
+
+  const fetchVenues = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const params = new URLSearchParams();
+      // Only send eventType if category is selected and not empty
+      if (categoryParam && categoryParam.trim() !== "" && categoryParam !== "all") {
+        params.append("eventType", categoryParam);
+      }
+      if (searchQuery) params.append("search", searchQuery);
+      if (locationParam) params.append("location", locationParam);
+
+      const url = `/api/venues?${params.toString()}`;
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to fetch venues (${response.status})`);
+      }
+
+      const data = await response.json();
+      setVenues(Array.isArray(data) ? data : []);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to load venues";
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Frontend filtering for location (if needed)
   const filteredVenues = venues.filter((venue) => {
@@ -137,11 +160,16 @@ function VenuesContent() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center min-h-[400px]">
-          <LoadingSpinner />
+      <main className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <div className="h-10 w-64 bg-muted animate-pulse rounded-md mb-4" />
+          <div className="h-6 w-96 bg-muted animate-pulse rounded-md" />
         </div>
-      </div>
+        <div className="mb-8">
+          <div className="h-12 w-full max-w-md bg-muted animate-pulse rounded-md" />
+        </div>
+        <GridSkeleton count={6} CardComponent={VenueCardSkeleton} />
+      </main>
     );
   }
 
@@ -166,7 +194,11 @@ function VenuesContent() {
       </div>
 
       {/* Filters */}
-      <Filters onFilterChange={setFilters} className="mb-8" />
+      <Filters 
+        onFilterChange={setFilters} 
+        onSearch={handleManualSearch}
+        className="mb-8" 
+      />
 
       {/* Venues Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -183,6 +215,7 @@ function VenuesContent() {
                   src="/placeholder.svg"
                   alt={venue.name}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  style={{ viewTransitionName: `venue-image-${venue.id}` }}
                 />
                 <Button
                   variant="ghost"
@@ -203,11 +236,11 @@ function VenuesContent() {
                     {venue.eventType}
                   </span>
                 </div>
-                <Link href={`/services/${venue.id}`}>
+                <TransitionLink href={`/services/${venue.id}`}>
                   <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors">
                     {venue.name}
                   </h3>
-                </Link>
+                </TransitionLink>
                 {venue.metadata && (
                   <div className="flex items-center text-sm text-muted-foreground mb-2">
                     <MapPin className="h-4 w-4 mr-1" />
@@ -276,16 +309,4 @@ function VenuesContent() {
   );
 }
 
-export default function VenuesPage() {
-  return (
-    <Suspense fallback={
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center min-h-[400px]">
-          <LoadingSpinner />
-        </div>
-      </div>
-    }>
-      <VenuesContent />
-    </Suspense>
-  );
-}
+export default VenuesContent;

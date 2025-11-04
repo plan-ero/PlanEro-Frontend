@@ -33,36 +33,38 @@ export function StarRating({
   };
 
   return (
-    <div className={cn("flex items-center gap-1", className)}>
-      {Array.from({ length: maxRating }, (_, index) => {
-        const filled = index < Math.floor(rating);
-        const halfFilled = index < rating && index >= Math.floor(rating);
+    <div className={cn("flex items-center gap-1 flex-shrink-0 min-w-0", className)}>
+      <div className="flex items-center gap-0.5 flex-shrink-0">
+        {Array.from({ length: maxRating }, (_, index) => {
+          const filled = index < Math.floor(rating);
+          const halfFilled = index < rating && index >= Math.floor(rating);
 
-        return (
-          <button
-            key={index}
-            type="button"
-            onClick={() => handleStarClick(index)}
-            disabled={readonly}
-            className={cn(
-              "transition-colors duration-200",
-              !readonly && "hover:scale-110 cursor-pointer",
-              readonly && "cursor-default",
-            )}
-          >
-            <Star
+          return (
+            <button
+              key={index}
+              type="button"
+              onClick={() => handleStarClick(index)}
+              disabled={readonly}
               className={cn(
-                sizeClasses[size],
-                filled && "fill-yellow-400 text-yellow-400",
-                halfFilled && "fill-yellow-200 text-yellow-400",
-                !filled && !halfFilled && "text-gray-300",
+                "transition-colors duration-200 flex-shrink-0",
+                !readonly && "hover:scale-110 cursor-pointer",
+                readonly && "cursor-default",
               )}
-            />
-          </button>
-        );
-      })}
+            >
+              <Star
+                className={cn(
+                  sizeClasses[size],
+                  filled && "fill-yellow-400 text-yellow-400",
+                  halfFilled && "fill-yellow-200 text-yellow-400",
+                  !filled && !halfFilled && "text-gray-300",
+                )}
+              />
+            </button>
+          );
+        })}
+      </div>
       {rating > 0 && (
-        <span className="ml-2 text-sm text-muted-foreground">
+        <span className="ml-1 text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
           {rating.toFixed(1)}
         </span>
       )}

@@ -536,7 +536,7 @@ export default function ServiceDetailPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">
-                    Starting Price
+                    Price
                   </span>
                   <span className="text-sm font-medium">
                     ₹{service.cost.toFixed(2)}

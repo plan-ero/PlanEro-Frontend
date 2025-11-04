@@ -14,6 +14,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 interface FiltersProps {
   onFilterChange?: (filters: FilterState) => void;
+  onSearch?: (query: string) => void; // New prop for manual search
   className?: string;
 }
 
@@ -65,13 +66,33 @@ const locations = [
   "Nagpur",
 ];
 
-export function Filters({ onFilterChange, className }: FiltersProps) {
+export function Filters({ onFilterChange, onSearch, className }: FiltersProps) {
+  // Separate search input state from filters
+  const [searchInput, setSearchInput] = useState("");
   const [filters, setFilters] = useState<FilterState>({
     query: "",
     type: "all",
     location: "all_locations",
     category: "all_categories",
   });
+
+  // Manual search function
+  const handleSearch = () => {
+    if (onSearch) {
+      onSearch(searchInput);
+    } else {
+      // Fallback to old behavior if onSearch not provided
+      handleFilterChange("query", searchInput);
+    }
+  };
+
+  // Handle Enter key in search input
+  const handleSearchKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSearch();
+    }
+  };
 
   const handleFilterChange = (key: keyof FilterState, value: string) => {
     const newFilters = { ...filters, [key]: value };
@@ -129,14 +150,20 @@ export function Filters({ onFilterChange, className }: FiltersProps) {
       <CardContent className="p-6">
         <div className="space-y-4">
           {/* Search Query */}
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search venues, vendors, or services..."
-              value={filters.query}
-              onChange={(e) => handleFilterChange("query", e.target.value)}
-              className="pl-10"
-            />
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search venues, vendors, or services..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyPress={handleSearchKeyPress}
+                className="pl-10"
+              />
+            </div>
+            <Button onClick={handleSearch} className="px-6">
+              Search
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

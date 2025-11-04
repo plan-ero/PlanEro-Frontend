@@ -350,3 +350,72 @@ h1, h2, h3 {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: oklch(0.5426 0.0465 284.7435 / 0.5);
 }
+
+/* View Transitions API */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+  }
+
+  ::view-transition-old(card-image),
+  ::view-transition-new(card-image) {
+    animation-duration: 0.3s;
+  }
+
+  ::view-transition-old(hero-image),
+  ::view-transition-new(hero-image) {
+    animation-duration: 0.4s;
+  }
+
+  /* Smooth fade for page transitions */
+  ::view-transition-old(root) {
+    animation-name: fade-out;
+  }
+
+  ::view-transition-new(root) {
+    animation-name: fade-in;
+  }
+
+  /* Slide transition for cards */
+  ::view-transition-old(card-image) {
+    animation-name: slide-out-to-left;
+  }
+
+  ::view-transition-new(card-image) {
+    animation-name: slide-in-from-right;
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-out-to-left {
+  to {
+    transform: translateX(-30px);
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

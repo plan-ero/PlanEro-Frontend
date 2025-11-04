@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Filters, FilterState } from "@/components/filters";
@@ -28,10 +28,11 @@ import {
   Calendar,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { SearchResultSkeleton, GridSkeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 
-// Enhanced mock search results with more detailed data
-const mockResults = [
+// Mock data removed - now using real API
+/* const mockResults = [
   {
     id: "1",
     type: "venue",
@@ -135,85 +136,158 @@ const mockResults = [
     availability: "Available",
     tags: ["Historic", "Vineyard Views", "Wine Cellar", "Bridal Suite"],
   },
-];
+]; */
 
 function SearchContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
   const pathname = usePathname();
-  
-  const [filters, setFilters] = useState<FilterState>({
-    query: searchParams.get("q") || searchParams.get("search") || "",
-    type: (searchParams.get("type") as "venue" | "vendor" | "all") || "all",
-    location: searchParams.get("location") || "",
-    category: searchParams.get("category") || "",
-  });
-  const [results, setResults] = useState(mockResults);
+  const { replace } = useRouter();
+
+  // Extract URL params IMMEDIATELY and discard searchParams reference
+  const rawSearchParams = useSearchParams();
+  const searchQuery = rawSearchParams?.get("q") || rawSearchParams?.get("search") || "";
+  const typeParam = (rawSearchParams?.get("type") as "venue" | "vendor" | "all") || "all";
+  const locationParam = rawSearchParams?.get("location") || "";
+  const categoryParam = rawSearchParams?.get("category") || "";
+  const sortParam = rawSearchParams?.get("sort") || "relevance";
+
+  const [results, setResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [sortBy, setSortBy] = useState(searchParams.get("sort") || "relevance");
   const [showFilters, setShowFilters] = useState(false);
 
-  // Update URL when filters or sort change
+  // Local state for filters
+  const [searchInput, setSearchInput] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"venue" | "vendor" | "all">("all");
+  const [locationFilter, setLocationFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [sortBy, setSortBy] = useState("relevance");
+
+  // Sync local state with URL params on mount/URL change
   useEffect(() => {
+    setSearchInput(searchQuery);
+    setTypeFilter(typeParam);
+    setLocationFilter(locationParam);
+    setCategoryFilter(categoryParam);
+    setSortBy(sortParam);
+  }, [searchQuery, typeParam, locationParam, categoryParam, sortParam]);
+
+  // Manual search function
+  const handleManualSearch = () => {
     const params = new URLSearchParams();
-    if (filters.query) params.set("q", filters.query);
-    if (filters.type && filters.type !== "all") params.set("type", filters.type);
-    if (filters.location) params.set("location", filters.location);
-    if (filters.category) params.set("category", filters.category);
+
+    // Rebuild params: new searchInput + current URL params for filters
+    if (searchInput) params.set("q", searchInput);
+    if (typeParam && typeParam !== "all") params.set("type", typeParam);
+    if (locationParam) params.set("location", locationParam);
+    if (categoryParam) params.set("category", categoryParam);
+    if (sortParam && sortParam !== "relevance") params.set("sort", sortParam);
+
+    replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  // Handle Enter key in search input
+  const handleSearchKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleManualSearch();
+    }
+  };
+
+  // Direct URL update for filters (no debounce needed)
+  const handleTypeChange = (type: "venue" | "vendor" | "all") => {
+    setTypeFilter(type);
+    const params = new URLSearchParams();
+
+    // Rebuild params from current state
+    if (searchInput) params.set("q", searchInput);
+    if (type && type !== "all") params.set("type", type);
+    if (locationFilter) params.set("location", locationFilter);
+    if (categoryFilter) params.set("category", categoryFilter);
     if (sortBy && sortBy !== "relevance") params.set("sort", sortBy);
 
-    const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
-    router.replace(newUrl, { scroll: false });
-  }, [filters, sortBy, pathname, router]);
+    replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
+  const handleLocationChange = (location: string) => {
+    setLocationFilter(location);
+    const params = new URLSearchParams();
+
+    // Rebuild params from current state
+    if (searchInput) params.set("q", searchInput);
+    if (typeFilter && typeFilter !== "all") params.set("type", typeFilter);
+    if (location) params.set("location", location);
+    if (categoryFilter) params.set("category", categoryFilter);
+    if (sortBy && sortBy !== "relevance") params.set("sort", sortBy);
+
+    replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setCategoryFilter(category);
+    const params = new URLSearchParams();
+
+    // Rebuild params from current state
+    if (searchInput) params.set("q", searchInput);
+    if (typeFilter && typeFilter !== "all") params.set("type", typeFilter);
+    if (locationFilter) params.set("location", locationFilter);
+    if (category) params.set("category", category);
+    if (sortBy && sortBy !== "relevance") params.set("sort", sortBy);
+
+    replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const handleSortChange = (sort: string) => {
+    setSortBy(sort);
+    const params = new URLSearchParams();
+
+    // Rebuild params from current state
+    if (searchInput) params.set("q", searchInput);
+    if (typeFilter && typeFilter !== "all") params.set("type", typeFilter);
+    if (locationFilter) params.set("location", locationFilter);
+    if (categoryFilter) params.set("category", categoryFilter);
+    if (sort && sort !== "relevance") params.set("sort", sort);
+
+    replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  // Fetch search results when URL params change
   useEffect(() => {
-    // Filter results based on current filters
-    const filtered = mockResults.filter((item) => {
-      const matchesQuery =
-        !filters.query ||
-        item.name.toLowerCase().includes(filters.query.toLowerCase()) ||
-        item.description.toLowerCase().includes(filters.query.toLowerCase()) ||
-        item.tags.some((tag) =>
-          tag.toLowerCase().includes(filters.query.toLowerCase()),
-        );
+    const fetchResults = async () => {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams();
+        if (searchQuery) params.append("query", searchQuery);
+        if (typeParam && typeParam !== "all") params.append("type", typeParam);
+        if (locationParam) params.append("location", locationParam);
+        if (categoryParam) params.append("category", categoryParam);
+        if (sortParam && sortParam !== "relevance") params.append("sortBy", sortParam);
 
-      const matchesType = filters.type === "all" || item.type === filters.type;
+        const response = await fetch(`/api/search?${params.toString()}`);
 
-      const matchesCategory =
-        !filters.category ||
-        item.category.toLowerCase().includes(filters.category.toLowerCase());
+        if (!response.ok) {
+          console.error("Search API error:", response.status);
+          setResults([]);
+          return;
+        }
 
-      const matchesLocation =
-        !filters.location ||
-        item.location.toLowerCase().includes(filters.location.toLowerCase());
-
-      return matchesQuery && matchesType && matchesCategory && matchesLocation;
-    });
-
-    // Sort results
-    const sorted = [...filtered].sort((a, b) => {
-      switch (sortBy) {
-        case "price-low":
-          return a.price - b.price;
-        case "price-high":
-          return b.price - a.price;
-        case "rating":
-          return b.rating - a.rating;
-        case "reviews":
-          return b.reviews - a.reviews;
-        default:
-          return 0; // relevance - keep original order
+        const data = await response.json();
+        setResults(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+        setResults([]);
+      } finally {
+        setLoading(false);
       }
-    });
+    };
 
-    setResults(sorted);
-  }, [filters, sortBy]);
+    fetchResults();
+  }, [searchQuery, typeParam, locationParam, categoryParam, sortParam]);
 
   const ResultCard = ({
     item,
     index,
   }: {
-    item: (typeof mockResults)[0];
+    item: any;
     index: number;
   }) => (
     <motion.div
@@ -266,7 +340,7 @@ function SearchContent() {
               <span className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
                 {item.category
                   .split("-")
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
                   .join(" ")}
               </span>
             </div>
@@ -304,25 +378,29 @@ function SearchContent() {
               </div>
             )}
 
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
-              <span>Responds {item.responseTime}</span>
-            </div>
+            {item.responseTime && (
+              <div className="flex items-center text-sm text-muted-foreground">
+                <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
+                <span>Responds {item.responseTime}</span>
+              </div>
+            )}
           </div>
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-1 mb-4">
-            {item.tags.slice(0, viewMode === "grid" ? 2 : 4).map((tag) => (
-              <Badge key={tag} variant="outline" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-            {item.tags.length > (viewMode === "grid" ? 2 : 4) && (
-              <Badge variant="outline" className="text-xs">
-                +{item.tags.length - (viewMode === "grid" ? 2 : 4)} more
-              </Badge>
-            )}
-          </div>
+          {item.tags && item.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-4">
+              {item.tags.slice(0, viewMode === "grid" ? 2 : 4).map((tag: string) => (
+                <Badge key={tag} variant="outline" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+              {item.tags.length > (viewMode === "grid" ? 2 : 4) && (
+                <Badge variant="outline" className="text-xs">
+                  +{item.tags.length - (viewMode === "grid" ? 2 : 4)} more
+                </Badge>
+              )}
+            </div>
+          )}
 
           <Separator className="my-4" />
 
@@ -354,6 +432,23 @@ function SearchContent() {
     </motion.div>
   );
 
+  if (loading) {
+    return (
+      <main className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <div className="h-10 w-64 bg-muted animate-pulse rounded-md mb-4" />
+          <div className="h-6 w-96 bg-muted animate-pulse rounded-md" />
+        </div>
+        <div className="flex gap-4 mb-8">
+          <div className="h-12 flex-1 bg-muted animate-pulse rounded-md" />
+          <div className="h-12 w-32 bg-muted animate-pulse rounded-md" />
+          <div className="h-12 w-24 bg-muted animate-pulse rounded-md" />
+        </div>
+        <GridSkeleton count={9} CardComponent={() => <SearchResultSkeleton viewMode="grid" />} />
+      </main>
+    );
+  }
+
   return (
     <main className="container mx-auto px-4 py-8">
       {/* Header Section */}
@@ -363,21 +458,25 @@ function SearchContent() {
             <h1 className="text-4xl font-bold mb-2">Search Results</h1>
             <p className="text-lg text-muted-foreground">
               {results.length} results found
-              {filters.query && ` for "${filters.query}"`}
+              {searchQuery && ` for "${searchQuery}"`}
             </p>
           </div>
 
           {/* Search Bar */}
-          <div className="relative max-w-md w-full">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Refine your search..."
-              value={filters.query}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, query: e.target.value }))
-              }
-              className="pl-10"
-            />
+          <div className="flex gap-2 max-w-md w-full">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Refine your search..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyPress={handleSearchKeyPress}
+                className="pl-10"
+              />
+            </div>
+            <Button onClick={handleManualSearch} className="px-6">
+              Search
+            </Button>
           </div>
         </div>
 
@@ -392,9 +491,9 @@ function SearchContent() {
             >
               <SlidersHorizontal className="h-4 w-4" />
               Filters
-              {(filters.type !== "all" ||
-                filters.location ||
-                filters.category) && (
+              {(typeFilter !== "all" ||
+                locationFilter ||
+                categoryFilter) && (
                 <Badge variant="destructive" className="ml-2 px-1 py-0 text-xs">
                   !
                 </Badge>
@@ -404,7 +503,7 @@ function SearchContent() {
             {/* Sort Dropdown */}
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              onChange={(e) => handleSortChange(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
             >
               <option value="relevance">Sort by Relevance</option>
@@ -447,7 +546,14 @@ function SearchContent() {
               className="w-80 flex-shrink-0"
             >
               <div className="sticky top-4">
-                <Filters onFilterChange={setFilters} className="shadow-lg" />
+                <Filters
+                  onFilterChange={(newFilters) => {
+                    if (newFilters.type) handleTypeChange(newFilters.type);
+                    if (newFilters.location !== undefined) handleLocationChange(newFilters.location);
+                    if (newFilters.category !== undefined) handleCategoryChange(newFilters.category);
+                  }}
+                  className="shadow-lg"
+                />
               </div>
             </motion.div>
           )}
@@ -504,18 +610,4 @@ function SearchContent() {
   );
 }
 
-export default function SearchPage() {
-  return (
-    <Suspense fallback={
-      <main className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex justify-center items-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        </div>
-      </main>
-    }>
-      <SearchContent />
-    </Suspense>
-  );
-}
+export default SearchContent;

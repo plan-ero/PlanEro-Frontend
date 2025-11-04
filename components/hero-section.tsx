@@ -48,7 +48,7 @@ export function HeroSection() {
   return (
     <section className="relative -mt-16">
       {/* Rotating Background Images with Fade Effect */}
-      <div className="relative h-[500px]">
+      <div className="relative h-[500px] bg-black">
         <AnimatePresence initial={false}>
           <motion.div
             key={currentImageIndex}
@@ -132,7 +132,7 @@ export function HeroSection() {
                   size="default"
                   variant="outline"
                   className="px-6 py-5 text-base font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105"
-                  onClick={() => router.push("/vendor")}
+                  onClick={() => router.push("/vendor/quick-onboarding")}
                 >
                   JOIN AS VENDOR
                 </Button>

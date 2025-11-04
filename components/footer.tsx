@@ -144,14 +144,6 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/terms"
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="/terms-and-conditions"
                   className="text-muted-foreground hover:text-primary"
                 >

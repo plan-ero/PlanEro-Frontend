@@ -782,9 +782,6 @@ export default function VendorServices() {
                           <span className="text-lg font-bold text-gray-900">
                             ₹{service.cost.toFixed(2)}
                           </span>
-                          <p className="text-xs text-gray-500">
-                            Starting price
-                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
