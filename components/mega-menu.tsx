@@ -115,11 +115,11 @@ export function MegaMenu({ isMobile = false, onClose }: MegaMenuProps) {
                           className="flex items-center justify-between py-2.5 px-4 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-all group"
                         >
                           <span>{sub.name}</span>
-                          {sub.count && (
+                          {/* {sub.count && (
                             <span className="text-xs text-muted-foreground/60 group-hover:text-muted-foreground">
                               {sub.count}
                             </span>
-                          )}
+                          )} */}
                         </Link>
                       ))}
                     </div>
@@ -174,11 +174,11 @@ export function MegaMenu({ isMobile = false, onClose }: MegaMenuProps) {
                         className="flex items-center justify-between py-2.5 px-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-all group"
                       >
                         <span className="flex-1">{sub.name}</span>
-                        {sub.count && (
+                        {/* {sub.count && (
                           <span className="text-xs text-muted-foreground/60 group-hover:text-muted-foreground ml-2">
                             {sub.count}
                           </span>
-                        )}
+                        )} */}
                         <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
                       </Link>
                     ))}
