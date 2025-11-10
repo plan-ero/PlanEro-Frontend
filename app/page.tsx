@@ -5,31 +5,28 @@ import { CategoriesSection } from "@/components/categories-section";
 import { FeaturedIdeaSlates } from "@/components/featured-idea-slates";
 import { OrganizersSection } from "@/components/organizers-section";
 import { VendorTeamSection } from "@/components/vendor-team-section";
+import { SEOComponent } from "@/components/seo-component";
 
 export const metadata: Metadata = {
-  title: "Find Your Perfect Venue",
-  description:
-    "Discover unique venues, vendors, and services for your special event. From dreamy weddings to epic parties — find spaces designed to impress.",
+  title: "Find Your Perfect Venue - Event Planning Made Easy",
+  description: "Discover unique venues, vendors, and services for your special event. From dreamy weddings to epic parties — find spaces designed to impress.",
   openGraph: {
-    title: "PlanEro - Find Your Perfect Venue",
-    description:
-      "Discover unique venues, vendors, and services for your special event. From dreamy weddings to epic parties.",
-    type: "website",
+    title: "Find Your Perfect Venue - Event Planning Made Easy",
+    description: "Discover unique venues, vendors, and services for your special event.",
   },
 };
 
-// Force static generation for better performance
-// export const dynamic = 'force-static';
-// export const revalidate = 3600; // Revalidate every hour
-
 export default async function HomePage() {
   return (
-    <main>
-      <HeroSection />
-      <CategoriesSection />
-      <VendorTeamSection />
-      <OrganizersSection />
-      <FeaturedIdeaSlates />
-    </main>
+    <>
+      <SEOComponent pageType="home" />
+      <main>
+        <HeroSection />
+        <CategoriesSection />
+        <VendorTeamSection />
+        <OrganizersSection />
+        <FeaturedIdeaSlates />
+      </main>
+    </>
   );
 }

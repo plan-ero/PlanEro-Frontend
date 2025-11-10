@@ -73,15 +73,6 @@ const venueCategories = [
     color: "from-teal-500/20 to-cyan-500/20",
   },
   {
-    id: "reunion",
-    name: "Reunion",
-    description: "Reconnect in style",
-    icon: PartyPopper,
-    image:
-      "https://media.istockphoto.com/id/175559502/photo/classy-wedding-setting.jpg?s=612x612&w=0&k=20&c=8CluymAckSE1Qxluoy0f0pHR-2yKq7X-Qj5yTsbzMrs=",
-    color: "from-amber-500/20 to-yellow-500/20",
-  },
-  {
     id: "baby-shower",
     name: "Baby Shower",
     description: "Celebrate new arrivals",

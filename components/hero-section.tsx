@@ -1,35 +1,38 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const heroImages = [
   {
-    src: "https://partyslate.imgix.net/photos/2704252/photo-1c8c8cd9-c588-42fe-8f92-89fc38ed3deb.jpg?ixlib=js-3.8.0&auto=compress%2Cformat&bg=fff&w=2400",
+    src: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80",
     alt: "Elegant wedding celebration",
     topText: "discover",
     mainText: "DREAM VENUES",
+    link: "/venues",
   },
   {
-    src: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80",
+    src: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80",
     alt: "Beautiful event decoration",
     topText: "find",
     mainText: "PERFECT VENDORS",
+    link: "/vendors",
   },
   {
-    src: "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80",
+    src: "https://images.unsplash.com/photo-1542332213-31f87348057f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80",
     alt: "Romantic venue setup",
     topText: "explore",
     mainText: "STUNNING DECORATIONS",
+    link: "/services?type=DECORATOR",
   },
   {
     src: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80",
     alt: "Vibrant event entertainment",
     topText: "experience",
     mainText: "LIVE ENTERTAINMENT",
+    link: "/services?type=DJ",
   },
 ];
 
@@ -47,71 +50,56 @@ export function HeroSection() {
 
   return (
     <section className="relative -mt-16">
-      {/* Rotating Background Images with Fade Effect */}
+      {/* Rotating Background Images with Simple Fade Effect */}
       <div className="relative h-[500px] bg-black">
-        <AnimatePresence initial={false}>
-          <motion.div
-            key={currentImageIndex}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="absolute inset-0"
-          >
-            <Image
-              src={heroImages[currentImageIndex].src}
-              alt={heroImages[currentImageIndex].alt}
-              fill
-              priority={currentImageIndex === 0}
-              quality={90}
-              className="object-cover"
-              sizes="100vw"
-            />
-          </motion.div>
-        </AnimatePresence>
+        <div className="absolute inset-0">
+          <Image
+            src={heroImages[currentImageIndex].src}
+            alt={heroImages[currentImageIndex].alt}
+            fill
+            priority={currentImageIndex === 0}
+            quality={90}
+            className="object-cover brightness-110 contrast-105 transition-opacity duration-1000"
+            sizes="100vw"
+          />
+        </div>
+
+        {/* Light overlay for better text contrast */}
+        <div className="absolute inset-0 bg-white/30"></div>
 
         {/* Text Overlay on Image */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
+        <div 
+          className="absolute inset-0 flex items-center justify-center cursor-pointer group"
+          onClick={() => router.push(heroImages[currentImageIndex].link)}
+        >
+          <div className="text-center group-hover:scale-105 transition-transform duration-300">
             {/* Dynamic Top Text */}
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={`top-${currentImageIndex}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.6 }}
-                className="text-xs sm:text-sm tracking-[0.3em] text-white mb-2 font-light uppercase drop-shadow-lg"
-              >
-                {heroImages[currentImageIndex].topText}
-              </motion.p>
-            </AnimatePresence>
+            <p
+              key={`top-${currentImageIndex}`}
+              className="text-xs sm:text-sm tracking-[0.3em] text-gray-800 mb-2 font-medium uppercase drop-shadow-sm transition-opacity duration-500"
+            >
+              {heroImages[currentImageIndex].topText}
+            </p>
 
             {/* Dynamic Main Heading */}
-            <AnimatePresence mode="wait">
-              <motion.h1
-                key={`main-${currentImageIndex}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.6 }}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white drop-shadow-lg"
-              >
-                {heroImages[currentImageIndex].mainText}
-              </motion.h1>
-            </AnimatePresence>
+            <h1
+              key={`main-${currentImageIndex}`}
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-gray-900 drop-shadow-sm transition-opacity duration-500"
+            >
+              {heroImages[currentImageIndex].mainText}
+            </h1>
+            
+            {/* Click indicator */}
+            <p className="text-xs text-gray-700 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              Click to explore
+            </p>
           </div>
         </div>
       </div>
 
       {/* Modal Card - Positioned at boundary */}
       <div className="relative -mt-24 z-10 w-full px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="max-w-lg mx-auto"
-        >
+        <div className="max-w-lg mx-auto animate-in slide-in-from-bottom-4 duration-700 delay-500">
           <div className="bg-card border border-border text-center rounded-lg shadow-2xl p-6 sm:p-8">
             <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3">
               Plan Your Dream Event
@@ -139,7 +127,7 @@ export function HeroSection() {
               </Button>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

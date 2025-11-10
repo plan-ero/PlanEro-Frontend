@@ -147,24 +147,24 @@ export function CategoriesSection() {
 
         {/* Horizontal Scrolling Container with Buttons */}
         <div className="relative flex items-center gap-4">
-          {/* Left Navigation Button - Always Visible */}
+          {/* Left Navigation Button - Hidden on Mobile */}
           <Button
             variant="outline"
             size="icon"
-            className="flex-shrink-0 h-12 w-12 rounded-full bg-background/95 backdrop-blur-sm shadow-xl border-2 hover:bg-background hover:scale-110 transition-all z-20"
+            className="hidden md:flex flex-shrink-0 h-12 w-12 rounded-full bg-background/95 backdrop-blur-sm shadow-xl border-2 hover:bg-background hover:scale-110 transition-all z-20"
             onClick={scrollLeft}
           >
             <ChevronLeft className="h-6 w-6" />
           </Button>
 
-          {/* Card Strip Container - Reduced Width */}
+          {/* Card Strip Container - Mobile Scrollable */}
           <div className="relative flex-1 overflow-hidden">
             <div
               ref={scrollContainerRef}
-              className="overflow-x-hidden scrollbar-hide pb-4 scroll-smooth"
+              className="overflow-x-auto md:overflow-x-hidden scrollbar-hide pb-4 scroll-smooth overflow-y-hidden"
               onWheel={(e) => {
-                // Only prevent horizontal scrolling, allow vertical
-                if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+                // Only prevent horizontal scrolling on desktop, allow vertical on mobile
+                if (window.innerWidth >= 768 && Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
                   e.preventDefault();
                 }
               }}
@@ -219,7 +219,7 @@ export function CategoriesSection() {
 
                             <Button
                               variant="outline"
-                              className="w-full bg-transparent border-2 group-hover/card:bg-primary group-hover/card:text-primary-foreground group-hover/card:border-primary transition-all duration-300"
+                              className="hidden md:block w-full bg-transparent border-2 group-hover/card:bg-primary group-hover/card:text-primary-foreground group-hover/card:border-primary transition-all duration-300"
                             >
                               Explore {category.name}
                               <ArrowRight className="h-4 w-4 ml-2 group-hover/card:translate-x-1 transition-transform duration-300" />
@@ -234,11 +234,11 @@ export function CategoriesSection() {
             </div>
           </div>
 
-          {/* Right Navigation Button - Always Visible */}
+          {/* Right Navigation Button - Hidden on Mobile */}
           <Button
             variant="outline"
             size="icon"
-            className="flex-shrink-0 h-12 w-12 rounded-full bg-background/95 backdrop-blur-sm shadow-xl border-2 hover:bg-background hover:scale-110 transition-all z-20"
+            className="hidden md:flex flex-shrink-0 h-12 w-12 rounded-full bg-background/95 backdrop-blur-sm shadow-xl border-2 hover:bg-background hover:scale-110 transition-all z-20"
             onClick={scrollRight}
           >
             <ChevronRight className="h-6 w-6" />

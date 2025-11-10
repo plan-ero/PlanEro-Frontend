@@ -1,18 +1,315 @@
-User-agent: *
-Allow: /
+# Planero - Event Planning Platform
+# https://planero.com/robots.txt
+# Updated: 2025-11-10
 
-# Disallow admin and API routes
+# ===========================================
+# SEARCH ENGINE CRAWLERS
+# ===========================================
+
+# Google Crawlers - Main Search
+User-agent: Googlebot
+Allow: /
+Allow: /venues
+Allow: /vendors
+Allow: /services
+Allow: /search
+Allow: /about
+Allow: /auth/login
+Allow: /auth/register
 Disallow: /api/
 Disallow: /admin/
 Disallow: /dashboard/
+Disallow: /auth/reset-password
+Disallow: /auth/verify-email
+Disallow: /profile/
+Disallow: /cart/
+Disallow: /_next/
+Disallow: /test/
+Disallow: /dev/
+Crawl-delay: 1
 
-# Allow search engines to crawl images
+# Google Images
+User-agent: Googlebot-Image
+Allow: /
 Allow: /*.jpg$
 Allow: /*.jpeg$
 Allow: /*.png$
 Allow: /*.webp$
 Allow: /*.avif$
 Allow: /*.svg$
+Allow: /*.gif$
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Crawl-delay: 1
 
-# Sitemap
+# Google Video
+User-agent: Googlebot-Video
+Allow: /
+Allow: /*.mp4$
+Allow: /*.webm$
+Allow: /*.mov$
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Crawl-delay: 1
+
+# Google News (for future news/blog content)
+User-agent: Googlebot-News
+Allow: /news/
+Allow: /blog/
+Allow: /announcements/
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+
+# Google Shopping/StoreBot
+User-agent: Storebot-Google
+Allow: /services
+Allow: /vendors
+Allow: /venues
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /cart/
+
+# Bing Search Engine
+User-agent: Bingbot
+Allow: /
+Allow: /venues
+Allow: /vendors
+Allow: /services
+Allow: /search
+Allow: /about
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /cart/
+Crawl-delay: 2
+
+# DuckDuckGo
+User-agent: DuckDuckBot
+Allow: /
+Allow: /venues
+Allow: /vendors
+Allow: /services
+Allow: /search
+Allow: /about
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /cart/
+Crawl-delay: 2
+
+# Yandex
+User-agent: YandexBot
+Allow: /
+Allow: /venues
+Allow: /vendors
+Allow: /services
+Allow: /search
+Allow: /about
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /cart/
+Crawl-delay: 3
+
+# ===========================================
+# SOCIAL MEDIA CRAWLERS
+# ===========================================
+
+# Facebook/Meta
+User-agent: facebookexternalhit
+Allow: /
+Allow: /venues/
+Allow: /vendors/
+Allow: /services/
+Allow: /about
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /cart/
+
+# Twitter/X
+User-agent: Twitterbot
+Allow: /
+Allow: /venues/
+Allow: /vendors/
+Allow: /services/
+Allow: /about
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /cart/
+
+# LinkedIn
+User-agent: LinkedInBot
+Allow: /
+Allow: /venues/
+Allow: /vendors/
+Allow: /services/
+Allow: /about
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /cart/
+
+# WhatsApp
+User-agent: WhatsApp
+Allow: /
+Allow: /venues/
+Allow: /vendors/
+Allow: /services/
+Allow: /about
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /cart/
+
+# ===========================================
+# AI/ML TRAINING RESTRICTIONS
+# ===========================================
+
+# Google AI Training (Gemini)
+User-agent: Google-Extended
+Disallow: /
+
+# OpenAI (ChatGPT)
+User-agent: GPTBot
+Disallow: /
+
+# Anthropic (Claude)
+User-agent: Claude-Web
+Disallow: /
+
+# Meta AI
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+# ===========================================
+# SEO AND ANALYSIS TOOLS
+# ===========================================
+
+# SEMrush
+User-agent: SemrushBot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Crawl-delay: 5
+
+# Ahrefs
+User-agent: AhrefsBot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Crawl-delay: 5
+
+# Moz
+User-agent: rogerbot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Crawl-delay: 5
+
+# ===========================================
+# MALICIOUS/UNWANTED BOTS
+# ===========================================
+
+# Known bad bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MegaIndex
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+# ===========================================
+# DEFAULT RULES FOR ALL OTHER BOTS
+# ===========================================
+
+User-agent: *
+Allow: /
+Allow: /venues
+Allow: /vendors  
+Allow: /services
+Allow: /search
+Allow: /about
+Allow: /pwa
+Allow: /terms-and-conditions
+Allow: /privacy-policy
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.webp$
+Allow: /*.avif$
+Allow: /*.svg$
+Allow: /*.gif$
+Allow: /*.mp4$
+Allow: /*.webm$
+Allow: /*.css$
+Allow: /*.js$
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /cart/
+Disallow: /favorites/
+Disallow: /auth/reset-password
+Disallow: /auth/verify-email
+Disallow: /_next/
+Disallow: /test/
+Disallow: /dev/
+Disallow: /*.json$
+Disallow: /*?*sort=
+Disallow: /*?*filter=
+Disallow: /*?*page=
+Disallow: /*sessionid*
+Disallow: /*tracking*
+Crawl-delay: 1
+
+# ===========================================
+# SITEMAPS
+# ===========================================
+
 Sitemap: https://planero.com/sitemap.xml
+Sitemap: https://planero.com/sitemap-venues.xml
+Sitemap: https://planero.com/sitemap-vendors.xml
+Sitemap: https://planero.com/sitemap-services.xml
+
+# ===========================================
+# ADDITIONAL INFORMATION
+# ===========================================
+
+# Host: https://planero.com
+# Contact: seo@planero.com
+# Last updated: 2025-11-10
+# For questions about this robots.txt file, please contact our team.

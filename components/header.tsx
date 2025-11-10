@@ -45,7 +45,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCart } from "@/hooks/use-cart";
 import { MegaMenu } from "@/components/mega-menu";
-import { motion, AnimatePresence } from "framer-motion";
 
 export function Header() {
   const router = useRouter();
@@ -89,7 +88,7 @@ export function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center font-extrabold sm:text-lg md:text-2xl text-foreground mr-2 sm:mr-4 md:mr-7"
+            className="flex items-center font-extrabold md:text-2xl text-foreground mr-2 sm:mr-4 md:mr-7"
           >
             <span className="font-medium">Plan</span>
             <span className="text-primary">Ero.</span>
@@ -105,6 +104,12 @@ export function Header() {
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               About
+            </Link>
+            <Link
+              href="/pwa"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Get App
             </Link>
           </nav>
 
@@ -321,16 +326,9 @@ export function Header() {
       </div>
 
       {/* Full-width Mobile Menu */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: "-100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "-100%" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed inset-0 top-12 sm:top-14 md:top-16 md:hidden bg-background/98 backdrop-blur-sm z-50 overflow-y-auto"
-          >
-            <div className="min-h-full">
+      {isMenuOpen && (
+        <div className="fixed inset-0 top-12 sm:top-14 md:top-16 md:hidden bg-background/98 backdrop-blur-sm z-50 overflow-y-auto transition-all duration-300 ease-in-out animate-in slide-in-from-left">
+          <div className="min-h-full">
               {/* Mobile Navigation with Mega Menu */}
               <MegaMenu isMobile onClose={() => setIsMenuOpen(false)} />
 
@@ -342,6 +340,13 @@ export function Header() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   About
+                </Link>
+                <Link
+                  href="/pwa"
+                  className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Get App
                 </Link>
               </div>
 
@@ -466,9 +471,8 @@ export function Header() {
                 )}
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </header>
   );
 }

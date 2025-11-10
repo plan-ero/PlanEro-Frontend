@@ -1,0 +1,8 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#f3f4f6"/>
+  <g transform="translate(400, 300)">
+    <circle cx="0" cy="-20" r="30" fill="#9ca3af"/>
+    <rect x="-40" y="10" width="80" height="60" rx="8" fill="#9ca3af"/>
+    <text x="0" y="90" text-anchor="middle" fill="#6b7280" font-family="system-ui" font-size="16">No Image Available</text>
+  </g>
+</svg>

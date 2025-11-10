@@ -32,7 +32,6 @@ const venueCategories = [
   "college-fests",
   "house-private-party",
   "farewell",
-  "reunion",
   "baby-shower",
 ];
 

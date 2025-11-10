@@ -89,8 +89,69 @@ export function FeaturedIdeaSlates() {
           </p>
         </motion.div>
 
-        {/* Slates Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        {/* Mobile: Horizontal scroller of slates (looks like other cards) */}
+        <div className="md:hidden mb-6">
+          <div className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth overflow-y-hidden" style={{ overscrollBehavior: "contain" }}>
+            <div className="flex gap-6 px-4">
+              {featuredSlates.map((slate, index) => (
+                <motion.div
+                  key={slate.id}
+                  initial={{ opacity: 0, x: 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.08 }}
+                  viewport={{ once: true }}
+                  className="flex-shrink-0 w-80"
+                >
+                  <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm h-full">
+                    <CardContent className="p-0 h-full flex flex-col">
+                      <div className="relative">
+                        <div className="absolute top-4 left-4 z-10">
+                          <div className="flex items-center gap-2 bg-background/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-sm">
+                            <slate.icon className="h-4 w-4 text-primary" />
+                            <span className="text-sm font-medium text-foreground">
+                              {slate.category}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-1 aspect-square">
+                          {slate.images.slice(0, 4).map((image, imgIndex) => (
+                            <div key={imgIndex} className="relative overflow-hidden bg-muted">
+                              <Image
+                                src={image}
+                                alt={`${slate.title} image ${imgIndex + 1}`}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                sizes="(max-width: 768px) 50vw"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/20" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="p-6 flex-1 flex flex-col">
+                        <h3 className="font-semibold text-xl mb-3 leading-tight group-hover:text-primary transition-colors duration-200">
+                          {slate.title}
+                        </h3>
+                        <p className="text-muted-foreground text-sm mb-4 line-clamp-2 flex-1">
+                          {slate.description}
+                        </p>
+                        <div className="flex items-center justify-between text-sm text-muted-foreground pt-2 border-t border-border/50">
+                          <span className="font-medium">by {slate.author}</span>
+                          <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs font-medium">
+                            {slate.itemCount} items
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop / Tablet grid */}
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {featuredSlates.map((slate, index) => (
             <motion.div
               key={slate.id}

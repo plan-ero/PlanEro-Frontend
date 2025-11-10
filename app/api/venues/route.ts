@@ -9,7 +9,6 @@ const categoryToEventTypeMap: Record<string, string> = {
   "college-fests": "CONFERENCE", // Map to closest match
   "house-private-party": "HOLIDAY_PARTY", // Map to closest match
   farewell: "GRADUATION", // Map to closest match
-  reunion: "CONFERENCE", // Map to closest match
   "baby-shower": "BABY_SHOWER",
   birthday: "BIRTHDAY",
   conference: "CONFERENCE",

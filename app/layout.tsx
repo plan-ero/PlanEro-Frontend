@@ -13,6 +13,10 @@ import { LoadingSpinner } from "@/components/loading-spinner";
 import { Suspense } from "react";
 import { Header } from "@/components/header";
 import { ViewTransitions } from "./view-transitions";
+import { PWAInstaller } from "@/components/pwa-installer";
+import { FloatingPWAInstaller } from "@/components/floating-pwa-installer";
+import { InstallPrompt } from "@/components/install-prompt";
+import { BotAnalytics } from "@/lib/bot-analytics";
 
 // Optimized font loading with display swap for better performance
 const inter = Inter({
@@ -115,13 +119,17 @@ export default function RootLayout({
       className={`${inter.variable} ${playfair.variable} ${montserrat.variable}`}
     >
       <head>
-        <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#000000" />
-        <link rel="apple-touch-icon" href="/placeholder-logo.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icon-192x192.png" />
         <link rel="preconnect" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
       </head>
       <body className={`${inter.className} font-sans antialiased`}>
+        <BotAnalytics page="global" />
+        <PWAInstaller />
+        <FloatingPWAInstaller />
+        <InstallPrompt />
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

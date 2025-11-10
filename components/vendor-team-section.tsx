@@ -29,7 +29,7 @@ const vendorTeam = [
     icon: Camera,
     description: "Professional photography and videography services",
     count: "300+ professionals",
-    href: "/services/photo-videographer",
+    href: "/vendors?category=photographer",
     image:
       "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     color: "from-purple-500 to-violet-600",
@@ -40,7 +40,7 @@ const vendorTeam = [
     icon: Sparkles,
     description: "Event decoration and styling experts",
     count: "250+ decorators",
-    href: "/services/decorator",
+    href: "/vendors?category=decorator",
     image:
       "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     color: "from-blue-500 to-indigo-600",
@@ -51,7 +51,7 @@ const vendorTeam = [
     icon: Flower,
     description: "Beautiful floral arrangements and designs",
     count: "180+ florists",
-    href: "/services/florist",
+    href: "/vendors?category=florists",
     image:
       "https://images.unsplash.com/photo-1490750967868-88aa4486c946?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     color: "from-green-500 to-emerald-600",
@@ -62,7 +62,7 @@ const vendorTeam = [
     icon: ChefHat,
     description: "Culinary excellence for your special events",
     count: "220+ caterers",
-    href: "/services/caterer",
+    href: "/vendors?category=caterers",
     image:
       "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     color: "from-orange-500 to-red-600",
@@ -73,7 +73,7 @@ const vendorTeam = [
     icon: Cake,
     description: "Custom cakes and dessert creations",
     count: "150+ bakers",
-    href: "/services/baker",
+    href: "/vendors?category=baker",
     image:
       "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     color: "from-pink-500 to-rose-600",
@@ -84,7 +84,7 @@ const vendorTeam = [
     icon: Car,
     description: "Luxury transportation and vehicle services",
     count: "120+ providers",
-    href: "/services/transportation",
+    href: "/vendors?category=transportation",
     image:
       "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     color: "from-slate-500 to-gray-600",
@@ -96,7 +96,7 @@ const vendorTeam = [
     icon: Music,
     description: "Live music bands for wedding ceremonies",
     count: "80+ bands",
-    href: "/services/wedding-band",
+    href: "/vendors?category=wedding-bands",
     image:
       "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     color: "from-purple-500 to-violet-600",
@@ -107,7 +107,7 @@ const vendorTeam = [
     icon: Disc,
     description: "Professional DJs for all event types",
     count: "150+ DJs",
-    href: "/services/dj",
+    href: "/vendors?category=dj",
     image:
       "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     color: "from-blue-500 to-indigo-600",
@@ -118,7 +118,7 @@ const vendorTeam = [
     icon: Mic,
     description: "Solo singers and vocal performers",
     count: "120+ singers",
-    href: "/services/singer",
+    href: "/vendors?category=singer",
     image:
       "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     color: "from-pink-500 to-rose-600",
@@ -129,7 +129,7 @@ const vendorTeam = [
     icon: Mic2,
     description: "Event hosts and emcees",
     count: "90+ anchors",
-    href: "/services/anchor",
+    href: "/vendors?category=anchor",
     image:
       "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     color: "from-green-500 to-emerald-600",
@@ -140,7 +140,7 @@ const vendorTeam = [
     icon: Wand2,
     description: "Magicians and illusionists",
     count: "60+ magicians",
-    href: "/services/magician",
+    href: "/vendors?category=magician",
     image:
       "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     color: "from-amber-500 to-orange-600",
@@ -196,24 +196,24 @@ export function VendorTeamSection() {
 
         {/* Horizontal Scrolling Container with Buttons */}
         <div className="relative flex items-center gap-4">
-          {/* Left Navigation Button - Always Visible */}
+          {/* Left Navigation Button - Hidden on Mobile */}
           <Button
             variant="outline"
             size="icon"
-            className="flex-shrink-0 h-12 w-12 rounded-full bg-background/95 backdrop-blur-sm shadow-xl border-2 hover:bg-background hover:scale-110 transition-all z-20"
+            className="hidden md:flex flex-shrink-0 h-12 w-12 rounded-full bg-background/95 backdrop-blur-sm shadow-xl border-2 hover:bg-background hover:scale-110 transition-all z-20"
             onClick={scrollLeft}
           >
             <ChevronLeft className="h-6 w-6" />
           </Button>
 
-          {/* Card Strip Container - Reduced Width */}
+          {/* Card Strip Container - Mobile Scrollable */}
           <div className="relative flex-1 overflow-hidden">
             <div
               ref={scrollContainerRef}
-              className="overflow-x-hidden scrollbar-hide pb-4 scroll-smooth"
+                className="overflow-x-auto md:overflow-x-hidden scrollbar-hide pb-4 scroll-smooth overflow-y-hidden"
               onWheel={(e) => {
-                // Only prevent horizontal scrolling, allow vertical
-                if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+                // Only prevent horizontal scrolling on desktop, allow vertical
+                if (window.innerWidth >= 768 && Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
                   e.preventDefault();
                 }
               }}
@@ -268,7 +268,7 @@ export function VendorTeamSection() {
 
                             <Button
                               variant="outline"
-                              className="w-full bg-transparent border-2 group-hover/card:bg-primary group-hover/card:text-primary-foreground group-hover/card:border-primary transition-all duration-300"
+                              className="hidden md:block w-full bg-transparent border-2 group-hover/card:bg-primary group-hover/card:text-primary-foreground group-hover/card:border-primary transition-all duration-300"
                             >
                               Find {vendor.name}
                               <ArrowRight className="h-4 w-4 ml-2 group-hover/card:translate-x-1 transition-transform duration-300" />
@@ -283,11 +283,11 @@ export function VendorTeamSection() {
             </div>
           </div>
 
-          {/* Right Navigation Button - Always Visible */}
+          {/* Right Navigation Button - Hidden on Mobile */}
           <Button
             variant="outline"
             size="icon"
-            className="flex-shrink-0 h-12 w-12 rounded-full bg-background/95 backdrop-blur-sm shadow-xl border-2 hover:bg-background hover:scale-110 transition-all z-20"
+            className="hidden md:flex flex-shrink-0 h-12 w-12 rounded-full bg-background/95 backdrop-blur-sm shadow-xl border-2 hover:bg-background hover:scale-110 transition-all z-20"
             onClick={scrollRight}
           >
             <ChevronRight className="h-6 w-6" />
@@ -306,7 +306,7 @@ export function VendorTeamSection() {
             asChild
             className="px-8 py-4 text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
-            <Link href="/services">
+            <Link href="/vendors">
               Browse All Vendors
               <ArrowRight className="h-5 w-5 ml-2" />
             </Link>
