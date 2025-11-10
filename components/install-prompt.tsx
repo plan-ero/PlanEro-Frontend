@@ -24,10 +24,13 @@ export function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+    
     // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (typeof window !== 'undefined' && window.matchMedia('(display-mode: standalone)').matches) {
       setIsInstalled(true);
       return;
     }
@@ -67,6 +70,18 @@ export function InstallPrompt() {
   };
 
   const getInstallInstructions = () => {
+    // Guard against SSR
+    if (typeof navigator === 'undefined') {
+      return {
+        browser: 'Your Browser',
+        steps: [
+          'Look for an install or "Add to Home Screen" option',
+          'This is usually found in the browser menu',
+          'Follow the prompts to install the app'
+        ]
+      };
+    }
+    
     const userAgent = navigator.userAgent.toLowerCase();
     
     if (userAgent.includes('chrome') && !userAgent.includes('edg')) {
@@ -117,8 +132,8 @@ export function InstallPrompt() {
     };
   };
 
-  // Don't show anything if already installed
-  if (isInstalled) return null;
+  // Don't show anything if already installed or not mounted (SSR)
+  if (!isMounted || isInstalled) return null;
 
   return (
     <>
