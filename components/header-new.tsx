@@ -33,6 +33,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MegaMenu } from "@/components/mega-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -304,33 +310,37 @@ export function Header() {
         </AnimatePresence>
       </div>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: "-100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "-100%" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed inset-0 top-16 md:hidden bg-background/98 backdrop-blur-sm z-50 overflow-y-auto"
-          >
-            <div className="min-h-full">
-              {/* Mobile Navigation with Mega Menu */}
-              <MegaMenu isMobile onClose={() => setIsMenuOpen(false)} />
-
-              {/* Additional Mobile Links */}
-              <div className="container mx-auto px-4 py-4 border-t border-border">
-                <Link
-                  href="/about"
-                  className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  About
-                </Link>
+      {/* Mobile Menu Sheet */}
+      <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+        <SheetContent side="left" className="w-full sm:max-w-md p-0 overflow-y-auto">
+          <SheetHeader className="px-6 py-4 border-b border-border bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
+            <SheetTitle className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">P</span>
               </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                PLANERO
+              </span>
+            </SheetTitle>
+          </SheetHeader>
 
-              {/* Mobile Actions */}
-              <div className="container mx-auto px-4 flex flex-col space-y-4 py-4 border-t border-border/50">
+          <div className="min-h-full">
+            {/* Mobile Navigation with Mega Menu */}
+            <MegaMenu isMobile onClose={() => setIsMenuOpen(false)} />
+
+            {/* Additional Mobile Links */}
+            <div className="px-4 py-4 border-t border-border">
+              <Link
+                href="/about"
+                className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                About
+              </Link>
+            </div>
+
+            {/* Mobile Actions */}
+            <div className="px-4 flex flex-col space-y-4 py-4 border-t border-border/50">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-muted-foreground">
                     Settings
@@ -429,9 +439,8 @@ export function Header() {
                 )}
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </header>
+        </SheetContent>
+      </Sheet>
+    </motion.header>
   );
 }

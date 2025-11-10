@@ -70,20 +70,10 @@ export function InstallPrompt() {
   };
 
   const getInstallInstructions = () => {
-    // Guard against SSR
-    if (typeof navigator === 'undefined') {
-      return {
-        browser: 'Your Browser',
-        steps: [
-          'Look for an install or "Add to Home Screen" option',
-          'This is usually found in the browser menu',
-          'Follow the prompts to install the app'
-        ]
-      };
-    }
-    
-    const userAgent = navigator.userAgent.toLowerCase();
-    
+    // Defensive userAgent parsing to avoid SSR/runtime issues
+    const uaRaw = typeof navigator !== 'undefined' && navigator && typeof navigator.userAgent === 'string' ? navigator.userAgent : '';
+    const userAgent = uaRaw.toLowerCase();
+
     if (userAgent.includes('chrome') && !userAgent.includes('edg')) {
       return {
         browser: 'Chrome',

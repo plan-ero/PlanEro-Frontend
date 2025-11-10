@@ -12,6 +12,7 @@ import { Footer } from "@/components/footer";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { Suspense } from "react";
 import { Header } from "@/components/header";
+import BottomAppBar from "@/components/bottom-app-bar";
 import { ViewTransitions } from "./view-transitions";
 import { PWAInstaller } from "@/components/pwa-installer";
 import { FloatingPWAInstaller } from "@/components/floating-pwa-installer";
@@ -148,6 +149,10 @@ export default function RootLayout({
                     </Suspense>
                     <Footer />
                   </div>
+                  {/* Mobile bottom app bar for installed apps / quick nav */}
+                  <Suspense fallback={null}>
+                    <BottomAppBar />
+                  </Suspense>
                   <Toaster position="top-right" />
                   {/* </SmoothScrollProvider> */}
                 </ViewTransitions>

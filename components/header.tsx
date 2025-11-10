@@ -309,170 +309,168 @@ export function Header() {
             )}
 
             {/* Mobile Menu */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="md:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? (
-                <X className="h-4 w-4 transition-transform duration-200" />
-              ) : (
-                <Menu className="h-4 w-4 transition-transform duration-200" />
-              )}
-            </Button>
+            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="md:hidden"
+                >
+                  <Menu className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-full sm:w-96 p-0 overflow-y-auto">
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                <div className="flex flex-col h-full">
+                  {/* Mobile Navigation with Mega Menu */}
+                  <div className="flex-1 overflow-y-auto">
+                    <MegaMenu isMobile onClose={() => setIsMenuOpen(false)} />
+
+                    {/* Additional Mobile Links */}
+                    <div className="px-4 py-4 border-t border-border">
+                      <Link
+                        href="/about"
+                        className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        About
+                      </Link>
+                      <Link
+                        href="/pwa"
+                        className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Get App
+                      </Link>
+                    </div>
+
+                    {/* Mobile Actions */}
+                    <div className="px-4 py-4 border-t border-border space-y-4">
+                      {session && (
+                        <>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start"
+                            asChild
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <Link href="/favorites">
+                              <Heart className="mr-2 h-4 w-4" />
+                              Favorites
+                            </Link>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start"
+                            asChild
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <Link href="/cart">
+                              <ShoppingCart className="mr-2 h-4 w-4" />
+                              Cart ({items.length})
+                            </Link>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start"
+                            asChild
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <Link href="/dashboard">
+                              <User className="mr-2 h-4 w-4" />
+                              Dashboard
+                            </Link>
+                          </Button>
+                        </>
+                      )}
+
+                      {/* Theme Toggle */}
+                      <div className="pt-2">
+                        <h4 className="text-sm font-medium mb-2">Theme</h4>
+                        <div className="grid grid-cols-3 gap-2">
+                          <Button
+                            variant={theme === "light" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setTheme("light")}
+                          >
+                            <Sun className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant={theme === "dark" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setTheme("dark")}
+                          >
+                            <Moon className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant={theme === "system" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setTheme("system")}
+                          >
+                            <Monitor className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Authentication for Mobile */}
+                      {!session ? (
+                        <div className="space-y-2 pt-4">
+                          <Button className="w-full" onClick={() => signIn()}>
+                            <LogIn className="mr-2 h-4 w-4" />
+                            Sign In
+                          </Button>
+                          <Button variant="outline" className="w-full" asChild>
+                            <Link
+                              href="/auth/signup"
+                              onClick={() => setIsMenuOpen(false)}
+                            >
+                              <UserPlus className="mr-2 h-4 w-4" />
+                              Sign Up
+                            </Link>
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-3 pt-4 pb-safe">
+                          <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted">
+                            <Avatar className="h-10 w-10">
+                              <AvatarImage
+                                src={session.user?.image || "/placeholder-user.jpg"}
+                                alt={session.user?.name || "User"}
+                              />
+                              <AvatarFallback>
+                                {session.user?.name?.charAt(0)?.toUpperCase() || "U"}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium truncate">
+                                {session.user?.name || "User"}
+                              </p>
+                              <p className="text-sm text-muted-foreground truncate">
+                                {session.user?.email}
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start"
+                            onClick={() => {
+                              signOut();
+                              setIsMenuOpen(false);
+                            }}
+                          >
+                            <LogOut className="mr-2 h-4 w-4" />
+                            Sign Out
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
-
-      {/* Full-width Mobile Menu */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 top-12 sm:top-14 md:top-16 md:hidden bg-background/98 backdrop-blur-sm z-50 overflow-y-auto transition-all duration-300 ease-in-out animate-in slide-in-from-left">
-          <div className="min-h-full">
-              {/* Mobile Navigation with Mega Menu */}
-              <MegaMenu isMobile onClose={() => setIsMenuOpen(false)} />
-
-              {/* Additional Mobile Links */}
-              <div className="container mx-auto px-4 py-4 border-t border-border">
-                <Link
-                  href="/about"
-                  className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  About
-                </Link>
-                <Link
-                  href="/pwa"
-                  className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Get App
-                </Link>
-              </div>
-
-              {/* Mobile Actions */}
-              <div className="container mx-auto px-4 py-4 border-t border-border space-y-4">
-                {session && (
-                  <>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start"
-                      asChild
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <Link href="/favorites">
-                        <Heart className="mr-2 h-4 w-4" />
-                        Favorites
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start"
-                      asChild
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <Link href="/cart">
-                        <ShoppingCart className="mr-2 h-4 w-4" />
-                        Cart ({items.length})
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start"
-                      asChild
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <Link href="/dashboard">
-                        <User className="mr-2 h-4 w-4" />
-                        Dashboard
-                      </Link>
-                    </Button>
-                  </>
-                )}
-
-                {/* Theme Toggle */}
-                <div className="pt-2">
-                  <h4 className="text-sm font-medium mb-2">Theme</h4>
-                  <div className="grid grid-cols-3 gap-2">
-                    <Button
-                      variant={theme === "light" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setTheme("light")}
-                    >
-                      <Sun className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant={theme === "dark" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setTheme("dark")}
-                    >
-                      <Moon className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant={theme === "system" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setTheme("system")}
-                    >
-                      <Monitor className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Authentication for Mobile */}
-                {!session ? (
-                  <div className="space-y-2 pt-4">
-                    <Button className="w-full" onClick={() => signIn()}>
-                      <LogIn className="mr-2 h-4 w-4" />
-                      Sign In
-                    </Button>
-                    <Button variant="outline" className="w-full" asChild>
-                      <Link
-                        href="/auth/signup"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <UserPlus className="mr-2 h-4 w-4" />
-                        Sign Up
-                      </Link>
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-3 pt-4">
-                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage
-                          src={session.user?.image || "/placeholder-user.jpg"}
-                          alt={session.user?.name || "User"}
-                        />
-                        <AvatarFallback>
-                          {session.user?.name?.charAt(0)?.toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">
-                          {session.user?.name || "User"}
-                        </p>
-                        <p className="text-sm text-muted-foreground truncate">
-                          {session.user?.email}
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start"
-                      onClick={() => {
-                        signOut();
-                        setIsMenuOpen(false);
-                      }}
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Sign Out
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
     </header>
   );
 }
