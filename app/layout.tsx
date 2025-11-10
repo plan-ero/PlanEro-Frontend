@@ -16,7 +16,6 @@ import BottomAppBar from "@/components/bottom-app-bar";
 import { ViewTransitions } from "./view-transitions";
 import { PWAInstaller } from "@/components/pwa-installer";
 import { FloatingPWAInstaller } from "@/components/floating-pwa-installer";
-import { InstallPrompt } from "@/components/install-prompt";
 import { BotAnalytics } from "@/lib/bot-analytics";
 
 // Optimized font loading with display swap for better performance
@@ -130,7 +129,6 @@ export default function RootLayout({
         <BotAnalytics page="global" />
         <PWAInstaller />
         <FloatingPWAInstaller />
-        <InstallPrompt />
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

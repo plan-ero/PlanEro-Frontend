@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRef } from "react";
+import { useReducedMotion, getMotionProps } from "@/hooks/use-reduced-motion";
 import {
   Music,
   Disc,
@@ -75,6 +76,7 @@ const entertainment = [
 ];
 
 export function EntertainmentSection() {
+  const shouldReduceMotion = useReducedMotion();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollLeft = () => {
@@ -99,10 +101,12 @@ export function EntertainmentSection() {
     <section className="py-20 bg-secondary/30">
       <div className="container mx-auto px-4">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          {...getMotionProps(shouldReduceMotion, {
+            initial: { opacity: 0, y: 30 },
+            whileInView: { opacity: 1, y: 0 },
+            transition: { duration: 0.8 },
+            viewport: { once: true },
+          })}
           className="text-center mb-12"
         >
           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
@@ -151,10 +155,12 @@ export function EntertainmentSection() {
                   return (
                     <motion.div
                       key={entertainer.id}
-                      initial={{ opacity: 0, x: 50 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.6, delay: index * 0.1 }}
-                      viewport={{ once: true }}
+                      {...getMotionProps(shouldReduceMotion, {
+                        initial: { opacity: 0, x: 50 },
+                        whileInView: { opacity: 1, x: 0 },
+                        transition: { duration: 0.6, delay: index * 0.1 },
+                        viewport: { once: true },
+                      })}
                       className="flex-shrink-0 w-80"
                     >
                       <Card className="group/card hover:shadow-2xl transition-all duration-500 h-full shadow-lg overflow-hidden border border-border/50 hover:border-primary/50 cursor-pointer">
@@ -194,7 +200,7 @@ export function EntertainmentSection() {
 
                             <Button
                               variant="outline"
-                              className="hidden md:block w-full bg-transparent border-2 group-hover/card:bg-primary group-hover/card:text-primary-foreground group-hover/card:border-primary transition-all duration-300"
+                              className="hidden md:flex w-full bg-transparent border-2 group-hover/card:bg-primary group-hover/card:text-primary-foreground group-hover/card:border-primary transition-all duration-300"
                             >
                               Book Now
                               <ArrowRight className="h-4 w-4 ml-2 group-hover/card:translate-x-1 transition-transform duration-300" />
@@ -222,10 +228,12 @@ export function EntertainmentSection() {
 
         <motion.div
           className="text-center mt-12"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          viewport={{ once: true }}
+          {...getMotionProps(shouldReduceMotion, {
+            initial: { opacity: 0 },
+            whileInView: { opacity: 1 },
+            transition: { delay: 0.5, duration: 0.8 },
+            viewport: { once: true },
+          })}
         >
           <Button
             size="lg"

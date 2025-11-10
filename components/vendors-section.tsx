@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useReducedMotion, getMotionProps } from "@/hooks/use-reduced-motion";
 
 // Vendor categories with their details
 const vendorCategories = [
@@ -121,15 +122,18 @@ const vendorCategories = [
 ];
 
 export function VendorsSection() {
+  const shouldReduceMotion = useReducedMotion();
   return (
     <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
+          {...getMotionProps(shouldReduceMotion, {
+            initial: { opacity: 0, y: 30 },
+            whileInView: { opacity: 1, y: 0 },
+            transition: { duration: 0.8 },
+            viewport: { once: true },
+          })}
+          className="text-center mb-12"
         >
           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
             <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
@@ -150,12 +154,14 @@ export function VendorsSection() {
           {vendorCategories.map((category, index) => (
             <motion.div
               key={category.id}
-              initial={{ opacity: 0, y: 50, scale: 0.9 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.6, delay: index * 0.05 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -8, scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              {...getMotionProps(shouldReduceMotion, {
+                initial: { opacity: 0, y: 50, scale: 0.9 },
+                whileInView: { opacity: 1, y: 0, scale: 1 },
+                transition: { duration: 0.6, delay: index * 0.05 },
+                viewport: { once: true },
+                whileHover: { y: -8, scale: 1.02 },
+                whileTap: { scale: 0.98 },
+              })}
             >
               <Link href={`/services?category=${category.id}`}>
                 <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer h-full border border-border shadow-lg bg-card hover:bg-muted/50">
@@ -200,10 +206,12 @@ export function VendorsSection() {
 
         <motion.div
           className="text-center mt-16"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          viewport={{ once: true }}
+          {...getMotionProps(shouldReduceMotion, {
+            initial: { opacity: 0 },
+            whileInView: { opacity: 1 },
+            transition: { delay: 0.5, duration: 0.8 },
+            viewport: { once: true },
+          })}
         >
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button

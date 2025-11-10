@@ -322,6 +322,10 @@ export function Header() {
               <SheetContent side="left" className="w-full sm:w-96 p-0 overflow-y-auto">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <div className="flex flex-col h-full">
+                  <h1 className="px-4 py-4 text-xl border-t border-border">
+                    <span className="font-medium">Plan</span>
+                    <span className="text-primary">Ero.</span>
+                  </h1>
                   {/* Mobile Navigation with Mega Menu */}
                   <div className="flex-1 overflow-y-auto">
                     <MegaMenu isMobile onClose={() => setIsMenuOpen(false)} />

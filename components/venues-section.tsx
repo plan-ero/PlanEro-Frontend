@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useReducedMotion, getMotionProps } from "@/hooks/use-reduced-motion";
 
 // Venue categories with their details
 const venueCategories = [
@@ -84,14 +85,18 @@ const venueCategories = [
 ];
 
 export function VenuesSection() {
+  const shouldReduceMotion = useReducedMotion();
+  
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          {...getMotionProps(shouldReduceMotion, {
+            initial: { opacity: 0, y: 30 },
+            whileInView: { opacity: 1, y: 0 },
+            transition: { duration: 0.8 },
+            viewport: { once: true },
+          })}
           className="text-center mb-16"
         >
           <div className="inline-block p-2 bg-primary/10 rounded-full mb-6">
@@ -110,11 +115,13 @@ export function VenuesSection() {
           {venueCategories.map((category, index) => (
             <motion.div
               key={category.id}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -10 }}
+              {...getMotionProps(shouldReduceMotion, {
+                initial: { opacity: 0, y: 50 },
+                whileInView: { opacity: 1, y: 0 },
+                transition: { duration: 0.6, delay: index * 0.1 },
+                viewport: { once: true },
+                whileHover: { y: -10 },
+              })}
             >
               <Link href={`/venues/category/${category.id}`}>
                 <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer h-full bg-card border border-border/50 shadow-lg hover:border-primary/20 relative">
@@ -161,10 +168,12 @@ export function VenuesSection() {
 
         <motion.div
           className="text-center mt-16"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          viewport={{ once: true }}
+          {...getMotionProps(shouldReduceMotion, {
+            initial: { opacity: 0 },
+            whileInView: { opacity: 1 },
+            transition: { delay: 0.5, duration: 0.8 },
+            viewport: { once: true },
+          })}
         >
           <Button
             variant="outline"

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useReducedMotion, getMotionProps } from "@/hooks/use-reduced-motion";
 
 const services = [
   {
@@ -86,14 +87,18 @@ const services = [
 ];
 
 export function ServicesSection() {
+  const shouldReduceMotion = useReducedMotion();
+  
   return (
-    <section className="py-20 bg-secondary/30">
+    <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          {...getMotionProps(shouldReduceMotion, {
+            initial: { opacity: 0, y: 30 },
+            whileInView: { opacity: 1, y: 0 },
+            transition: { duration: 0.8 },
+            viewport: { once: true },
+          })}
           className="text-center mb-16"
         >
           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
@@ -118,11 +123,13 @@ export function ServicesSection() {
             return (
               <motion.div
                 key={service.id}
-                initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -8, scale: 1.02 }}
+                {...getMotionProps(shouldReduceMotion, {
+                  initial: { opacity: 0, y: 50, scale: 0.9 },
+                  whileInView: { opacity: 1, y: 0, scale: 1 },
+                  transition: { duration: 0.6, delay: index * 0.1 },
+                  viewport: { once: true },
+                  whileHover: { y: -8, scale: 1.02 },
+                })}
                 whileTap={{ scale: 0.98 }}
               >
                 <Card className="group hover:shadow-2xl transition-all duration-500 h-full shadow-lg bg-card/80 hover:bg-card/95 hover:backdrop-blur-xl overflow-hidden relative border border-border/50 hover:border-primary/30">
@@ -185,9 +192,11 @@ export function ServicesSection() {
 
         <motion.div
           className="text-center mt-16"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
+          {...getMotionProps(shouldReduceMotion, {
+            initial: { opacity: 0 },
+            whileInView: { opacity: 1 },
+            transition: { delay: 0.5, duration: 0.8 },
+          })}
           viewport={{ once: true }}
         >
           <Button
