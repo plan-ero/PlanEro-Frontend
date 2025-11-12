@@ -3,9 +3,9 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, Users, Award, Clock, CheckCircle } from "lucide-react";
+import { Heart, Users, Award, Clock, CheckCircle, Target, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { Header } from "@/components/header";
+import Image from "next/image";
 
 const features = [
   {
@@ -50,6 +50,27 @@ const values = [
   "Building lasting relationships",
 ];
 
+const founders = [
+  {
+    name: "Sarah Johnson",
+    role: "Co-Founder & CEO",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
+    bio: "With 15 years of experience in event planning, Sarah leads our vision of making memorable events accessible to everyone."
+  },
+  {
+    name: "Michael Chen",
+    role: "Co-Founder & CTO",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+    bio: "Michael brings tech innovation to event planning, creating seamless experiences through cutting-edge platform solutions."
+  },
+  {
+    name: "Emily Rodriguez",
+    role: "Co-Founder & Creative Director",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
+    bio: "Emily's creative expertise ensures every event reflects unique style and personality, turning visions into reality."
+  }
+];
+
 export default function AboutPage() {
   return (
     <>
@@ -76,15 +97,105 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Our Story */}
+      {/* Our Mission */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center max-w-3xl mx-auto"
+          >
+            <div className="flex items-center justify-center mb-4">
+              <Target className="h-12 w-12 text-primary mr-4" />
+              <h2 className="text-3xl font-bold">Our Mission</h2>
+            </div>
+            <p className="text-xl text-muted-foreground leading-relaxed">
+              To revolutionize event planning by connecting people with the perfect venues,
+              vendors, and services, making every celebration extraordinary and stress-free.
+              We believe that creating memorable moments should be joyful, not overwhelming.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Two-Column Layout with Image */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
+            >
+              <div className="flex items-center mb-6">
+                <Sparkles className="h-8 w-8 text-primary mr-3" />
+                <h2 className="text-3xl font-bold">Why PlanEro?</h2>
+              </div>
+              <p className="text-muted-foreground mb-4">
+                Planning an event shouldn't be complicated. PlanEro brings together everything
+                you need in one place—from stunning venues to talented vendors, all vetted for quality.
+              </p>
+              <p className="text-muted-foreground mb-4">
+                Our platform empowers you to discover, compare, and book with confidence.
+                Whether you're planning a wedding, corporate event, or birthday celebration,
+                we provide the tools and support to make it seamless.
+              </p>
+              <p className="text-muted-foreground">
+                With real reviews, transparent pricing, and dedicated customer support,
+                we're here to ensure your event is everything you imagined—and more.
+              </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="relative h-[400px] rounded-lg overflow-hidden shadow-xl">
+                <Image
+                  src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&h=600&fit=crop"
+                  alt="Event planning excellence"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Story */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="relative order-2 md:order-1"
+            >
+              <div className="relative h-[400px] rounded-lg overflow-hidden shadow-xl">
+                <Image
+                  src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&h=600&fit=crop"
+                  alt="Our journey"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="order-1 md:order-2"
             >
               <h2 className="text-3xl font-bold mb-6">Our Story</h2>
               <p className="text-muted-foreground mb-6">
@@ -105,19 +216,53 @@ export default function AboutPage() {
                 country, helping them create memories that last a lifetime.
               </p>
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <img
-                src="https://media.istockphoto.com/id/590034882/photo/restaurant-table-with-food.jpg?s=612x612&w=0&k=20&c=ZgVIAKS1s10FiQBLvmmgHXSwoLvMHWa7K4Tla8JZcmI="
-                alt="Our team at work"
-                className="rounded-lg shadow-lg w-full"
-              />
-            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Founders Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl font-bold mb-4">Meet Our Founders</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              The passionate team behind PlanEro, dedicated to revolutionizing event planning.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {founders.map((founder, index) => (
+              <motion.div
+                key={founder.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <Card className="h-full text-center overflow-hidden">
+                  <CardContent className="pt-6">
+                    <div className="relative w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden">
+                      <Image
+                        src={founder.image}
+                        alt={founder.name}
+                        fill
+                        className="object-cover"
+                        sizes="128px"
+                      />
+                    </div>
+                    <h3 className="font-bold text-lg mb-1">{founder.name}</h3>
+                    <p className="text-sm text-primary font-medium mb-3">{founder.role}</p>
+                    <p className="text-sm text-muted-foreground">{founder.bio}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

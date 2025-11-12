@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, Users, Calendar, ArrowRight } from "lucide-react";
+import { useReducedMotion, getMotionProps } from "@/hooks/use-reduced-motion";
 
 interface IdeaSlate {
   id: string;
@@ -70,15 +71,19 @@ const featuredSlates: IdeaSlate[] = [
 ];
 
 export function FeaturedIdeaSlates() {
+  const shouldReduceMotion = useReducedMotion();
+  
   return (
     <section className="py-16 px-4 bg-gradient-to-br from-muted/30 to-background">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          {...getMotionProps(shouldReduceMotion, {
+            initial: { opacity: 0, y: 20 },
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true },
+            transition: { duration: 0.6 },
+          })}
           className="text-center mb-12"
         >
           <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent mb-4">
@@ -91,19 +96,27 @@ export function FeaturedIdeaSlates() {
 
         {/* Mobile: Horizontal scroller of slates (looks like other cards) */}
         <div className="md:hidden mb-6">
-          <div className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth overflow-y-hidden" style={{ overscrollBehavior: "contain" }}>
+          <div 
+            className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth" 
+            style={{ 
+              overscrollBehavior: "contain auto",
+              touchAction: "pan-x pan-y"
+            }}
+          >
             <div className="flex gap-6 px-4">
               {featuredSlates.map((slate, index) => (
                 <motion.div
                   key={slate.id}
-                  initial={{ opacity: 0, x: 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.08 }}
-                  viewport={{ once: true }}
+                  {...getMotionProps(shouldReduceMotion, {
+                    initial: { opacity: 0, x: 50 },
+                    whileInView: { opacity: 1, x: 0 },
+                    transition: { duration: 0.6, delay: index * 0.08 },
+                    viewport: { once: true },
+                  })}
                   className="flex-shrink-0 w-80"
                 >
-                  <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm h-full">
-                    <CardContent className="p-0 h-full flex flex-col">
+              <Card className="group overflow-hidden border-0 bg-card/50 backdrop-blur-sm h-full">
+                <CardContent className="p-0 h-full flex flex-col">
                       <div className="relative">
                         <div className="absolute top-4 left-4 z-10">
                           <div className="flex items-center gap-2 bg-background/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-sm">
@@ -120,7 +133,7 @@ export function FeaturedIdeaSlates() {
                                 src={image}
                                 alt={`${slate.title} image ${imgIndex + 1}`}
                                 fill
-                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                className="object-cover"
                                 sizes="(max-width: 768px) 50vw"
                               />
                               <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/20" />
@@ -129,7 +142,7 @@ export function FeaturedIdeaSlates() {
                         </div>
                       </div>
                       <div className="p-6 flex-1 flex flex-col">
-                        <h3 className="font-semibold text-xl mb-3 leading-tight group-hover:text-primary transition-colors duration-200">
+                        <h3 className="font-semibold text-xl mb-3 leading-tight">
                           {slate.title}
                         </h3>
                         <p className="text-muted-foreground text-sm mb-4 line-clamp-2 flex-1">
@@ -155,12 +168,14 @@ export function FeaturedIdeaSlates() {
           {featuredSlates.map((slate, index) => (
             <motion.div
               key={slate.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              {...getMotionProps(shouldReduceMotion, {
+                initial: { opacity: 0, y: 30 },
+                whileInView: { opacity: 1, y: 0 },
+                viewport: { once: true },
+                transition: { duration: 0.6, delay: index * 0.1 },
+              })}
             >
-              <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm h-full">
+              <Card className="group overflow-hidden border-0 bg-card/50 backdrop-blur-sm h-full">
                 <CardContent className="p-0 h-full flex flex-col">
                   {/* Category Badge */}
                   <div className="relative">
@@ -184,7 +199,7 @@ export function FeaturedIdeaSlates() {
                             src={image}
                             alt={`${slate.title} image ${imgIndex + 1}`}
                             fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            className="object-cover"
                             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 16vw"
                           />
                           <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/20" />
@@ -195,7 +210,7 @@ export function FeaturedIdeaSlates() {
 
                   {/* Content */}
                   <div className="p-6 flex-1 flex flex-col">
-                    <h3 className="font-semibold text-xl mb-3 leading-tight group-hover:text-primary transition-colors duration-200">
+                    <h3 className="font-semibold text-xl mb-3 leading-tight">
                       {slate.title}
                     </h3>
                     <p className="text-muted-foreground text-sm mb-4 line-clamp-2 flex-1">
@@ -216,10 +231,12 @@ export function FeaturedIdeaSlates() {
 
         {/* View All Button */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          {...getMotionProps(shouldReduceMotion, {
+            initial: { opacity: 0, y: 20 },
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true },
+            transition: { duration: 0.6, delay: 0.3 },
+          })}
           className="text-center"
         >
           <Button

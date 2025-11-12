@@ -214,14 +214,11 @@ export function VendorTeamSection() {
           <div className="relative flex-1 overflow-hidden">
             <div
               ref={scrollContainerRef}
-                className="overflow-x-auto md:overflow-x-hidden scrollbar-hide pb-4 scroll-smooth overflow-y-hidden"
-              onWheel={(e) => {
-                // Only prevent horizontal scrolling on desktop, allow vertical
-                if (window.innerWidth >= 768 && Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-                  e.preventDefault();
-                }
+                className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
+              style={{ 
+                overscrollBehavior: "contain auto",
+                touchAction: "pan-x pan-y"
               }}
-              style={{ overscrollBehavior: "contain" }}
             >
               <div className="flex gap-6 px-4">
                 {vendorTeam.map((vendor, index) => {

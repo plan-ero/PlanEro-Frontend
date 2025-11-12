@@ -191,7 +191,7 @@ export function MegaMenu({ isMobile = false, onClose }: MegaMenuProps) {
 
   // Desktop version
   return (
-    <nav className="hidden lg:flex items-center space-x-1">
+    <nav className="hidden md:flex items-center space-x-1">
       {megaMenuData.map((item) => (
         <div
           key={item.label}

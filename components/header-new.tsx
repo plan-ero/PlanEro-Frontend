@@ -97,7 +97,7 @@ export function Header() {
           <MegaMenu />
 
           {/* Additional Links */}
-          <nav className="hidden lg:flex items-center space-x-1 ml-2">
+          <nav className="hidden md:flex items-center space-x-1 ml-2">
             {[{ href: "/about", label: "About" }].map((item) => (
               <Link
                 key={item.href}
@@ -250,29 +250,11 @@ export function Header() {
               className="md:hidden w-9 h-9 rounded-full hover:bg-muted/80"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <AnimatePresence mode="wait">
-                {isMenuOpen ? (
-                  <motion.div
-                    key="close"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <X className="h-4 w-4" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="menu"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Menu className="h-4 w-4" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {isMenuOpen ? (
+                <X className="h-4 w-4" />
+              ) : (
+                <Menu className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>
@@ -280,12 +262,7 @@ export function Header() {
         {/* Mobile Search */}
         <AnimatePresence>
           {!isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden pb-4"
-            >
+            <div className="md:hidden pb-4">
               <form onSubmit={handleSearch} className="relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
@@ -305,7 +282,7 @@ export function Header() {
                   <Filter className="h-3 w-3" />
                 </Button>
               </form>
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
       </div>
@@ -441,6 +418,6 @@ export function Header() {
             </div>
         </SheetContent>
       </Sheet>
-    </motion.header>
+    </header>
   );
 }

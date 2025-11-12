@@ -30,6 +30,7 @@ import {
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { StarRating } from "@/components/ui/star-rating";
 import { VendorCardSkeleton, GridSkeleton } from "@/components/ui/skeleton";
+import { InquiryDialog } from "@/components/inquiry-dialog";
 import { MapPin, Globe, Phone, Star, Search, Filter, Mail } from "lucide-react";
 
 interface Vendor {
@@ -355,124 +356,125 @@ function VendorsContent() {
                 {vendors.map((vendor) => (
                   <Card
                     key={vendor?.id || Math.random()}
-                    className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                    className="group overflow-hidden hover:shadow-xl transition-all duration-300"
                   >
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start space-x-4">
-                        <Avatar className="h-16 w-16">
-                          <AvatarImage
-                            src={
-                              vendor?.profilePictureUrl ||
-                              "/placeholder-user.jpg"
-                            }
-                            alt={
-                              vendor?.businessName || vendor?.email || "Vendor"
-                            }
-                            style={{
-                              viewTransitionName: `vendor-avatar-${vendor?.id}`,
-                            }}
-                          />
-                          <AvatarFallback className="text-lg">
-                            {getInitials(
-                              vendor?.businessName ||
-                                vendor?.email ||
-                                "Unknown Vendor",
-                            )}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <CardTitle className="text-lg group-hover:text-primary transition-colors line-clamp-2">
-                            {vendor?.businessName ||
+                    {/* Full-width Image at top */}
+                    <div className="relative w-full h-48 bg-gradient-to-br from-primary/20 to-primary/5 overflow-hidden">
+                      <Avatar className="w-full h-full rounded-none">
+                        <AvatarImage
+                          src={
+                            vendor?.profilePictureUrl ||
+                            "/placeholder-user.jpg"
+                          }
+                          alt={
+                            vendor?.businessName || vendor?.email || "Vendor"
+                          }
+                          className="object-cover w-full h-full"
+                          style={{
+                            viewTransitionName: `vendor-avatar-${vendor?.id}`,
+                          }}
+                        />
+                        <AvatarFallback className="text-4xl rounded-none w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                          {getInitials(
+                            vendor?.businessName ||
                               vendor?.email ||
-                              "Unnamed Vendor"}
-                          </CardTitle>
-                          <div className="flex items-center text-sm text-muted-foreground mt-1">
-                            <MapPin className="h-3 w-3 mr-1" />
-                            {vendor?.location || "Location not specified"}
-                          </div>
-                        </div>
+                              "Unknown Vendor",
+                          )}
+                        </AvatarFallback>
+                      </Avatar>
+                      {/* Status Badge */}
+                      {vendor?.approved && vendor?.published && (
+                        <Badge className="absolute top-3 right-3 bg-green-500">
+                          Verified
+                        </Badge>
+                      )}
+                    </div>
+
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-xl group-hover:text-primary transition-colors line-clamp-2">
+                        {vendor?.businessName ||
+                          vendor?.email ||
+                          "Unnamed Vendor"}
+                      </CardTitle>
+                      <div className="flex items-center text-sm text-muted-foreground mt-1">
+                        <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                        <span className="truncate">
+                          {vendor?.location || "Location not specified"}
+                        </span>
                       </div>
                     </CardHeader>
 
-                    <CardContent className="pt-0">
+                    <CardContent className="pt-0 space-y-4">
                       {vendor?.bio && vendor.bio.trim() && (
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                        <p className="text-sm text-muted-foreground line-clamp-3">
                           {vendor.bio}
                         </p>
                       )}
 
-                      <div className="space-y-2 mb-4">
-                        {vendor?.websiteUrl &&
-                          Array.isArray(vendor.websiteUrl) &&
-                          vendor.websiteUrl.length > 0 &&
-                          vendor.websiteUrl[0] && (
-                            <div className="flex items-center text-sm text-muted-foreground">
-                              <Globe className="h-3 w-3 mr-2" />
-                              <a
-                                href={vendor.websiteUrl[0]}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="hover:text-primary transition-colors truncate"
-                              >
-                                {vendor.websiteUrl[0].replace(
-                                  /^https?:\/\//,
-                                  "",
-                                )}
-                              </a>
-                            </div>
-                          )}
+                      {/* Rating */}
+                      {vendor?.totalRating !== undefined &&
+                      vendor?.numberOfRatings !== undefined ? (
+                        <div className="flex items-center gap-2">
+                          <StarRating
+                            rating={vendor.totalRating || 0}
+                            readonly
+                            size="sm"
+                          />
+                          <span className="text-xs text-muted-foreground">
+                            ({vendor.numberOfRatings} reviews)
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="text-xs text-muted-foreground">
+                          No reviews yet
+                        </div>
+                      )}
 
-                        {vendor?.phoneNumber && vendor.phoneNumber.trim() && (
-                          <div className="flex items-center text-sm text-muted-foreground">
-                            <Phone className="h-3 w-3 mr-2" />
-                            {vendor.phoneNumber}
-                          </div>
-                        )}
-
-                        {vendor?.email && (
-                          <div className="flex items-center text-sm text-muted-foreground">
-                            <Mail className="h-3 w-3 mr-2" />
-                            {vendor.email}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        {vendor?.totalRating !== undefined &&
-                        vendor?.numberOfRatings !== undefined ? (
-                          <div className="flex items-center gap-2">
-                            <StarRating
-                              rating={vendor.totalRating || 0}
-                              readonly
-                              size="sm"
-                            />
-                            <span className="text-xs text-muted-foreground">
-                              ({vendor.numberOfRatings} reviews)
-                            </span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <StarRating rating={0} readonly size="sm" />
-                            <span className="text-xs text-muted-foreground">
-                              (No reviews yet)
-                            </span>
-                          </div>
-                        )}
-
-                        <Badge
-                          variant={
-                            vendor?.approved === true ? "default" : "secondary"
-                          }
+                      {/* View Profile in same row on larger devices */}
+                      <div className="hidden md:flex gap-2 pt-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="flex-shrink-0"
+                          disabled={!vendor?.phoneNumber || !vendor.phoneNumber.trim()}
+                          asChild={vendor?.phoneNumber && vendor.phoneNumber.trim()}
                         >
-                          {vendor?.approved === true ? "Verified" : "Pending"}
-                        </Badge>
-                      </div>
+                          {vendor?.phoneNumber && vendor.phoneNumber.trim() ? (
+                            <a href={`tel:${vendor.phoneNumber}`} title="Call vendor">
+                              <Phone className="h-4 w-4" />
+                            </a>
+                          ) : (
+                            <Phone className="h-4 w-4" />
+                          )}
+                        </Button>
 
-                      <Button asChild className="w-full mt-4">
-                        <TransitionLink href={`/vendors/${vendor?.id || ""}`}>
-                          View Profile
+                        <InquiryDialog
+                          serviceId={vendor?.id?.toString() || ""}
+                          serviceName={vendor?.businessName || "Vendor"}
+                          serviceType="VENDOR"
+                        >
+                          <Button
+                            size="sm"
+                            className="flex-1 bg-primary hover:bg-primary/90"
+                          >
+                            <Mail className="h-4 w-4 mr-1" />
+                            Inquire
+                          </Button>
+                        </InquiryDialog>
+
+                        <TransitionLink
+                          href={`/vendors/${vendor?.id}`}
+                          className="flex-1"
+                        >
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                          >
+                            View Profile
+                          </Button>
                         </TransitionLink>
-                      </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
