@@ -301,20 +301,22 @@ export function Header() {
             </SheetTitle>
           </SheetHeader>
 
-          <div className="min-h-full">
-            {/* Mobile Navigation with Mega Menu */}
-            <MegaMenu isMobile onClose={() => setIsMenuOpen(false)} />
+          {/* Only render content when menu is open for better performance */}
+          {isMenuOpen && (
+            <div className="min-h-full">
+              {/* Mobile Navigation with Mega Menu */}
+              <MegaMenu isMobile onClose={() => setIsMenuOpen(false)} />
 
-            {/* Additional Mobile Links */}
-            <div className="px-4 py-4 border-t border-border">
-              <Link
-                href="/about"
-                className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About
-              </Link>
-            </div>
+              {/* Additional Mobile Links */}
+              <div className="px-4 py-4 border-t border-border">
+                <Link
+                  href="/about"
+                  className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  About
+                </Link>
+              </div>
 
             {/* Mobile Actions */}
             <div className="px-4 flex flex-col space-y-4 py-4 border-t border-border/50">
@@ -416,6 +418,7 @@ export function Header() {
                 )}
               </div>
             </div>
+          )}
         </SheetContent>
       </Sheet>
     </header>

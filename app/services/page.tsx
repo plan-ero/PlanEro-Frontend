@@ -23,6 +23,7 @@ import { useCart } from "@/hooks/use-cart";
 import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import { ServicesSEO } from "@/components/seo/services-seo";
 import {
   Search,
   Filter,
@@ -482,6 +483,17 @@ function ServicesContent() {
 
   return (
     <div className="min-h-screen bg-background">
+      <ServicesSEO 
+        services={services.slice(0, 10).map(s => ({
+          name: s.name,
+          description: s.metadata,
+          serviceType: s.serviceType,
+          eventTypes: s.eventTypes,
+          price: s.price ? getPriceDisplay(s.price) : undefined,
+        }))} 
+        totalCount={totalServices}
+        category={serviceTypeFilter !== "all" ? serviceTypeFilter : undefined}
+      />
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">

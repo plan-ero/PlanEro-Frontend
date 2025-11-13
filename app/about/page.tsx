@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Heart, Users, Award, Clock, CheckCircle, Target, Sparkles } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { AboutSEO } from "@/components/seo/about-seo";
 
 const features = [
   {
@@ -72,8 +73,15 @@ const founders = [
 ];
 
 export default function AboutPage() {
+  const mission = "To revolutionize event planning by connecting people with the perfect venues, vendors, and services, making every celebration extraordinary and stress-free. We believe that creating memorable moments should be joyful, not overwhelming.";
+
   return (
     <>
+      <AboutSEO 
+        companyName="PlanEro"
+        foundedYear={2019}
+        mission={mission}
+      />
       <section className="relative py-20 bg-gradient-to-br from-primary/10 to-secondary/10">
         <div className="container mx-auto px-4">
           <motion.div

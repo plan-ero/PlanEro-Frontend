@@ -31,6 +31,7 @@ import { LoadingSpinner } from "@/components/loading-spinner";
 import { StarRating } from "@/components/ui/star-rating";
 import { VendorCardSkeleton, GridSkeleton } from "@/components/ui/skeleton";
 import { InquiryDialog } from "@/components/inquiry-dialog";
+import { VendorsSEO } from "@/components/seo/vendors-seo";
 import { MapPin, Globe, Phone, Star, Search, Filter, Mail } from "lucide-react";
 
 interface Vendor {
@@ -253,6 +254,16 @@ function VendorsContent() {
 
   return (
     <div className="min-h-screen bg-background">
+      <VendorsSEO 
+        vendors={vendors.slice(0, 10).map(v => ({
+          businessName: v.businessName,
+          location: v.location,
+          bio: v.bio,
+          phoneNumber: v.phoneNumber,
+          email: v.email
+        }))} 
+        totalCount={totalVendors} 
+      />
       {/* Header */}
       <div className="bg-gradient-to-r from-primary/10 to-primary/5 py-16">
         <div className="container mx-auto px-4">
