@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { TransitionLink } from "@/components/transition-link";
 import { useRef } from "react";
 import {
   Heart,
@@ -103,7 +103,7 @@ export function OrganizersSection() {
   };
 
   return (
-    <section className="py-12 sm:py-16 md:py-20 bg-background">
+    <section className="py-10 sm:py-16 md:py-20 bg-background">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           {...getMotionProps(shouldReduceMotion, {
@@ -147,9 +147,9 @@ export function OrganizersSection() {
             <div
               ref={scrollContainerRef}
               className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
-              style={{ 
+              style={{
                 overscrollBehavior: "contain auto",
-                touchAction: "pan-x pan-y"
+                touchAction: "pan-x pan-y",
               }}
             >
               <div className="flex gap-6 px-4">
@@ -167,7 +167,7 @@ export function OrganizersSection() {
                       className="flex-shrink-0 w-80"
                     >
                       <Card className="group/card hover:shadow-2xl transition-all duration-500 h-full shadow-lg overflow-hidden border border-border/50 hover:border-primary/50 cursor-pointer">
-                        <Link href={organizer.href}>
+                        <TransitionLink href={organizer.href}>
                           {/* Image Card - Prominent Image Display */}
                           <div className="relative h-64 overflow-hidden">
                             <div
@@ -233,7 +233,7 @@ export function OrganizersSection() {
                               <ArrowRight className="h-4 w-4 ml-2 group-hover/card:translate-x-1 transition-transform duration-300" />
                             </Button>
                           </CardContent>
-                        </Link>
+                        </TransitionLink>
                       </Card>
                     </motion.div>
                   );
@@ -267,23 +267,15 @@ export function OrganizersSection() {
             asChild
             className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
-            <Link href="/services/organizers">
+            <TransitionLink href="/services/organizers">
               View All Organizers
               <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2" />
-            </Link>
+            </TransitionLink>
           </Button>
         </motion.div>
       </div>
 
-      <style jsx global>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
+
     </section>
   );
 }

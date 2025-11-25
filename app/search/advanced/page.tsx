@@ -16,7 +16,7 @@ import {
   Clock,
 } from "lucide-react";
 import { SearchResultSkeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
+import { TransitionLink } from "@/components/transition-link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,7 +38,7 @@ interface AdvancedFilters {
   query: string;
   category: string;
   location: string;
-  priceRange: [number, number];
+  priceTier: string;
   rating: number;
   availability: string;
   capacity: [number, number];
@@ -96,7 +96,7 @@ export default function AdvancedSearchPage() {
     query: "",
     category: "all",
     location: "all",
-    priceRange: [0, 100000],
+    priceTier: "all",
     rating: 0,
     availability: "all",
     capacity: [10, 1000],
@@ -127,7 +127,7 @@ export default function AdvancedSearchPage() {
       query: "",
       category: "all",
       location: "all",
-      priceRange: [0, 100000],
+      priceTier: "all",
       rating: 0,
       availability: "all",
       capacity: [10, 1000],
@@ -156,6 +156,24 @@ export default function AdvancedSearchPage() {
       if (filters.sortBy !== "relevance")
         params.append("sortBy", filters.sortBy);
 
+      if (filters.priceTier !== "all")
+        params.append("priceTier", filters.priceTier);
+
+      if (filters.rating > 0)
+        params.append("rating", filters.rating.toString());
+
+      if (filters.availability !== "all")
+        params.append("availability", filters.availability);
+
+      if (filters.capacity[0] > 10)
+        params.append("capacityMin", filters.capacity[0].toString());
+
+      if (filters.capacity[1] < 1000)
+        params.append("capacityMax", filters.capacity[1].toString());
+
+      if (filters.amenities.length > 0)
+        params.append("amenities", filters.amenities.join(","));
+
       const response = await fetch(`/api/search?${params.toString()}`);
 
       if (!response.ok) {
@@ -182,7 +200,7 @@ export default function AdvancedSearchPage() {
     let count = 0;
     if (filters.category !== "all") count++;
     if (filters.location !== "all") count++;
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 100000) count++;
+    if (filters.priceTier !== "all") count++;
     if (filters.rating > 0) count++;
     if (filters.availability !== "all") count++;
     if (filters.amenities.length > 0) count++;
@@ -389,19 +407,25 @@ export default function AdvancedSearchPage() {
                   {/* Price Range */}
                   <div>
                     <Label className="text-sm font-medium mb-3 block">
-                      Price Range: ₹{filters.priceRange[0].toLocaleString()} - ₹
-                      {filters.priceRange[1].toLocaleString()}
+                      Price Range
                     </Label>
-                    <Slider
-                      value={filters.priceRange}
+                    <Select
+                      value={filters.priceTier}
                       onValueChange={(value) =>
-                        handleFilterChange("priceRange", value)
+                        handleFilterChange("priceTier", value)
                       }
-                      max={100000}
-                      min={0}
-                      step={1000}
-                      className="w-full"
-                    />
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select price range" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Any Price</SelectItem>
+                        <SelectItem value="budget">Budget (Under ₹25,000)</SelectItem>
+                        <SelectItem value="moderate">Moderate (₹25,000 - ₹50,000)</SelectItem>
+                        <SelectItem value="premium">Premium (₹50,000 - ₹1,00,000)</SelectItem>
+                        <SelectItem value="luxury">Luxury (₹1,00,000+)</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   {/* Minimum Rating */}
@@ -570,14 +594,19 @@ export default function AdvancedSearchPage() {
                           }
                         </Badge>
                       )}
-                      {(filters.priceRange[0] > 0 ||
-                        filters.priceRange[1] < 100000) && (
+                      {filters.priceTier !== "all" && (
                         <Badge
                           variant="secondary"
                           className="bg-primary/10 text-primary"
                         >
-                          Price: ₹{filters.priceRange[0].toLocaleString()} - ₹
-                          {filters.priceRange[1].toLocaleString()}
+                          Price:{" "}
+                          {filters.priceTier === "budget"
+                            ? "Under ₹25k"
+                            : filters.priceTier === "moderate"
+                              ? "₹25k - ₹50k"
+                              : filters.priceTier === "premium"
+                                ? "₹50k - ₹1L"
+                                : "₹1L+"}
                         </Badge>
                       )}
                       {filters.rating > 0 && (
@@ -624,14 +653,14 @@ export default function AdvancedSearchPage() {
                   Found {results.length} result{results.length !== 1 ? "s" : ""}
                 </h2>
                 <div className="grid gap-6">
-                  {results.map((result) => {
+                  {results.map((result, index) => {
                     const href =
                       result.type === "vendor"
                         ? `/vendors/${result.id}`
                         : `/services/${result.id}`;
 
                     return (
-                      <Link key={result.id} href={href}>
+                      <TransitionLink key={`${result.type}-${result.id}-${index}`} href={href}>
                         <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer">
                           <CardContent className="p-6">
                             <div className="flex flex-col md:flex-row gap-6">
@@ -727,7 +756,7 @@ export default function AdvancedSearchPage() {
                             </div>
                           </CardContent>
                         </Card>
-                      </Link>
+                      </TransitionLink>
                     );
                   })}
                 </div>
@@ -763,7 +792,7 @@ export default function AdvancedSearchPage() {
                   Search with Filters
                 </Button>
 
-                <Link href="/search">
+                <TransitionLink href="/search">
                   <Button
                     variant="outline"
                     size="lg"
@@ -771,7 +800,7 @@ export default function AdvancedSearchPage() {
                   >
                     Basic Search
                   </Button>
-                </Link>
+                </TransitionLink>
               </div>
             </motion.div>
           </motion.div>

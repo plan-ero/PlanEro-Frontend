@@ -21,10 +21,26 @@ import {
   Star,
   CalendarCheck,
   CheckCircle,
+  CreditCard,
+  TrendingUp,
+  MoreVertical,
+  Search,
+  Filter,
+  ArrowRight,
+  Sparkles
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 // Mock data interface - would be replaced with actual API types
 interface ServiceBooking {
@@ -75,7 +91,7 @@ export default function UserDashboardPage() {
               location: "Los Angeles, CA",
               status: "completed",
               price: 2500,
-              imageUrl: "/placeholder.jpg",
+              imageUrl: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop",
               rating: 5,
               hasReview: true,
             },
@@ -88,7 +104,7 @@ export default function UserDashboardPage() {
               location: "San Francisco, CA",
               status: "completed",
               price: 3200,
-              imageUrl: "/placeholder.jpg",
+              imageUrl: "https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=2070&auto=format&fit=crop",
               rating: 4,
               hasReview: true,
             },
@@ -101,7 +117,7 @@ export default function UserDashboardPage() {
               location: "San Diego, CA",
               status: "upcoming",
               price: 1200,
-              imageUrl: "/placeholder.jpg",
+              imageUrl: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop",
               hasReview: false,
             },
           ]);
@@ -122,7 +138,6 @@ export default function UserDashboardPage() {
   }, [status, router, toast]);
 
   const leaveReview = (bookingId: string) => {
-    // In a real implementation, this would navigate to a review form
     toast({
       title: "Coming Soon",
       description: "Review feature is coming soon!",
@@ -130,7 +145,6 @@ export default function UserDashboardPage() {
   };
 
   const cancelBooking = (bookingId: string) => {
-    // In a real implementation, this would call an API to cancel the booking
     toast({
       title: "Coming Soon",
       description: "Cancellation feature is coming soon!",
@@ -139,7 +153,7 @@ export default function UserDashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-4">
           <LoadingSpinner size="lg" />
           <p className="text-muted-foreground">Loading your dashboard...</p>
@@ -148,141 +162,187 @@ export default function UserDashboardPage() {
     );
   }
 
+  const stats = [
+    {
+      title: "Total Bookings",
+      value: bookings.length,
+      icon: CalendarCheck,
+      description: "All time booking count",
+      color: "text-blue-600",
+      bg: "bg-blue-100",
+    },
+    {
+      title: "Upcoming",
+      value: bookings.filter((b) => b.status === "upcoming").length,
+      icon: Clock,
+      description: "Services to look forward to",
+      color: "text-purple-600",
+      bg: "bg-purple-100",
+    },
+    {
+      title: "Completed",
+      value: bookings.filter((b) => b.status === "completed").length,
+      icon: CheckCircle,
+      description: "Services you've enjoyed",
+      color: "text-green-600",
+      bg: "bg-green-100",
+    },
+    {
+      title: "Total Spent",
+      value: `$${bookings
+        .reduce((sum, booking) => sum + (booking.price || 0), 0)
+        .toLocaleString()}`,
+      icon: CreditCard,
+      description: "Your investment in services",
+      color: "text-orange-600",
+      bg: "bg-orange-100",
+    },
+  ];
+
   return (
-    <div className="container mx-auto py-10 px-4 md:px-6">
-      <h1 className="text-4xl font-bold mb-2">My Dashboard</h1>
-      <p className="text-muted-foreground mb-6">
-        View and manage your services and bookings
-      </p>
-
-      <Tabs defaultValue="all" className="mb-8">
-        <TabsList className="mb-6">
-          <TabsTrigger value="all">All Bookings</TabsTrigger>
-          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="all">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {bookings.length > 0 ? (
-              bookings.map((booking) => (
-                <BookingCard
-                  key={booking.id}
-                  booking={booking}
-                  onReview={leaveReview}
-                  onCancel={cancelBooking}
-                />
-              ))
-            ) : (
-              <div className="col-span-full text-center py-12">
-                <p className="text-muted-foreground">
-                  You don't have any bookings yet.
-                </p>
-                <Button className="mt-4" asChild>
-                  <Link href="/services">Browse Services</Link>
-                </Button>
-              </div>
-            )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="upcoming">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {bookings.filter((b) => b.status === "upcoming").length > 0 ? (
-              bookings
-                .filter((b) => b.status === "upcoming")
-                .map((booking) => (
-                  <BookingCard
-                    key={booking.id}
-                    booking={booking}
-                    onReview={leaveReview}
-                    onCancel={cancelBooking}
-                  />
-                ))
-            ) : (
-              <div className="col-span-full text-center py-12">
-                <p className="text-muted-foreground">
-                  You don't have any upcoming bookings.
-                </p>
-                <Button className="mt-4" asChild>
-                  <Link href="/services">Browse Services</Link>
-                </Button>
-              </div>
-            )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="completed">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {bookings.filter((b) => b.status === "completed").length > 0 ? (
-              bookings
-                .filter((b) => b.status === "completed")
-                .map((booking) => (
-                  <BookingCard
-                    key={booking.id}
-                    booking={booking}
-                    onReview={leaveReview}
-                    onCancel={cancelBooking}
-                  />
-                ))
-            ) : (
-              <div className="col-span-full text-center py-12">
-                <p className="text-muted-foreground">
-                  You don't have any completed bookings yet.
-                </p>
-              </div>
-            )}
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4 mt-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Bookings</CardTitle>
-            <CardDescription>All time booking count</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold">{bookings.length}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Upcoming</CardTitle>
-            <CardDescription>Services to look forward to</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold">
-              {bookings.filter((b) => b.status === "upcoming").length}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Completed</CardTitle>
-            <CardDescription>Services you've enjoyed</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold">
-              {bookings.filter((b) => b.status === "completed").length}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Spent</CardTitle>
-            <CardDescription>Your investment in services</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold">
-              $
-              {bookings
-                .reduce((sum, booking) => sum + (booking.price || 0), 0)
-                .toLocaleString()}
-            </p>
-          </CardContent>
-        </Card>
+    <div className="space-y-8 max-w-7xl mx-auto p-6">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-8 rounded-3xl border border-primary/10">
+        <div>
+          <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+            Welcome back, {session?.user?.name?.split(" ")[0] || "User"}
+          </h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            Manage your events and bookings in one place.
+          </p>
+        </div>
+        <Button size="lg" className="shadow-lg hover:shadow-xl transition-all rounded-full px-8" asChild>
+          <Link href="/search">
+            <Sparkles className="mr-2 h-4 w-4" />
+            Explore Services
+          </Link>
+        </Button>
       </div>
+
+      {/* Stats Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat, index) => (
+          <motion.div
+            key={stat.title}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <Card className="border-none shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group relative">
+              <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity ${stat.bg.replace('bg-', 'bg-')}`} />
+              <CardContent className="p-6 flex items-center space-x-4 relative z-10">
+                <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform duration-300`}>
+                  <stat.icon className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {stat.title}
+                  </p>
+                  <h3 className="text-2xl font-bold tracking-tight">{stat.value}</h3>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Bookings Section */}
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h2 className="text-2xl font-bold tracking-tight">Your Bookings</h2>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search bookings..." className="pl-9 rounded-full bg-muted/50 border-transparent focus:bg-background transition-colors" />
+            </div>
+            <Button variant="outline" size="icon" className="rounded-full">
+              <Filter className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        <Tabs defaultValue="all" className="space-y-6">
+          <TabsList className="bg-muted/50 p-1 rounded-full inline-flex h-auto">
+            <TabsTrigger value="all" className="rounded-full px-6 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">All Bookings</TabsTrigger>
+            <TabsTrigger value="upcoming" className="rounded-full px-6 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">Upcoming</TabsTrigger>
+            <TabsTrigger value="completed" className="rounded-full px-6 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all">Completed</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="all" className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
+            <BookingsGrid
+              bookings={bookings}
+              onReview={leaveReview}
+              onCancel={cancelBooking}
+            />
+          </TabsContent>
+
+          <TabsContent value="upcoming" className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
+            <BookingsGrid
+              bookings={bookings.filter((b) => b.status === "upcoming")}
+              onReview={leaveReview}
+              onCancel={cancelBooking}
+              emptyMessage="You don't have any upcoming bookings."
+            />
+          </TabsContent>
+
+          <TabsContent value="completed" className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
+            <BookingsGrid
+              bookings={bookings.filter((b) => b.status === "completed")}
+              onReview={leaveReview}
+              onCancel={cancelBooking}
+              emptyMessage="You don't have any completed bookings yet."
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
+
+function BookingsGrid({
+  bookings,
+  onReview,
+  onCancel,
+  emptyMessage = "You don't have any bookings yet."
+}: {
+  bookings: ServiceBooking[];
+  onReview: (id: string) => void;
+  onCancel: (id: string) => void;
+  emptyMessage?: string;
+}) {
+  if (bookings.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed rounded-3xl bg-muted/5">
+        <div className="p-6 rounded-full bg-muted/50 mb-4">
+          <Calendar className="h-10 w-10 text-muted-foreground" />
+        </div>
+        <h3 className="text-xl font-semibold mb-2">{emptyMessage}</h3>
+        <p className="text-muted-foreground mb-8 max-w-md">
+          Discover amazing vendors and services for your next event and start planning today.
+        </p>
+        <Button asChild size="lg" className="rounded-full px-8">
+          <Link href="/search">Browse Services</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {bookings.map((booking, index) => (
+        <motion.div
+          key={booking.id}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: index * 0.1 }}
+        >
+          <BookingCard
+            booking={booking}
+            onReview={onReview}
+            onCancel={onCancel}
+          />
+        </motion.div>
+      ))}
     </div>
   );
 }
@@ -296,85 +356,112 @@ function BookingCard({
   onReview: (id: string) => void;
   onCancel: (id: string) => void;
 }) {
-  // Parse date for formatting
   const bookingDate = new Date(booking.date);
 
   return (
-    <Card className="overflow-hidden">
-      <div className="h-48 bg-muted relative">
+    <Card className="overflow-hidden group hover:shadow-xl transition-all duration-500 border-none shadow-md ring-1 ring-black/5 dark:ring-white/10 h-full flex flex-col">
+      <div className="h-56 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
         <img
           src={booking.imageUrl}
           alt={booking.serviceName}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        <Badge
-          className={`absolute top-2 right-2 ${
-            booking.status === "completed"
-              ? "bg-green-500"
+        <div className="absolute top-4 right-4 z-20">
+          <Badge
+            className={cn(
+              "backdrop-blur-md border-none px-3 py-1 text-xs font-semibold shadow-lg",
+              booking.status === "completed"
+                ? "bg-green-500/90 text-white hover:bg-green-500"
+                : booking.status === "upcoming"
+                  ? "bg-blue-500/90 text-white hover:bg-blue-500"
+                  : "bg-red-500/90 text-white hover:bg-red-500"
+            )}
+          >
+            {booking.status === "completed"
+              ? "Completed"
               : booking.status === "upcoming"
-                ? "bg-blue-500"
-                : "bg-red-500"
-          }`}
-        >
-          {booking.status === "completed"
-            ? "Completed"
-            : booking.status === "upcoming"
-              ? "Upcoming"
-              : "Cancelled"}
-        </Badge>
+                ? "Upcoming"
+                : "Cancelled"}
+          </Badge>
+        </div>
+        <div className="absolute bottom-4 left-4 z-20 text-white">
+          <p className="font-bold text-xl leading-tight mb-1">{booking.serviceName}</p>
+          <p className="text-sm text-white/80 font-medium flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-white/60" />
+            {booking.vendorName}
+          </p>
+        </div>
       </div>
-      <CardContent className="p-6">
-        <h3 className="font-bold text-xl mb-1">{booking.serviceName}</h3>
-        <p className="text-muted-foreground mb-4">
-          Provided by {booking.vendorName}
-        </p>
-
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center text-sm">
-            <Calendar className="mr-2 h-4 w-4" />
-            <span>{format(bookingDate, "MMMM d, yyyy")}</span>
+      <CardContent className="p-6 flex-1 flex flex-col">
+        <div className="space-y-4 mb-6 flex-1">
+          <div className="flex items-center text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3 text-primary">
+              <Calendar className="h-4 w-4" />
+            </div>
+            <span className="font-medium">{format(bookingDate, "MMMM d, yyyy")}</span>
           </div>
-          <div className="flex items-center text-sm">
-            <Clock className="mr-2 h-4 w-4" />
-            <span>{booking.time}</span>
+          <div className="flex items-center text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3 text-primary">
+              <Clock className="h-4 w-4" />
+            </div>
+            <span className="font-medium">{booking.time}</span>
           </div>
-          <div className="flex items-center text-sm">
-            <MapPin className="mr-2 h-4 w-4" />
-            <span>{booking.location}</span>
+          <div className="flex items-center text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3 text-primary">
+              <MapPin className="h-4 w-4" />
+            </div>
+            <span className="font-medium truncate">{booking.location}</span>
           </div>
           {booking.rating && (
-            <div className="flex items-center text-sm">
-              <Star className="mr-2 h-4 w-4 fill-yellow-400 text-yellow-400" />
-              <span>{booking.rating}/5 Rating</span>
+            <div className="flex items-center text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+              <div className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center mr-3 text-yellow-600">
+                <Star className="h-4 w-4 fill-current" />
+              </div>
+              <span className="font-medium">{booking.rating}/5 Rating</span>
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-between mt-4">
-          <p className="font-bold">
+        <div className="flex items-center justify-between pt-4 border-t mt-auto">
+          <p className="font-bold text-xl text-primary">
             {booking.price
               ? `₹${booking.price.toLocaleString()}`
               : "Price not available"}
           </p>
 
-          {booking.status === "upcoming" ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onCancel(booking.id)}
-            >
-              Cancel
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" asChild className="rounded-full hover:bg-primary/10 hover:text-primary">
+              <Link href={`/services/${booking.id}`}>
+                Details
+              </Link>
             </Button>
-          ) : booking.status === "completed" && !booking.hasReview ? (
-            <Button size="sm" onClick={() => onReview(booking.id)}>
-              Leave Review
-            </Button>
-          ) : booking.status === "completed" ? (
-            <div className="flex items-center text-sm text-green-600">
-              <CheckCircle className="mr-1 h-4 w-4" />
-              <span>Reviewed</span>
-            </div>
-          ) : null}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 rounded-xl">
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link href={`/services/${booking.id}`}>View Details</Link>
+                </DropdownMenuItem>
+                {booking.status === "upcoming" && (
+                  <DropdownMenuItem
+                    className="text-red-600 focus:text-red-600 cursor-pointer"
+                    onClick={() => onCancel(booking.id)}
+                  >
+                    Cancel Booking
+                  </DropdownMenuItem>
+                )}
+                {booking.status === "completed" && !booking.hasReview && (
+                  <DropdownMenuItem onClick={() => onReview(booking.id)} className="cursor-pointer">
+                    Leave Review
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </CardContent>
     </Card>

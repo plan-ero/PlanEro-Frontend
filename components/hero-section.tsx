@@ -36,6 +36,10 @@ const heroImages = [
   },
 ];
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export function HeroSection() {
   const router = useRouter();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -47,6 +51,17 @@ export function HeroSection() {
 
     return () => clearInterval(interval);
   }, []);
+
+  const handleNavigation = (href: string) => {
+    if (!document.startViewTransition) {
+      router.push(href);
+      return;
+    }
+    document.startViewTransition(async () => {
+      router.push(href);
+      await sleep(50);
+    });
+  };
 
   return (
     <section className="relative -mt-16">
@@ -68,9 +83,9 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-white/30"></div>
 
         {/* Text Overlay on Image */}
-        <div 
+        <div
           className="absolute inset-0 flex items-center justify-center cursor-pointer group"
-          onClick={() => router.push(heroImages[currentImageIndex].link)}
+          onClick={() => handleNavigation(heroImages[currentImageIndex].link)}
         >
           <div className="text-center group-hover:scale-105 transition-transform duration-300">
             {/* Dynamic Top Text */}
@@ -88,7 +103,7 @@ export function HeroSection() {
             >
               {heroImages[currentImageIndex].mainText}
             </h1>
-            
+
             {/* Click indicator */}
             <p className="text-xs text-gray-700 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               Click to explore
@@ -113,7 +128,7 @@ export function HeroSection() {
               <Button
                 size="default"
                 className="px-6 py-5 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all hover:scale-105"
-                onClick={() => router.push("/search")}
+                onClick={() => handleNavigation("/search")}
               >
                 START PLANNING
               </Button>
@@ -121,7 +136,7 @@ export function HeroSection() {
                 size="default"
                 variant="outline"
                 className="px-6 py-5 text-base font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105"
-                onClick={() => router.push("/vendor/quick-onboarding")}
+                onClick={() => handleNavigation("/vendor/quick-onboarding")}
               >
                 JOIN AS VENDOR
               </Button>

@@ -12,8 +12,8 @@ export default function ServicesLayout({
   children: React.ReactNode;
 }) {
   const breadcrumbs = [
-    { name: 'Home', url: '/' },
-    { name: 'Services', url: '/services' }
+    { name: "Home", url: "/" },
+    { name: "Services", url: "/services" },
   ];
 
   return (

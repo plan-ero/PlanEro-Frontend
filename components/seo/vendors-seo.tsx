@@ -19,19 +19,27 @@ export function VendorsSEO({ vendors = [], totalCount }: VendorsSEOProps) {
   if (!isBot) return null;
 
   return (
-    <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }} aria-hidden="true">
+    <div
+      style={{ position: "absolute", left: "-9999px", top: "-9999px" }}
+      aria-hidden="true"
+    >
       <header>
         <h1>Event Vendors - PlanEro</h1>
-        <p>Browse our directory of verified event vendors. Find photographers, caterers, decorators, DJs, and more for your special event.</p>
+        <p>
+          Browse our directory of verified event vendors. Find photographers,
+          caterers, decorators, DJs, and more for your special event.
+        </p>
       </header>
 
       <main>
         <section>
           <h2>About Our Vendors</h2>
           <p>
-            PlanEro connects you with {totalCount ? `${totalCount}+` : 'trusted'} professional event vendors. 
-            All vendors are verified and reviewed by our community. Find the perfect service providers 
-            for weddings, corporate events, parties, and more.
+            PlanEro connects you with{" "}
+            {totalCount ? `${totalCount}+` : "trusted"} professional event
+            vendors. All vendors are verified and reviewed by our community.
+            Find the perfect service providers for weddings, corporate events,
+            parties, and more.
           </p>
         </section>
 

@@ -18,7 +18,7 @@ import {
   Users,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { TransitionLink } from "@/components/transition-link";
 import { useReducedMotion, getMotionProps } from "@/hooks/use-reduced-motion";
 
 // Vendor categories with their details
@@ -163,7 +163,7 @@ export function VendorsSection() {
                 whileTap: { scale: 0.98 },
               })}
             >
-              <Link href={`/services?category=${category.id}`}>
+              <TransitionLink href={`/services?category=${category.id}`}>
                 <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer h-full border border-border shadow-lg bg-card hover:bg-muted/50">
                   <CardContent className="p-6 flex flex-col h-full text-center relative">
                     {/* Background Pattern */}
@@ -199,7 +199,7 @@ export function VendorsSection() {
                     </div>
                   </CardContent>
                 </Card>
-              </Link>
+              </TransitionLink>
             </motion.div>
           ))}
         </div>
@@ -220,10 +220,10 @@ export function VendorsSection() {
               className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary hover:text-white transition-all duration-300 transform hover:scale-105"
               asChild
             >
-              <Link href="/services">
+              <TransitionLink href="/services">
                 <Users className="h-5 w-5 mr-2" />
                 Browse All Vendors
-              </Link>
+              </TransitionLink>
             </Button>
 
             <Button
@@ -231,10 +231,10 @@ export function VendorsSection() {
               className="px-8 py-4 text-lg font-semibold bg-primary hover:bg-primary/90 transition-all duration-300 transform hover:scale-105"
               asChild
             >
-              <Link href="/vendor/onboarding">
+              <TransitionLink href="/vendor/onboarding">
                 <Crown className="h-5 w-5 mr-2" />
                 Become a Vendor
-              </Link>
+              </TransitionLink>
             </Button>
           </div>
         </motion.div>

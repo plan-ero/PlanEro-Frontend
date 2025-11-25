@@ -3,30 +3,46 @@
 import { useIsBot } from "@/hooks/use-is-bot";
 
 interface HomeSEOProps {
-  featuredVenues?: Array<{ name: string; location: string; description: string }>;
+  featuredVenues?: Array<{
+    name: string;
+    location: string;
+    description: string;
+  }>;
   featuredServices?: Array<{ name: string; type: string; description: string }>;
   categories?: Array<{ name: string; description: string }>;
 }
 
-export function HomeSEO({ featuredVenues = [], featuredServices = [], categories = [] }: HomeSEOProps) {
+export function HomeSEO({
+  featuredVenues = [],
+  featuredServices = [],
+  categories = [],
+}: HomeSEOProps) {
   const isBot = useIsBot();
 
   if (!isBot) return null;
 
   return (
-    <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }} aria-hidden="true">
+    <div
+      style={{ position: "absolute", left: "-9999px", top: "-9999px" }}
+      aria-hidden="true"
+    >
       <header>
         <h1>PlanEro - Event Planning Platform</h1>
-        <p>Find the perfect venues, services, and vendors for your events. Weddings, corporate events, birthdays, and more.</p>
+        <p>
+          Find the perfect venues, services, and vendors for your events.
+          Weddings, corporate events, birthdays, and more.
+        </p>
       </header>
 
       <main>
         <section>
           <h2>About PlanEro</h2>
           <p>
-            PlanEro is a comprehensive event planning platform connecting event hosts with trusted vendors, 
-            beautiful venues, and professional services. Whether you're planning a wedding, corporate event, 
-            birthday party, or any special occasion, we make it easy to find and book everything you need.
+            PlanEro is a comprehensive event planning platform connecting event
+            hosts with trusted vendors, beautiful venues, and professional
+            services. Whether you're planning a wedding, corporate event,
+            birthday party, or any special occasion, we make it easy to find and
+            book everything you need.
           </p>
         </section>
 
@@ -106,7 +122,9 @@ export function HomeSEO({ featuredVenues = [], featuredServices = [], categories
       </main>
 
       <footer>
-        <p>Contact us for more information about planning your perfect event.</p>
+        <p>
+          Contact us for more information about planning your perfect event.
+        </p>
       </footer>
     </div>
   );

@@ -1,20 +1,19 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { TransitionLink } from "@/components/transition-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, ShoppingCart, MapPin, Users, Star } from "lucide-react";
+import { Heart, ShoppingCart, MapPin, Users, Star, Search, X, Filter, Sparkles, ArrowRight } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import Link from "next/link";
 import { getPriceDisplay } from "@/lib/utils";
-import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -223,241 +222,300 @@ function VenuesContent() {
 
   if (pageLoading) {
     return (
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <div className="h-10 w-64 bg-muted animate-pulse rounded-md mb-4" />
-          <div className="h-6 w-96 bg-muted animate-pulse rounded-md" />
+      <div className="min-h-screen bg-background">
+        <div className="bg-muted/30 py-20 border-b">
+          <div className="container mx-auto px-4">
+            <div className="h-12 w-64 bg-muted animate-pulse rounded-md mb-4" />
+            <div className="h-6 w-96 bg-muted animate-pulse rounded-md" />
+          </div>
         </div>
-        <div className="mb-8">
-          <div className="h-12 w-full max-w-md bg-muted animate-pulse rounded-md" />
+        <div className="container mx-auto px-4 py-8">
+          <div className="h-12 w-full max-w-md bg-muted animate-pulse rounded-md mb-8" />
+          <GridSkeleton count={6} CardComponent={VenueCardSkeleton} />
         </div>
-        <GridSkeleton count={6} CardComponent={VenueCardSkeleton} />
-      </main>
+      </div>
     );
   }
 
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center py-8">
-          <p className="text-red-500 mb-4">{error}</p>
-          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        <div className="text-center py-12">
+          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 max-w-md mx-auto">
+            <p className="text-destructive font-medium mb-2">{error}</p>
+            <Button onClick={() => window.location.reload()} variant="outline">Try Again</Button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <main className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">Find Your Perfect Venue</h1>
-        <p className="text-lg text-muted-foreground">
-          Discover unique venues for your special event
-        </p>
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <div className="relative bg-muted/30 py-24 border-b overflow-hidden">
+        <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/20 border-none px-4 py-1.5 text-sm">
+                <Sparkles className="h-3.5 w-3.5 mr-2 inline-block" />
+                Exclusive Venues
+              </Badge>
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 font-display tracking-tight text-foreground">
+                Find Your Perfect Venue
+              </h1>
+              <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                Discover unique and breathtaking venues for your special event. From intimate gatherings to grand celebrations.
+              </p>
+            </motion.div>
+          </div>
+        </div>
       </div>
 
-      {/* Search and Filters */}
-      <div className="mb-6 space-y-4">
-        <div className="flex flex-col lg:flex-row gap-4">
-          <div className="flex-1">
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input
-                  placeholder="Search venues..."
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  onKeyDown={handleSearchKeyPress}
-                  className="pl-10"
-                />
-              </div>
+      <div className="container mx-auto px-4 py-12">
+        {/* Search and Filters */}
+        <div className="mb-10">
+          <div className="flex flex-col lg:flex-row gap-4 mb-6 p-2 bg-card rounded-xl border shadow-sm">
+            <div className="flex-1 relative group">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 group-focus-within:text-primary transition-colors" />
+              <Input
+                placeholder="Search venues..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={handleSearchKeyPress}
+                className="pl-10 h-12 border-none shadow-none focus-visible:ring-0 bg-transparent"
+              />
+            </div>
+
+            <div className="h-px lg:h-12 w-full lg:w-px bg-border" />
+
+            <div className="flex flex-col sm:flex-row gap-4 lg:gap-0">
+              <Select value={categoryFilter} onValueChange={handleCategoryChange}>
+                <SelectTrigger className="w-full sm:w-[180px] h-12 border-none shadow-none focus:ring-0 bg-transparent">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {venueCategories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category
+                        .split("-")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1),
+                        )
+                        .join(" ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <div className="hidden sm:block w-px h-12 bg-border" />
+
+              <Select value={locationFilter} onValueChange={handleLocationChange}>
+                <SelectTrigger className="w-full sm:w-[180px] h-12 border-none shadow-none focus:ring-0 bg-transparent">
+                  <div className="flex items-center text-muted-foreground">
+                    <MapPin className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder="Location" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Locations</SelectItem>
+                  {locations.map((location) => (
+                    <SelectItem key={location} value={location.toLowerCase()}>
+                      {location}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              onClick={handleManualSearch}
+              className="h-12 px-8 rounded-lg shadow-sm"
+              disabled={dataLoading}
+            >
+              {dataLoading ? (
+                <>
+                  <LoadingSpinner size="sm" className="mr-2" />
+                  Searching...
+                </>
+              ) : (
+                "Search"
+              )}
+            </Button>
+          </div>
+
+          {(searchInput || categoryFilter !== "all" || locationFilter !== "all") && (
+            <div className="flex justify-end">
               <Button
-                onClick={handleManualSearch}
-                className="px-6"
-                disabled={dataLoading}
+                variant="ghost"
+                size="sm"
+                onClick={clearAllFilters}
+                className="text-muted-foreground hover:text-foreground"
               >
-                {dataLoading ? (
-                  <>
-                    <LoadingSpinner size="sm" className="mr-2" />
-                    Searching...
-                  </>
-                ) : (
-                  "Search"
-                )}
+                <X className="h-4 w-4 mr-2" />
+                Clear Filters
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Venues Grid */}
+        {dataLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <VenueCardSkeleton key={index} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {venues.map((venue, index) => (
+              <motion.div
+                key={venue.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+              >
+                <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 h-full border-none shadow-sm ring-1 ring-border/50 flex flex-col">
+                  <div className="relative h-64 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
+                    <img
+                      src={venue.images?.[0] || "/placeholder.svg"}
+                      alt={venue.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      style={{ viewTransitionName: `venue-image-${venue.id}` }}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "/placeholder.svg";
+                      }}
+                    />
+                    <div className="absolute top-3 left-3 z-20">
+                      <Badge className="bg-white/90 text-foreground backdrop-blur-sm shadow-sm border-none">
+                        {venue.eventType}
+                      </Badge>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={`absolute top-3 right-3 z-20 rounded-full backdrop-blur-sm transition-colors ${isFavorite(venue.id)
+                          ? "bg-white text-red-500 hover:bg-white/90"
+                          : "bg-black/20 text-white hover:bg-white hover:text-red-500"
+                        }`}
+                      onClick={() => handleToggleFavorite(venue)}
+                    >
+                      <Heart
+                        className={`h-4 w-4 ${isFavorite(venue.id) ? "fill-current" : ""}`}
+                      />
+                    </Button>
+
+                    <div className="absolute bottom-3 left-3 right-3 z-20 text-white">
+                      <h3 className="font-bold text-xl leading-tight mb-1 drop-shadow-md line-clamp-1">
+                        {venue.name}
+                      </h3>
+                      {venue.metadata && (
+                        <div className="flex items-center text-xs text-white/90">
+                          <MapPin className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
+                          <span className="truncate">
+                            {(() => {
+                              try {
+                                return (
+                                  JSON.parse(venue.metadata)?.location ||
+                                  "Location not specified"
+                                );
+                              } catch {
+                                return venue.metadata || "Location not specified";
+                              }
+                            })()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <CardContent className="p-5 flex-1 flex flex-col">
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-1">
+                      {venue.description}
+                    </p>
+
+                    {/* Rating Display */}
+                    <div className="flex items-center justify-between mb-4">
+                      {venue.averageRating ? (
+                        <div className="flex items-center gap-1.5 bg-yellow-50 px-2 py-1 rounded-md border border-yellow-100">
+                          <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
+                          <span className="text-sm font-semibold text-yellow-700">{venue.averageRating.toFixed(1)}</span>
+                          {venue.totalReviews && (
+                            <span className="text-xs text-yellow-600/80">
+                              ({venue.totalReviews})
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground italic">No reviews yet</span>
+                      )}
+
+                      <Badge variant={venue.availability ? "outline" : "secondary"} className={venue.availability ? "text-green-600 border-green-200 bg-green-50" : ""}>
+                        {venue.availability ? "Available" : "Booked"}
+                      </Badge>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-4 border-t mt-auto">
+                      <div>
+                        <span className="text-lg font-bold text-primary">
+                          {venue.priceEnum
+                            ? getPriceDisplay(venue.priceEnum)
+                            : "Price on request"}
+                        </span>
+                        {venue.priceEnum && <span className="text-xs text-muted-foreground ml-1">/ event</span>}
+                      </div>
+
+                      <div className="flex gap-2">
+                        <TransitionLink href={`/services/${venue.id}`}>
+                          <Button variant="outline" size="sm">
+                            Details
+                          </Button>
+                        </TransitionLink>
+                        <Button
+                          size="sm"
+                          onClick={() => handleAddToCart(venue)}
+                          disabled={!venue.availability}
+                          className="shadow-sm"
+                        >
+                          <ShoppingCart className="h-4 w-4 mr-2" />
+                          Add
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        {venues.length === 0 && !dataLoading && !pageLoading && (
+          <div className="text-center py-20 bg-muted/30 rounded-xl border border-dashed">
+            <div className="max-w-md mx-auto">
+              <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <Search className="h-10 w-10 text-muted-foreground" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">No venues found</h3>
+              <p className="text-muted-foreground mb-6">
+                We couldn't find any venues matching your criteria. Try adjusting your filters.
+              </p>
+              <Button onClick={clearAllFilters} variant="outline">
+                Clear Filters
               </Button>
             </div>
           </div>
-
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Select value={categoryFilter} onValueChange={handleCategoryChange}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {venueCategories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category
-                      .split("-")
-                      .map(
-                        (word) => word.charAt(0).toUpperCase() + word.slice(1),
-                      )
-                      .join(" ")}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={locationFilter} onValueChange={handleLocationChange}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Location" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Locations</SelectItem>
-                {locations.map((location) => (
-                  <SelectItem key={location} value={location.toLowerCase()}>
-                    {location}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {(searchInput ||
-              categoryFilter !== "all" ||
-              locationFilter !== "all") && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={clearAllFilters}
-                className="shrink-0"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        </div>
+        )}
       </div>
-
-      {/* Venues Grid */}
-      {dataLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <VenueCardSkeleton key={index} />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {venues.map((venue, index) => (
-            <motion.div
-              key={venue.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-            >
-              <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="relative">
-                  <img
-                    src={venue.images?.[0] || "/placeholder.svg"}
-                    alt={venue.name}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                    style={{ viewTransitionName: `venue-image-${venue.id}` }}
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "/placeholder.svg";
-                    }}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={`absolute top-2 right-2 bg-white/80 hover:bg-white ${
-                      isFavorite(venue.id) ? "text-red-500" : "text-gray-600"
-                    }`}
-                    onClick={() => handleToggleFavorite(venue)}
-                  >
-                    <Heart
-                      className={`h-4 w-4 ${isFavorite(venue.id) ? "fill-current" : ""}`}
-                    />
-                  </Button>
-                </div>
-                <CardContent className="p-4">
-                  <div className="mb-2">
-                    <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                      {venue.eventType}
-                    </span>
-                  </div>
-                  <TransitionLink href={`/services/${venue.id}`}>
-                    <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors">
-                      {venue.name}
-                    </h3>
-                  </TransitionLink>
-                  {venue.metadata && (
-                    <div className="flex items-center text-sm text-muted-foreground mb-2">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {(() => {
-                        try {
-                          return (
-                            JSON.parse(venue.metadata)?.location ||
-                            "Location not specified"
-                          );
-                        } catch {
-                          return venue.metadata || "Location not specified";
-                        }
-                      })()}
-                    </div>
-                  )}
-                  <p className="text-sm text-muted-foreground mb-3">
-                    {venue.description}
-                  </p>
-
-                  {/* Rating Display */}
-                  {venue.averageRating && (
-                    <div className="flex items-center text-sm text-muted-foreground mb-3">
-                      <Star className="h-4 w-4 mr-1 fill-yellow-400 text-yellow-400" />
-                      <span>{venue.averageRating.toFixed(1)}</span>
-                      {venue.totalReviews && (
-                        <span className="ml-1">
-                          ({venue.totalReviews} reviews)
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-lg font-bold">
-                        {venue.priceEnum
-                          ? getPriceDisplay(venue.priceEnum)
-                          : "Price on request"}
-                      </span>
-                      <span className="text-sm text-muted-foreground ml-1">
-                        / event
-                      </span>
-                    </div>
-                    <Button
-                      size="sm"
-                      onClick={() => handleAddToCart(venue)}
-                      className="flex items-center gap-2"
-                      disabled={!venue.availability}
-                    >
-                      <ShoppingCart className="h-4 w-4" />
-                      {venue.availability ? "Add to Cart" : "Unavailable"}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      )}
-
-      {venues.length === 0 && !dataLoading && !pageLoading && (
-        <div className="text-center py-8">
-          <p className="text-muted-foreground">
-            No venues found matching your criteria.
-          </p>
-        </div>
-      )}
-    </main>
+    </div>
   );
 }
 
 export default VenuesContent;
+

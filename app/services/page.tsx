@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
 import { TransitionLink } from "@/components/transition-link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +23,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { ServicesSEO } from "@/components/seo/services-seo";
+import { motion } from "framer-motion";
 import {
   Search,
   Filter,
@@ -46,6 +46,8 @@ import {
   Gem,
   Tag,
   ImageIcon,
+  X,
+  ArrowRight,
 } from "lucide-react";
 import { getPriceDisplay, PriceEnum } from "@/lib/utils";
 
@@ -334,6 +336,8 @@ function ServicesContent() {
     setServiceTypeFilter("all");
     setEventTypeFilter("all");
     setPriceFilter("all");
+    // Also clear URL params
+    replace(pathname, { scroll: false });
   };
 
   const handleAddToFavorites = (service: Service) => {
@@ -394,17 +398,21 @@ function ServicesContent() {
 
   if (pageLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <div className="h-10 w-80 bg-muted animate-pulse rounded-md mb-4" />
-          <div className="h-6 w-96 bg-muted animate-pulse rounded-md" />
+      <div className="min-h-screen bg-background">
+        <div className="bg-muted/30 py-20 border-b">
+          <div className="container mx-auto px-4">
+            <div className="h-12 w-64 bg-muted animate-pulse rounded-md mb-4" />
+            <div className="h-6 w-96 bg-muted animate-pulse rounded-md" />
+          </div>
         </div>
-        <div className="flex gap-4 mb-8 flex-wrap">
-          <div className="h-12 w-64 bg-muted animate-pulse rounded-md" />
-          <div className="h-12 w-48 bg-muted animate-pulse rounded-md" />
-          <div className="h-12 w-48 bg-muted animate-pulse rounded-md" />
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex gap-4 mb-8 flex-wrap">
+            <div className="h-12 flex-1 bg-muted animate-pulse rounded-md" />
+            <div className="h-12 w-48 bg-muted animate-pulse rounded-md" />
+            <div className="h-12 w-48 bg-muted animate-pulse rounded-md" />
+          </div>
+          <GridSkeleton count={6} CardComponent={ServiceCardSkeleton} />
         </div>
-        <GridSkeleton count={6} CardComponent={ServiceCardSkeleton} />
       </div>
     );
   }
@@ -413,55 +421,74 @@ function ServicesContent() {
   if (showEventTypeSelection) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-12">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Find Services for Your Event
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              What type of event are you planning? Select below to discover the
-              perfect vendors.
-            </p>
+        <div className="relative bg-muted/30 py-24 border-b overflow-hidden">
+          <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="text-center max-w-3xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/20 border-none px-4 py-1.5 text-sm">
+                  <Sparkles className="h-3.5 w-3.5 mr-2 inline-block" />
+                  Start Planning
+                </Badge>
+                <h1 className="text-4xl md:text-6xl font-bold mb-6 font-display tracking-tight text-foreground">
+                  Find Services for Your Event
+                </h1>
+                <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                  What type of event are you planning? Select below to discover the perfect vendors.
+                </p>
+              </motion.div>
+            </div>
           </div>
+        </div>
 
+        <div className="container mx-auto px-4 py-12">
           {/* Event Type Selection Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {eventTypeOptions.map((option) => {
+            {eventTypeOptions.map((option, index) => {
               const IconComponent = option.icon;
               return (
-                <Card
+                <motion.div
                   key={option.type}
-                  className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden border-2 hover:border-primary"
-                  onClick={() => handleEventTypeSelection(option.type)}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
                 >
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={option.image}
-                      alt={option.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <div className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center">
-                          <IconComponent className="h-5 w-5 text-primary" />
+                  <Card
+                    className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden border-none shadow-md ring-1 ring-border/50 h-full"
+                    onClick={() => handleEventTypeSelection(option.type)}
+                  >
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={option.image}
+                        alt={option.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute bottom-4 left-4 right-4">
+                        <div className="flex items-center space-x-3 mb-1">
+                          <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20">
+                            <IconComponent className="h-5 w-5 text-white" />
+                          </div>
+                          <h3 className="text-2xl font-bold text-white">
+                            {option.name}
+                          </h3>
                         </div>
-                        <h3 className="text-2xl font-bold text-white">
-                          {option.name}
-                        </h3>
                       </div>
                     </div>
-                  </div>
-                  <CardContent className="p-6">
-                    <p className="text-muted-foreground">
-                      {option.description}
-                    </p>
-                    <Button className="w-full mt-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                      Browse {option.name} Services
-                    </Button>
-                  </CardContent>
-                </Card>
+                    <CardContent className="p-6">
+                      <p className="text-muted-foreground mb-4">
+                        {option.description}
+                      </p>
+                      <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-300">
+                        Browse Services <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               );
             })}
           </div>
@@ -469,9 +496,10 @@ function ServicesContent() {
           {/* Skip to All Services */}
           <div className="text-center mt-12">
             <Button
-              variant="outline"
+              variant="ghost"
               size="lg"
               onClick={() => setShowEventTypeSelection(false)}
+              className="text-muted-foreground hover:text-foreground"
             >
               Skip and Browse All Services
             </Button>
@@ -481,77 +509,66 @@ function ServicesContent() {
     );
   }
 
+  const totalServices = services.length;
+
   return (
     <div className="min-h-screen bg-background">
-      <ServicesSEO 
-        services={services.slice(0, 10).map(s => ({
+      <ServicesSEO
+        services={services.slice(0, 10).map((s) => ({
           name: s.name,
           description: s.metadata,
           serviceType: s.serviceType,
-          eventTypes: s.eventTypes,
-          price: s.price ? getPriceDisplay(s.price) : undefined,
-        }))} 
+          eventTypes: [s.eventType],
+          price: s.priceEnum ? getPriceDisplay(s.priceEnum) : undefined,
+        }))}
         totalCount={totalServices}
         category={serviceTypeFilter !== "all" ? serviceTypeFilter : undefined}
       />
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
+
+      {/* Mini Hero */}
+      <div className="bg-muted/30 border-b py-12">
+        <div className="container mx-auto px-4">
           <Button
             variant="ghost"
             onClick={handleBackToSelection}
-            className="mb-4"
+            className="mb-6 pl-0 hover:pl-2 transition-all"
           >
             ← Back to Event Types
           </Button>
-          <h1 className="text-3xl font-bold mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold mb-3">
             {eventTypeFilter !== "all"
               ? `${eventTypeFilter.replace(/_/g, " ")} Services`
               : "All Services"}
           </h1>
-          <p className="text-muted-foreground">
-            Discover amazing services for your events
+          <p className="text-lg text-muted-foreground max-w-2xl">
+            Browse our curated list of professional services to make your event truly special.
           </p>
         </div>
+      </div>
 
+      <div className="container mx-auto px-4 py-8">
         {/* Search and Filters */}
-        <div className="mb-6 space-y-4">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    placeholder="Search services..."
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                    onKeyDown={handleSearchKeyPress}
-                    className="pl-10"
-                  />
-                </div>
-                <Button
-                  onClick={handleManualSearch}
-                  className="px-6"
-                  disabled={dataLoading}
-                >
-                  {dataLoading ? (
-                    <>
-                      <LoadingSpinner size="sm" className="mr-2" />
-                      Searching...
-                    </>
-                  ) : (
-                    "Search"
-                  )}
-                </Button>
-              </div>
+        <div className="mb-10">
+          <div className="flex flex-col lg:flex-row gap-4 mb-6 p-2 bg-card rounded-xl border shadow-sm">
+            <div className="flex-1 relative group">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 group-focus-within:text-primary transition-colors" />
+              <Input
+                placeholder="Search services..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={handleSearchKeyPress}
+                className="pl-10 h-12 border-none shadow-none focus-visible:ring-0 bg-transparent"
+              />
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="h-px lg:h-12 w-full lg:w-px bg-border" />
+
+            <div className="flex flex-col sm:flex-row gap-4 lg:gap-0">
               <Select
                 value={serviceTypeFilter}
                 onValueChange={setServiceTypeFilter}
               >
-                <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectTrigger className="w-full sm:w-[160px] h-12 border-none shadow-none focus:ring-0 bg-transparent">
                   <SelectValue placeholder="Service Type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -564,11 +581,13 @@ function ServicesContent() {
                 </SelectContent>
               </Select>
 
+              <div className="hidden sm:block w-px h-12 bg-border" />
+
               <Select
                 value={eventTypeFilter}
                 onValueChange={setEventTypeFilter}
               >
-                <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectTrigger className="w-full sm:w-[160px] h-12 border-none shadow-none focus:ring-0 bg-transparent">
                   <SelectValue placeholder="Event Type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -581,8 +600,10 @@ function ServicesContent() {
                 </SelectContent>
               </Select>
 
+              <div className="hidden sm:block w-px h-12 bg-border" />
+
               <Select value={priceFilter} onValueChange={setPriceFilter}>
-                <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectTrigger className="w-full sm:w-[160px] h-12 border-none shadow-none focus:ring-0 bg-transparent">
                   <SelectValue placeholder="Price Tier" />
                 </SelectTrigger>
                 <SelectContent>
@@ -594,28 +615,35 @@ function ServicesContent() {
                   ))}
                 </SelectContent>
               </Select>
-
-              <Button variant="outline" onClick={clearFilters}>
-                <Filter className="h-4 w-4 mr-2" />
-                Clear
-              </Button>
             </div>
-          </div>
-        </div>
 
-        {/* Results Count */}
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            {dataLoading
-              ? "Loading services..."
-              : `Showing ${services.length} services`}
-          </p>
-          {dataLoading && (
-            <div className="flex items-center gap-2">
-              <LoadingSpinner size="sm" />
-              <span className="text-sm text-muted-foreground">
-                Fetching data...
-              </span>
+            <Button
+              onClick={handleManualSearch}
+              className="h-12 px-8 rounded-lg shadow-sm"
+              disabled={dataLoading}
+            >
+              {dataLoading ? (
+                <>
+                  <LoadingSpinner size="sm" className="mr-2" />
+                  Searching...
+                </>
+              ) : (
+                "Search"
+              )}
+            </Button>
+          </div>
+
+          {(searchInput || serviceTypeFilter !== "all" || eventTypeFilter !== "all" || priceFilter !== "all") && (
+            <div className="flex justify-between items-center px-2">
+              <p className="text-sm text-muted-foreground font-medium">
+                {dataLoading
+                  ? "Loading services..."
+                  : `Showing ${services.length} services`}
+              </p>
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground hover:text-foreground">
+                <X className="h-4 w-4 mr-2" />
+                Clear Filters
+              </Button>
             </div>
           )}
         </div>
@@ -628,7 +656,7 @@ function ServicesContent() {
                 Error
               </h3>
               <p className="text-muted-foreground mb-4">{error}</p>
-              <Button onClick={fetchServices}>Try Again</Button>
+              <Button onClick={fetchServices} variant="outline">Try Again</Button>
             </div>
           </div>
         ) : dataLoading ? (
@@ -639,192 +667,194 @@ function ServicesContent() {
           </div>
         ) : services.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => {
+            {services.map((service, index) => {
               const ServiceIconComponent =
                 serviceTypeIcons[service.serviceType] || Tag;
               const PriceIconComponent =
                 priceEnumIcons[service.priceEnum] || DollarSign;
 
               return (
-                <Card
+                <motion.div
                   key={service.id}
-                  className="group hover:shadow-lg transition-all duration-200 flex flex-col h-full"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
                 >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                        <div className="p-2 sm:p-3 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex-shrink-0">
-                          <ServiceIconComponent className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <CardTitle className="text-base sm:text-lg font-semibold line-clamp-2">
-                            {service.name}
-                          </CardTitle>
-                          <div className="flex items-center gap-1 sm:gap-2 mt-1 flex-wrap">
-                            <Badge variant="outline" className="text-xs">
-                              {service.serviceType.replace(/_/g, " ")}
-                            </Badge>
-                            <div className="flex items-center gap-1">
-                              <PriceIconComponent className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                              <span className="text-xs text-muted-foreground truncate">
-                                {service.priceEnum.replace(/_/g, " ")}
-                              </span>
+                  <Card
+                    className="group hover:shadow-xl transition-all duration-300 flex flex-col h-full border-none shadow-sm ring-1 ring-border/50 overflow-hidden"
+                  >
+                    <CardHeader className="pb-3 bg-muted/30 border-b">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className="p-2.5 bg-white rounded-xl shadow-sm border flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                            <ServiceIconComponent className="h-5 w-5 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <CardTitle className="text-lg font-bold line-clamp-1 group-hover:text-primary transition-colors">
+                              {service.name}
+                            </CardTitle>
+                            <div className="flex items-center gap-2 mt-1.5">
+                              <Badge variant="secondary" className="text-xs font-normal bg-white/50 hover:bg-white">
+                                {service.serviceType.replace(/_/g, " ")}
+                              </Badge>
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <PriceIconComponent className="h-3 w-3" />
+                                <span className="truncate">
+                                  {service.priceEnum.replace(/_/g, " ")}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
+
+                        <Badge
+                          variant={service.availability ? "default" : "secondary"}
+                          className={cn(
+                            "flex-shrink-0 text-xs shadow-none",
+                            service.availability &&
+                            "bg-green-100 text-green-700 hover:bg-green-200 border-transparent",
+                            !service.availability && "bg-gray-100 text-gray-500"
+                          )}
+                        >
+                          {service.availability ? "Available" : "Booked"}
+                        </Badge>
                       </div>
+                    </CardHeader>
 
-                      <Badge
-                        variant={service.availability ? "default" : "secondary"}
-                        className={cn(
-                          "flex-shrink-0 text-xs",
-                          service.availability &&
-                            "bg-green-100 text-green-800 border-green-200",
-                        )}
-                      >
-                        {service.availability ? "Available" : "Unavailable"}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-
-                  <CardContent className="space-y-4 pt-0 flex-1 flex flex-col">
-                    {/* Price */}
-                    <div className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-green-100 rounded-lg flex-shrink-0">
-                          <DollarSign className="h-4 w-4 text-green-600" />
+                    <CardContent className="space-y-4 pt-5 flex-1 flex flex-col">
+                      {/* Images Preview */}
+                      {service.images && service.images.length > 0 ? (
+                        <div className="space-y-2">
+                          <div className="grid grid-cols-3 gap-2">
+                            {service.images.slice(0, 3).map((imageUrl, index) => (
+                              <div key={index} className="relative group/image aspect-square overflow-hidden rounded-md bg-muted">
+                                <img
+                                  src={imageUrl}
+                                  alt={`${service.name} image ${index + 1}`}
+                                  className="w-full h-full object-cover transition-transform duration-500 group-hover/image:scale-110"
+                                  style={{
+                                    viewTransitionName: `service-image-${service.id}-${index}`,
+                                  }}
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = "none";
+                                  }}
+                                />
+                                {index === 2 &&
+                                  service.images &&
+                                  service.images.length > 3 && (
+                                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-[1px]">
+                                      <span className="text-white text-xs font-bold">
+                                        +{service.images.length - 2}
+                                      </span>
+                                    </div>
+                                  )}
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-base sm:text-lg font-bold text-gray-900">
-                            {getPriceDisplay(service.priceEnum)}
-                          </span>
+                      ) : (
+                        <div className="h-20 bg-muted/30 rounded-lg flex items-center justify-center border border-dashed">
+                          <ImageIcon className="h-8 w-8 text-muted-foreground/30" />
                         </div>
-                      </div>
-                    </div>
+                      )}
 
-                    {/* Rating */}
-                    {service.totalRating !== undefined &&
-                    service.numberOfRatings !== undefined ? (
-                      <div className="flex items-center justify-between gap-2">
-                        <StarRating
-                          rating={service.totalRating || 0}
-                          readonly
-                          size="sm"
-                        />
-                        <span className="text-xs text-muted-foreground whitespace-nowrap truncate">
-                          ({service.numberOfRatings} reviews)
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-between gap-2">
-                        <StarRating rating={0} readonly size="sm" />
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">
-                          (No reviews yet)
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Images Preview */}
-                    {service.images && service.images.length > 0 && (
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                          <ImageIcon className="h-4 w-4" />
-                          Service Images ({service.images.length})
+                      {/* Description */}
+                      {service.metadata && (
+                        <div className="text-sm text-muted-foreground line-clamp-2">
+                          {service.metadata}
                         </div>
-                        <div className="grid grid-cols-3 gap-2">
-                          {service.images.slice(0, 3).map((imageUrl, index) => (
-                            <div key={index} className="relative group">
-                              <img
-                                src={imageUrl}
-                                alt={`${service.name} image ${index + 1}`}
-                                className="w-full h-16 object-cover rounded-lg border border-gray-200"
-                                style={{
-                                  viewTransitionName: `service-image-${service.id}-${index}`,
-                                }}
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.style.display = "none";
-                                }}
-                              />
-                              {index === 2 &&
-                                service.images &&
-                                service.images.length > 3 && (
-                                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
-                                    <span className="text-white text-xs font-medium">
-                                      +{service.images.length - 2} more
-                                    </span>
-                                  </div>
-                                )}
+                      )}
+
+                      <div className="mt-auto pt-4 border-t flex flex-col gap-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-green-50 rounded-md">
+                              <DollarSign className="h-4 w-4 text-green-600" />
                             </div>
-                          ))}
+                            <span className="text-lg font-bold text-foreground">
+                              {getPriceDisplay(service.priceEnum)}
+                            </span>
+                          </div>
+
+                          {/* Rating */}
+                          {service.totalRating !== undefined &&
+                            service.numberOfRatings !== undefined ? (
+                            <div className="flex items-center gap-1.5">
+                              <StarRating
+                                rating={service.totalRating || 0}
+                                readonly
+                                size="sm"
+                              />
+                              <span className="text-xs text-muted-foreground">
+                                ({service.numberOfRatings})
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-muted-foreground italic">
+                              No reviews
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex gap-2">
+                          <TransitionLink href={`/services/${service.id}`} className="flex-1">
+                            <Button variant="outline" className="w-full">
+                              Details
+                            </Button>
+                          </TransitionLink>
+
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => handleAddToFavorites(service)}
+                            className={cn(
+                              "transition-colors",
+                              favorites.some(
+                                (fav) =>
+                                  fav.id === service.id.toString() &&
+                                  fav.type === "service",
+                              )
+                                ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100"
+                                : "hover:text-red-500"
+                            )}
+                          >
+                            <Heart
+                              className={cn("h-4 w-4", favorites.some((fav) => fav.id === service.id.toString() && fav.type === "service") && "fill-current")}
+                            />
+                          </Button>
+
+                          <Button
+                            size="icon"
+                            onClick={() => handleAddToCart(service)}
+                            disabled={!service.availability}
+                            className={cn(!service.availability && "opacity-50")}
+                          >
+                            <ShoppingCart className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
-                    )}
-
-                    {/* Description */}
-                    {service.metadata && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {service.metadata}
-                      </p>
-                    )}
-
-                    {/* Actions */}
-                    <div className="flex gap-2 pt-2">
-                      <Button asChild className="flex-1">
-                        <TransitionLink href={`/services/${service.id}`}>
-                          View Details
-                        </TransitionLink>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleAddToFavorites(service)}
-                        className={
-                          favorites.some(
-                            (fav) =>
-                              fav.id === service.id.toString() &&
-                              fav.type === "service",
-                          )
-                            ? "text-red-500"
-                            : ""
-                        }
-                      >
-                        <Heart
-                          className={`h-4 w-4 ${favorites.some((fav) => fav.id === service.id.toString() && fav.type === "service") ? "fill-current" : ""}`}
-                        />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleAddToCart(service)}
-                        disabled={!service.availability}
-                      >
-                        <ShoppingCart className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               );
             })}
           </div>
         ) : (
-          !dataLoading && (
-            <div className="text-center py-12">
-              <div className="max-w-md mx-auto">
-                <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Search className="h-8 w-8 text-muted-foreground" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  No services found
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  Try adjusting your search criteria or browse all available
-                  services.
-                </p>
-                <Button onClick={clearFilters}>Clear Filters</Button>
+          <div className="text-center py-20 bg-muted/30 rounded-xl border border-dashed">
+            <div className="max-w-md mx-auto">
+              <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <Search className="h-10 w-10 text-muted-foreground" />
               </div>
+              <h3 className="text-xl font-bold mb-2">No services found</h3>
+              <p className="text-muted-foreground mb-6">
+                We couldn't find any services matching your criteria. Try adjusting your filters.
+              </p>
+              <Button onClick={clearFilters} variant="outline">
+                Clear Filters
+              </Button>
             </div>
-          )
+          </div>
         )}
       </div>
     </div>

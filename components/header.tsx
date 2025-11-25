@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { TransitionLink } from "@/components/transition-link";
 import { useRouter } from "next/navigation";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
@@ -77,40 +77,39 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled
           ? "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b shadow-sm"
           : "bg-background border-b"
-      }`}
+        }`}
     >
       <div className="container mx-auto px-2 sm:px-3 md:px-4">
         <div className="flex h-12 sm:h-14 md:h-16 items-center justify-between">
           {/* Logo */}
-          <Link
+          <TransitionLink
             href="/"
             className="flex items-center font-extrabold md:text-2xl text-foreground mr-2 sm:mr-4 md:mr-7"
           >
             <span className="font-medium">Plan</span>
             <span className="text-primary">Ero.</span>
-          </Link>
+          </TransitionLink>
 
           {/* Desktop Navigation with Mega Menu */}
           <MegaMenu />
 
           {/* Additional Links */}
           <nav className="hidden lg:flex items-center space-x-4 lg:space-x-6 ml-2">
-            <Link
+            <TransitionLink
               href="/about"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               About
-            </Link>
-            <Link
+            </TransitionLink>
+            <TransitionLink
               href="/pwa"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Get App
-            </Link>
+            </TransitionLink>
           </nav>
 
           {/* Enhanced Search Bar - Desktop */}
@@ -183,14 +182,14 @@ export function Header() {
 
             {/* Favorites */}
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/favorites">
+              <TransitionLink href="/favorites">
                 <Heart className="h-4 w-4" />
-              </Link>
+              </TransitionLink>
             </Button>
 
             {/* Cart */}
             <Button variant="ghost" size="sm" className="relative" asChild>
-              <Link href="/cart">
+              <TransitionLink href="/cart">
                 <ShoppingCart className="h-4 w-4" />
                 {items.length > 0 && (
                   <Badge
@@ -200,7 +199,7 @@ export function Header() {
                     {items.length}
                   </Badge>
                 )}
-              </Link>
+              </TransitionLink>
             </Button>
 
             {/* Notifications - Only show when authenticated */}
@@ -245,22 +244,22 @@ export function Header() {
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard">
+                    <TransitionLink href="/dashboard">
                       <User className="mr-2 h-4 w-4" />
                       Dashboard
-                    </Link>
+                    </TransitionLink>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/bookings">
+                    <TransitionLink href="/dashboard/bookings">
                       <Calendar className="mr-2 h-4 w-4" />
                       My Bookings
-                    </Link>
+                    </TransitionLink>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/settings">
+                    <TransitionLink href="/dashboard/settings">
                       <Settings className="mr-2 h-4 w-4" />
                       Settings
-                    </Link>
+                    </TransitionLink>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
 
@@ -300,10 +299,10 @@ export function Header() {
                   Sign In
                 </Button>
                 <Button size="sm" asChild>
-                  <Link href="/auth/signup">
+                  <TransitionLink href="/auth/signup">
                     <UserPlus className="h-4 w-4 mr-2" />
                     Sign Up
-                  </Link>
+                  </TransitionLink>
                 </Button>
               </div>
             )}
@@ -311,15 +310,14 @@ export function Header() {
             {/* Mobile Menu */}
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="md:hidden"
-                >
+                <Button variant="ghost" size="sm" className="md:hidden">
                   <Menu className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-full sm:w-96 p-0 overflow-y-auto">
+              <SheetContent
+                side="left"
+                className="w-full sm:w-96 p-0 overflow-y-auto"
+              >
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <div className="flex flex-col h-full">
                   <h1 className="px-4 py-4 text-xl border-t border-border">
@@ -332,20 +330,20 @@ export function Header() {
 
                     {/* Additional Mobile Links */}
                     <div className="px-4 py-4 border-t border-border">
-                      <Link
+                      <TransitionLink
                         href="/about"
                         className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         About
-                      </Link>
-                      <Link
+                      </TransitionLink>
+                      <TransitionLink
                         href="/pwa"
                         className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Get App
-                      </Link>
+                      </TransitionLink>
                     </div>
 
                     {/* Mobile Actions */}
@@ -358,10 +356,10 @@ export function Header() {
                             asChild
                             onClick={() => setIsMenuOpen(false)}
                           >
-                            <Link href="/favorites">
+                            <TransitionLink href="/favorites">
                               <Heart className="mr-2 h-4 w-4" />
                               Favorites
-                            </Link>
+                            </TransitionLink>
                           </Button>
                           <Button
                             variant="outline"
@@ -369,10 +367,10 @@ export function Header() {
                             asChild
                             onClick={() => setIsMenuOpen(false)}
                           >
-                            <Link href="/cart">
+                            <TransitionLink href="/cart">
                               <ShoppingCart className="mr-2 h-4 w-4" />
                               Cart ({items.length})
-                            </Link>
+                            </TransitionLink>
                           </Button>
                           <Button
                             variant="outline"
@@ -380,10 +378,10 @@ export function Header() {
                             asChild
                             onClick={() => setIsMenuOpen(false)}
                           >
-                            <Link href="/dashboard">
+                            <TransitionLink href="/dashboard">
                               <User className="mr-2 h-4 w-4" />
                               Dashboard
-                            </Link>
+                            </TransitionLink>
                           </Button>
                         </>
                       )}
@@ -424,13 +422,13 @@ export function Header() {
                             Sign In
                           </Button>
                           <Button variant="outline" className="w-full" asChild>
-                            <Link
+                            <TransitionLink
                               href="/auth/signup"
                               onClick={() => setIsMenuOpen(false)}
                             >
                               <UserPlus className="mr-2 h-4 w-4" />
                               Sign Up
-                            </Link>
+                            </TransitionLink>
                           </Button>
                         </div>
                       ) : (
@@ -438,11 +436,14 @@ export function Header() {
                           <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted">
                             <Avatar className="h-10 w-10">
                               <AvatarImage
-                                src={session.user?.image || "/placeholder-user.jpg"}
+                                src={
+                                  session.user?.image || "/placeholder-user.jpg"
+                                }
                                 alt={session.user?.name || "User"}
                               />
                               <AvatarFallback>
-                                {session.user?.name?.charAt(0)?.toUpperCase() || "U"}
+                                {session.user?.name?.charAt(0)?.toUpperCase() ||
+                                  "U"}
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">

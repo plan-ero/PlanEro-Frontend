@@ -43,11 +43,16 @@ import {
   LogOut,
   Mail,
   ShieldCheck,
+  MapPin,
+  Phone,
+  Sparkles
 } from "lucide-react";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import ImageUpload from "@/components/image-upload";
 import EmailVerification from "@/components/email-verification";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 const profileSchema = z.object({
   businessName: z
@@ -204,7 +209,7 @@ export default function VendorProfile() {
           console.error("Vendor profile not found:", errorData);
           toast.error(
             errorData.error ||
-              "Vendor profile not found. Please create one to continue.",
+            "Vendor profile not found. Please create one to continue.",
           );
         }
       } else {
@@ -562,100 +567,132 @@ export default function VendorProfile() {
   const StatusIcon = statusInfo.icon;
 
   return (
-    <div className="container mx-auto py-8 max-w-4xl">
+    <div className="container mx-auto py-8 max-w-5xl px-4">
       <div className="space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-8 rounded-3xl border border-primary/10">
           <div>
-            <h1 className="text-3xl font-bold">Profile Settings</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+              Profile Settings
+            </h1>
+            <p className="text-muted-foreground mt-2">
               Manage your vendor profile and account settings
             </p>
           </div>
           <Badge
             variant={statusInfo.variant}
-            className="flex items-center gap-1"
+            className="flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium"
           >
-            <StatusIcon className="h-3 w-3" />
+            <StatusIcon className="h-4 w-4" />
             {statusInfo.text}
           </Badge>
         </div>
 
         {/* Authentication Issue Alert */}
         {authIssue && (
-          <Card className="border-yellow-200 bg-yellow-50">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
-                <AlertCircle className="h-8 w-8 text-yellow-600" />
-                <div className="flex-1">
-                  <h3 className="font-semibold text-yellow-800">
-                    Authentication Session Issue Detected
-                  </h3>
-                  <p className="text-sm text-yellow-700 mt-1">
-                    Your authentication token appears to be outdated. This can
-                    happen after system updates. Please sign out and sign back
-                    in to refresh your session.
-                  </p>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-900/10 dark:border-yellow-800">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-2 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400">
+                    <AlertCircle className="h-6 w-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-yellow-800 dark:text-yellow-200">
+                      Authentication Session Issue Detected
+                    </h3>
+                    <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                      Your authentication token appears to be outdated. Please sign out and sign back in to refresh your session.
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+                    className="flex items-center gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign Out & Refresh
+                  </Button>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => signOut({ callbackUrl: "/auth/signin" })}
-                  className="flex items-center gap-2"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Sign Out & Refresh
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
         )}
 
         {/* Status Card */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16">
-                <AvatarImage src={vendor?.profilePictureUrl} />
-                <AvatarFallback>
-                  <Building2 className="h-8 w-8" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold">
-                  {vendor?.businessName || "No Business Name"}
-                </h3>
-                <p className="text-muted-foreground">{vendor?.location}</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <StatusIcon className="h-4 w-4" />
-                  <span className="text-sm">{statusInfo.description}</span>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card className="border-none shadow-md overflow-hidden">
+            <div className="h-24 bg-gradient-to-r from-primary/5 to-secondary/5"></div>
+            <CardContent className="relative pt-0 px-8 pb-8">
+              <div className="flex flex-col md:flex-row items-start md:items-end gap-6 -mt-12">
+                <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
+                  <AvatarImage src={vendor?.profilePictureUrl} className="object-cover" />
+                  <AvatarFallback className="bg-primary/10 text-primary">
+                    <Building2 className="h-10 w-10" />
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-1 mb-2">
+                  <h3 className="text-2xl font-bold">
+                    {vendor?.businessName || "No Business Name"}
+                  </h3>
+                  <div className="flex items-center gap-4 text-muted-foreground text-sm">
+                    {vendor?.location && (
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-3.5 w-3.5" />
+                        {vendor.location}
+                      </div>
+                    )}
+                    {vendor?.email && (
+                      <div className="flex items-center gap-1">
+                        <Mail className="h-3.5 w-3.5" />
+                        {vendor.email}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="outline" className="px-3 py-1 rounded-full bg-background/50 backdrop-blur-sm">
+                    <StatusIcon className="h-3.5 w-3.5 mr-1.5" />
+                    {statusInfo.description}
+                  </Badge>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* Tabs */}
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <Building2 className="h-4 w-4" />
+          <TabsList className="bg-muted/50 p-1 rounded-full inline-flex h-auto w-full md:w-auto">
+            <TabsTrigger value="profile" className="rounded-full px-6 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all flex-1 md:flex-none">
+              <Building2 className="h-4 w-4 mr-2" />
               Business Profile
             </TabsTrigger>
-            <TabsTrigger value="account" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
+            <TabsTrigger value="account" className="rounded-full px-6 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all flex-1 md:flex-none">
+              <User className="h-4 w-4 mr-2" />
               Account
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Eye className="h-4 w-4" />
+            <TabsTrigger value="settings" className="rounded-full px-6 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all flex-1 md:flex-none">
+              <Eye className="h-4 w-4 mr-2" />
               Settings
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="profile">
-            <Card>
+          <TabsContent value="profile" className="animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
+            <Card className="border-none shadow-md">
               <CardHeader>
-                <CardTitle>Business Profile</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  Business Details
+                </CardTitle>
                 <CardDescription>
                   Update your business information that customers will see
                 </CardDescription>
@@ -663,23 +700,26 @@ export default function VendorProfile() {
               <CardContent>
                 <form
                   onSubmit={(e) => {
-                    e.preventDefault(); // Prevent default form submission
+                    e.preventDefault();
                   }}
                   className={`space-y-6 ${saving ? "opacity-75 pointer-events-none" : ""}`}
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="businessName">Business Name *</Label>
-                      <Input
-                        id="businessName"
-                        disabled={saving}
-                        {...profileForm.register("businessName")}
-                        className={
-                          profileForm.formState.errors.businessName
-                            ? "border-red-500"
-                            : ""
-                        }
-                      />
+                      <div className="relative">
+                        <Building2 className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="businessName"
+                          disabled={saving}
+                          {...profileForm.register("businessName")}
+                          className={`pl-9 ${profileForm.formState.errors.businessName
+                              ? "border-red-500 focus-visible:ring-red-500"
+                              : ""
+                            }`}
+                          placeholder="e.g. Elegant Events Co."
+                        />
+                      </div>
                       {profileForm.formState.errors.businessName && (
                         <p className="text-sm text-red-500">
                           {profileForm.formState.errors.businessName.message}
@@ -689,16 +729,19 @@ export default function VendorProfile() {
 
                     <div className="space-y-2">
                       <Label htmlFor="location">Location *</Label>
-                      <Input
-                        id="location"
-                        disabled={saving}
-                        {...profileForm.register("location")}
-                        className={
-                          profileForm.formState.errors.location
-                            ? "border-red-500"
-                            : ""
-                        }
-                      />
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="location"
+                          disabled={saving}
+                          {...profileForm.register("location")}
+                          className={`pl-9 ${profileForm.formState.errors.location
+                              ? "border-red-500 focus-visible:ring-red-500"
+                              : ""
+                            }`}
+                          placeholder="e.g. New York, NY"
+                        />
+                      </div>
                       {profileForm.formState.errors.location && (
                         <p className="text-sm text-red-500">
                           {profileForm.formState.errors.location.message}
@@ -707,25 +750,52 @@ export default function VendorProfile() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="websiteUrl">Website URL</Label>
-                    <Input
-                      id="websiteUrl"
-                      type="url"
-                      placeholder="https://yourwebsite.com"
-                      disabled={saving}
-                      {...profileForm.register("websiteUrl")}
-                      className={
-                        profileForm.formState.errors.websiteUrl
-                          ? "border-red-500"
-                          : ""
-                      }
-                    />
-                    {profileForm.formState.errors.websiteUrl && (
-                      <p className="text-sm text-red-500">
-                        {profileForm.formState.errors.websiteUrl.message}
-                      </p>
-                    )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="websiteUrl">Website URL</Label>
+                      <div className="relative">
+                        <Globe className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="websiteUrl"
+                          type="url"
+                          placeholder="https://yourwebsite.com"
+                          disabled={saving}
+                          {...profileForm.register("websiteUrl")}
+                          className={`pl-9 ${profileForm.formState.errors.websiteUrl
+                              ? "border-red-500 focus-visible:ring-red-500"
+                              : ""
+                            }`}
+                        />
+                      </div>
+                      {profileForm.formState.errors.websiteUrl && (
+                        <p className="text-sm text-red-500">
+                          {profileForm.formState.errors.websiteUrl.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="phoneNumber">Phone Number</Label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="phoneNumber"
+                          type="tel"
+                          placeholder="+1 (555) 123-4567"
+                          disabled={saving}
+                          {...profileForm.register("phoneNumber")}
+                          className={`pl-9 ${profileForm.formState.errors.phoneNumber
+                              ? "border-red-500 focus-visible:ring-red-500"
+                              : ""
+                            }`}
+                        />
+                      </div>
+                      {profileForm.formState.errors.phoneNumber && (
+                        <p className="text-sm text-red-500">
+                          {profileForm.formState.errors.phoneNumber.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -739,32 +809,11 @@ export default function VendorProfile() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phoneNumber">Phone Number</Label>
-                    <Input
-                      id="phoneNumber"
-                      type="tel"
-                      placeholder="+1 (555) 123-4567"
-                      disabled={saving}
-                      {...profileForm.register("phoneNumber")}
-                      className={
-                        profileForm.formState.errors.phoneNumber
-                          ? "border-red-500"
-                          : ""
-                      }
-                    />
-                    {profileForm.formState.errors.phoneNumber && (
-                      <p className="text-sm text-red-500">
-                        {profileForm.formState.errors.phoneNumber.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
                     <Label htmlFor="bio">Business Description *</Label>
                     <Textarea
                       id="bio"
-                      placeholder="Describe your business and services..."
-                      className="min-h-32"
+                      placeholder="Describe your business, services, and what makes you unique..."
+                      className="min-h-32 resize-y"
                       disabled={saving}
                       {...profileForm.register("bio")}
                     />
@@ -773,199 +822,216 @@ export default function VendorProfile() {
                         {profileForm.formState.errors.bio.message}
                       </p>
                     )}
+                    <p className="text-xs text-muted-foreground text-right">
+                      {profileForm.watch("bio")?.length || 0}/1000 characters
+                    </p>
                   </div>
 
-                  <Separator />
-
-                  <Button
-                    type="button"
-                    disabled={saving || submissionInProgress.current}
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      if (!submissionInProgress.current && !saving) {
-                        const formData = profileForm.getValues();
-                        const isValid = await profileForm.trigger(); // Validate form
-                        if (isValid) {
-                          await onProfileSubmit(formData);
+                  <div className="flex justify-end pt-4">
+                    <Button
+                      type="button"
+                      size="lg"
+                      className="rounded-full px-8 shadow-lg hover:shadow-xl transition-all"
+                      disabled={saving || submissionInProgress.current}
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        if (!submissionInProgress.current && !saving) {
+                          const formData = profileForm.getValues();
+                          const isValid = await profileForm.trigger();
+                          if (isValid) {
+                            await onProfileSubmit(formData);
+                          } else {
+                            toast.error("Please fix form errors before submitting");
+                          }
                         } else {
-                          toast.error(
-                            "Please fix form errors before submitting",
-                          );
+                          toast.error("Please wait, submission in progress...");
                         }
-                      } else {
-                        toast.error("Please wait, submission in progress...");
-                      }
-                    }}
-                  >
-                    {saving ? (
-                      <LoadingSpinner size="sm" className="mr-2" />
-                    ) : (
-                      <Save className="h-4 w-4 mr-2" />
-                    )}
-                    {saving ? "Saving..." : "Save Profile"}
-                  </Button>
+                      }}
+                    >
+                      {saving ? (
+                        <>
+                          <LoadingSpinner size="sm" className="mr-2" />
+                          Saving Changes...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="mr-2 h-4 w-4" />
+                          Save Changes
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </form>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="account">
-            <Card>
+          <TabsContent value="account" className="animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
+            <Card className="border-none shadow-md">
               <CardHeader>
-                <CardTitle>Account Information</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5 text-primary" />
+                  Account Information
+                </CardTitle>
                 <CardDescription>
-                  Your account details (read-only). Contact support to update.
+                  Manage your personal account details
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="username">Username</Label>
                     <Input
                       id="username"
+                      disabled={true}
                       {...accountForm.register("username")}
-                      disabled
-                      className="bg-muted cursor-not-allowed"
+                      className="bg-muted/50"
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Username cannot be changed
+                    </p>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="email">Email Address</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      {...accountForm.register("email")}
-                      disabled
-                      className="bg-muted cursor-not-allowed"
-                    />
-                  </div>
-
-                  {/* Email Verification Status */}
-                  {vendor?.emailVerified ? (
-                    <div className="p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-900">
-                      <div className="flex items-start gap-3">
-                        <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
-                        <div>
-                          <h4 className="font-semibold text-green-900 dark:text-green-100">
-                            Email Verified
-                          </h4>
-                          <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                            Your email address has been successfully verified.
-                            You'll receive all important notifications.
-                          </p>
+                    <div className="flex gap-2">
+                      <Input
+                        id="email"
+                        disabled={true}
+                        {...accountForm.register("email")}
+                        className="bg-muted/50"
+                      />
+                      {vendor?.emailVerified ? (
+                        <div className="flex items-center justify-center px-3 py-2 bg-green-100 text-green-700 rounded-md border border-green-200 shrink-0" title="Email Verified">
+                          <CheckCircle className="h-5 w-5" />
                         </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-900">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex items-start gap-3 flex-1">
-                          <Mail className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-blue-900 dark:text-blue-100">
-                              Email Verification Required
-                            </h4>
-                            <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                              Verify your email address to ensure you receive
-                              important notifications and updates about your
-                              vendor account.
-                            </p>
-                          </div>
-                        </div>
+                      ) : (
                         <Button
                           type="button"
                           variant="outline"
-                          size="sm"
                           onClick={openVerificationDialog}
-                          className="whitespace-nowrap"
+                          className="shrink-0 border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800"
                         >
-                          <ShieldCheck className="h-4 w-4 mr-2" />
-                          Verify Email
+                          Verify
                         </Button>
-                      </div>
+                      )}
                     </div>
-                  )}
-
-                  <div className="p-4 bg-muted/50 rounded-lg border">
-                    <p className="text-sm text-muted-foreground">
-                      <strong>Note:</strong> Account information cannot be
-                      changed at this time. If you need to update your username
-                      or email, please contact support.
-                    </p>
                   </div>
+                </div>
+
+                <div className="rounded-xl bg-muted/30 p-4 border border-border/50">
+                  <h4 className="font-medium mb-2 flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-primary" />
+                    Security
+                  </h4>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    To change your password or update sensitive account information, please contact support.
+                  </p>
+                  <Button variant="outline" size="sm" asChild>
+                    <a href="mailto:support@planero.com">Contact Support</a>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="settings">
-            <Card>
+          <TabsContent value="settings" className="animate-in fade-in-50 slide-in-from-bottom-4 duration-500">
+            <Card className="border-none shadow-md">
               <CardHeader>
-                <CardTitle>Visibility & Notifications</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-5 w-5 text-primary" />
+                  Visibility & Notifications
+                </CardTitle>
                 <CardDescription>
-                  Control how your profile appears and manage notification
-                  preferences
+                  Control how your profile appears and how we contact you
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form
                   onSubmit={settingsForm.handleSubmit(onSettingsSubmit)}
-                  className="space-y-6"
+                  className="space-y-8"
                 >
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="space-y-1">
-                        <Label>Profile Visibility</Label>
+                    <h3 className="text-lg font-medium">Profile Visibility</h3>
+                    <div className="flex items-center justify-between rounded-xl border p-4 shadow-sm">
+                      <div className="space-y-0.5">
+                        <Label className="text-base">Publish Profile</Label>
                         <p className="text-sm text-muted-foreground">
-                          Make your profile visible to the public
+                          Make your profile visible to customers on the platform
                         </p>
                       </div>
                       <Switch
-                        {...settingsForm.register("isPublished")}
-                        disabled={!vendor?.isApproved}
+                        checked={settingsForm.watch("isPublished")}
+                        onCheckedChange={(checked) =>
+                          settingsForm.setValue("isPublished", checked)
+                        }
+                        disabled={saving || !vendor?.isApproved}
                       />
                     </div>
-
                     {!vendor?.isApproved && (
-                      <p className="text-sm text-muted-foreground">
-                        Profile visibility will be available after admin
-                        approval
-                      </p>
+                      <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-100">
+                        <AlertCircle className="h-4 w-4" />
+                        <span>You must be approved before you can publish your profile.</span>
+                      </div>
                     )}
-
-                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="space-y-1">
-                        <Label>Email Notifications</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Receive notifications via email
-                        </p>
-                      </div>
-                      <Switch
-                        {...settingsForm.register("emailNotifications")}
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="space-y-1">
-                        <Label>SMS Notifications</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Receive notifications via SMS
-                        </p>
-                      </div>
-                      <Switch {...settingsForm.register("smsNotifications")} />
-                    </div>
                   </div>
 
                   <Separator />
 
-                  <Button type="submit" disabled={saving}>
-                    {saving ? (
-                      <LoadingSpinner size="sm" className="mr-2" />
-                    ) : (
-                      <Save className="h-4 w-4 mr-2" />
-                    )}
-                    Save Settings
-                  </Button>
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Notifications</h3>
+                    <div className="flex items-center justify-between rounded-xl border p-4 shadow-sm">
+                      <div className="space-y-0.5">
+                        <Label className="text-base">Email Notifications</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Receive emails about new inquiries and bookings
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settingsForm.watch("emailNotifications")}
+                        onCheckedChange={(checked) =>
+                          settingsForm.setValue("emailNotifications", checked)
+                        }
+                        disabled={saving}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between rounded-xl border p-4 shadow-sm">
+                      <div className="space-y-0.5">
+                        <Label className="text-base">SMS Notifications</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Receive text messages for urgent updates
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settingsForm.watch("smsNotifications")}
+                        onCheckedChange={(checked) =>
+                          settingsForm.setValue("smsNotifications", checked)
+                        }
+                        disabled={saving}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-4">
+                    <Button
+                      type="submit"
+                      disabled={saving}
+                      size="lg"
+                      className="rounded-full px-8 shadow-lg hover:shadow-xl transition-all"
+                    >
+                      {saving ? (
+                        <>
+                          <LoadingSpinner size="sm" className="mr-2" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="mr-2 h-4 w-4" />
+                          Save Settings
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </form>
               </CardContent>
             </Card>
@@ -973,23 +1039,20 @@ export default function VendorProfile() {
         </Tabs>
       </div>
 
-      {/* Email Verification Dialog */}
-      <Dialog
-        open={showVerificationDialog}
-        onOpenChange={setShowVerificationDialog}
-      >
+      <Dialog open={showVerificationDialog} onOpenChange={setShowVerificationDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Verify Your Email</DialogTitle>
+            <DialogTitle>Verify Email Address</DialogTitle>
             <DialogDescription>
-              We'll send a verification code to your email address
+              We'll send a verification code to {vendor?.email}
             </DialogDescription>
           </DialogHeader>
-          <EmailVerification
-            email={vendor?.email || ""}
-            onVerificationComplete={handleVerificationComplete}
-            showEmailInput={false}
-          />
+          {vendor?.email && (
+            <EmailVerification
+              email={vendor.email}
+              onVerificationComplete={handleVerificationComplete}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>

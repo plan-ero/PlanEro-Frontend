@@ -1,16 +1,19 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 interface StructuredDataProps {
   data: any;
   id?: string;
 }
 
-export function StructuredData({ data, id = 'structured-data' }: StructuredDataProps) {
+export function StructuredData({
+  data,
+  id = "structured-data",
+}: StructuredDataProps) {
   useEffect(() => {
     // Only run on client side to avoid hydration issues
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       // Remove existing structured data if it exists
       const existingScript = document.getElementById(id);
       if (existingScript) {
@@ -18,16 +21,16 @@ export function StructuredData({ data, id = 'structured-data' }: StructuredDataP
       }
 
       // Add new structured data
-      const script = document.createElement('script');
+      const script = document.createElement("script");
       script.id = id;
-      script.type = 'application/ld+json';
+      script.type = "application/ld+json";
       script.innerHTML = JSON.stringify(data, null, 2);
       document.head.appendChild(script);
     }
 
     // Cleanup function
     return () => {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         const script = document.getElementById(id);
         if (script) {
           script.remove();
@@ -40,7 +43,10 @@ export function StructuredData({ data, id = 'structured-data' }: StructuredDataP
 }
 
 // Static variant for server-side rendering
-export function StaticStructuredData({ data, id = 'structured-data' }: StructuredDataProps) {
+export function StaticStructuredData({
+  data,
+  id = "structured-data",
+}: StructuredDataProps) {
   return (
     <script
       id={id}

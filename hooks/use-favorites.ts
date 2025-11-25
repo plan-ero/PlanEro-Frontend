@@ -8,7 +8,7 @@ interface FavoriteItem {
   name: string;
   price?: number;
   image: string;
-  type: "venue" | "service";
+  type: "venue" | "service" | "vendor";
 }
 
 export function useFavorites() {

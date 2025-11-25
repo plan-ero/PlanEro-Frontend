@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { TransitionLink } from "@/components/transition-link";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -147,9 +147,8 @@ export function MegaMenu({ isMobile = false, onClose }: MegaMenuProps) {
               >
                 <span>{item.label}</span>
                 <ChevronDown
-                  className={`h-4 w-4 transition-transform ${
-                    expandedMobile === item.label ? "rotate-180" : ""
-                  }`}
+                  className={`h-4 w-4 transition-transform ${expandedMobile === item.label ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 
@@ -164,7 +163,7 @@ export function MegaMenu({ isMobile = false, onClose }: MegaMenuProps) {
                   >
                     <div className="pl-4 pr-2 py-2 space-y-1">
                       {item.subcategories.map((sub) => (
-                        <Link
+                        <TransitionLink
                           key={sub.name}
                           href={sub.href}
                           onClick={onClose}
@@ -176,7 +175,7 @@ export function MegaMenu({ isMobile = false, onClose }: MegaMenuProps) {
                               {sub.count}
                             </span>
                           )} */}
-                        </Link>
+                        </TransitionLink>
                       ))}
                     </div>
                   </motion.div>
@@ -199,13 +198,13 @@ export function MegaMenu({ isMobile = false, onClose }: MegaMenuProps) {
           onMouseEnter={() => setHoveredItem(item.label)}
           onMouseLeave={() => setHoveredItem(null)}
         >
-          <Link
+          <TransitionLink
             href={item.href}
             className="flex items-center px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-all duration-200"
           >
             {item.label}
             <ChevronDown className="ml-1 h-3 w-3" />
-          </Link>
+          </TransitionLink>
 
           <AnimatePresence>
             {hoveredItem === item.label && (
@@ -224,7 +223,7 @@ export function MegaMenu({ isMobile = false, onClose }: MegaMenuProps) {
                   </div>
                   <div className="space-y-1 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                     {item.subcategories.map((sub) => (
-                      <Link
+                      <TransitionLink
                         key={sub.name}
                         href={sub.href}
                         className="flex items-center justify-between py-2.5 px-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-all group"
@@ -236,7 +235,7 @@ export function MegaMenu({ isMobile = false, onClose }: MegaMenuProps) {
                           </span>
                         )} */}
                         <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
-                      </Link>
+                      </TransitionLink>
                     ))}
                   </div>
                 </div>

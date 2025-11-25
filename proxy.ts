@@ -1,5 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getBotFromHeaders, getBotHeaders, handleBotRequest } from '@/lib/bot-utils.server';
+import { NextRequest, NextResponse } from "next/server";
+import {
+  getBotFromHeaders,
+  getBotHeaders,
+  handleBotRequest,
+} from "@/lib/bot-utils.server";
 
 export default function proxy(request: NextRequest) {
   // Handle bot-specific requests
@@ -19,21 +23,29 @@ export default function proxy(request: NextRequest) {
   });
 
   // Add security headers for all requests
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-XSS-Protection', '1; mode=block');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-XSS-Protection", "1; mode=block");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
 
   // Bot-specific optimizations
   if (bot) {
     // Add cache headers for social media bots
-    if (['facebookbot', 'twitterbot', 'linkedinbot', 'whatsapp'].includes(bot)) {
-      response.headers.set('Cache-Control', 'public, max-age=86400, stale-while-revalidate=43200');
+    if (
+      ["facebookbot", "twitterbot", "linkedinbot", "whatsapp"].includes(bot)
+    ) {
+      response.headers.set(
+        "Cache-Control",
+        "public, max-age=86400, stale-while-revalidate=43200",
+      );
     }
-    
+
     // Add special headers for search engine bots
-    if (['googlebot', 'bingbot', 'yandexbot', 'duckduckbot'].includes(bot)) {
-      response.headers.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=1800');
+    if (["googlebot", "bingbot", "yandexbot", "duckduckbot"].includes(bot)) {
+      response.headers.set(
+        "Cache-Control",
+        "public, max-age=3600, stale-while-revalidate=1800",
+      );
     }
   }
 
@@ -51,6 +63,6 @@ export const config = {
      * - robots.txt (robots file)
      * - sitemap.xml (sitemap files)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap|sw.js|manifest).*)',
+    "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap|sw.js|manifest).*)",
   ],
 };

@@ -14,7 +14,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { TransitionLink } from "@/components/transition-link";
 import { useReducedMotion, getMotionProps } from "@/hooks/use-reduced-motion";
 
 // Venue categories with their details
@@ -86,9 +86,9 @@ const venueCategories = [
 
 export function VenuesSection() {
   const shouldReduceMotion = useReducedMotion();
-  
+
   return (
-    <section className="py-20 bg-background">
+    <section className="py-10 sm:py-16 md:py-20 bg-background">
       <div className="container mx-auto px-4">
         <motion.div
           {...getMotionProps(shouldReduceMotion, {
@@ -123,7 +123,7 @@ export function VenuesSection() {
                 whileHover: { y: -10 },
               })}
             >
-              <Link href={`/venues/category/${category.id}`}>
+              <TransitionLink href={`/venues/category/${category.id}`}>
                 <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer h-full bg-card border border-border/50 shadow-lg hover:border-primary/20 relative">
                   <div className="relative overflow-hidden">
                     <div
@@ -161,7 +161,7 @@ export function VenuesSection() {
                     <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg pointer-events-none" />
                   </CardContent>
                 </Card>
-              </Link>
+              </TransitionLink>
             </motion.div>
           ))}
         </div>
@@ -181,10 +181,10 @@ export function VenuesSection() {
             className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary hover:text-white transition-all duration-300 transform hover:scale-105"
             asChild
           >
-            <Link href="/venues">
+            <TransitionLink href="/venues">
               <MapPin className="h-5 w-5 mr-2" />
               View All Venues
-            </Link>
+            </TransitionLink>
           </Button>
         </motion.div>
       </div>

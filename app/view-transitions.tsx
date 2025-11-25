@@ -18,7 +18,7 @@ function ViewTransitionsContent({ children }: { children: React.ReactNode }) {
 
 export function ViewTransitions({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={children}>
+    <Suspense fallback={null}>
       <ViewTransitionsContent>{children}</ViewTransitionsContent>
     </Suspense>
   );

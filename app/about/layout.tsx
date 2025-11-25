@@ -3,7 +3,8 @@ import { SEOComponent } from "@/components/seo-component";
 
 export const metadata: Metadata = {
   title: "About Us",
-  description: "Learn more about Planero - your trusted event planning platform for finding perfect venues, vendors, and services.",
+  description:
+    "Learn more about Planero - your trusted event planning platform for finding perfect venues, vendors, and services.",
 };
 
 export default function AboutLayout({
@@ -12,8 +13,8 @@ export default function AboutLayout({
   children: React.ReactNode;
 }) {
   const breadcrumbs = [
-    { name: 'Home', url: '/' },
-    { name: 'About', url: '/about' }
+    { name: "Home", url: "/" },
+    { name: "About", url: "/about" },
   ];
 
   return (

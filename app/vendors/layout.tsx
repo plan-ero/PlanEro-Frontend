@@ -3,7 +3,8 @@ import { SEOComponent } from "@/components/seo-component";
 
 export const metadata: Metadata = {
   title: "Vendors",
-  description: "Discover trusted event vendors and service providers for your special occasion.",
+  description:
+    "Discover trusted event vendors and service providers for your special occasion.",
 };
 
 export default function VendorsLayout({
@@ -12,8 +13,8 @@ export default function VendorsLayout({
   children: React.ReactNode;
 }) {
   const breadcrumbs = [
-    { name: 'Home', url: '/' },
-    { name: 'Vendors', url: '/vendors' }
+    { name: "Home", url: "/" },
+    { name: "Vendors", url: "/vendors" },
   ];
 
   return (

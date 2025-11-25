@@ -8,6 +8,12 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get("category");
     const location = searchParams.get("location");
     const sortBy = searchParams.get("sortBy");
+    const priceTier = searchParams.get("priceTier");
+    const rating = searchParams.get("rating");
+    const availability = searchParams.get("availability");
+    const capacityMin = searchParams.get("capacityMin");
+    const capacityMax = searchParams.get("capacityMax");
+    const amenities = searchParams.get("amenities");
 
     const backendUrl =
       process.env.BACKEND_URL ||
@@ -43,15 +49,15 @@ export async function GET(request: NextRequest) {
               service.serviceType?.toLowerCase(),
             location: service.metadata
               ? (() => {
-                  try {
-                    return (
-                      JSON.parse(service.metadata)?.location ||
-                      "Location not specified"
-                    );
-                  } catch {
-                    return service.metadata || "Location not specified";
-                  }
-                })()
+                try {
+                  return (
+                    JSON.parse(service.metadata)?.location ||
+                    "Location not specified"
+                  );
+                } catch {
+                  return service.metadata || "Location not specified";
+                }
+              })()
               : "Location not specified",
             priceEnum: service.priceEnum || "MODERATE",
             image: service.images?.[0] || "/placeholder.svg",
@@ -62,6 +68,8 @@ export async function GET(request: NextRequest) {
             availability: service.availability ? "Available" : "Unavailable",
             serviceType: service.serviceType,
             eventType: service.eventType,
+            capacity: service.capacity || 0,
+            amenities: service.amenities || [],
           }));
           results.push(...mappedServices);
         }
@@ -101,6 +109,8 @@ export async function GET(request: NextRequest) {
             reviews: 0,
             verified: vendor.approved === true,
             availability: vendor.approved ? "Available" : "Pending Approval",
+            capacity: 0,
+            amenities: [],
           }));
           results.push(...mappedVendors);
         }
@@ -119,10 +129,60 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (location) {
+    if (location && location !== "all") {
       results = results.filter((result) =>
         result.location?.toLowerCase().includes(location.toLowerCase()),
       );
+    }
+
+    if (priceTier && priceTier !== "all") {
+      results = results.filter((result) => {
+        const price = result.priceEnum?.toUpperCase();
+        if (priceTier === "budget") return price === "BUDGET" || price === "CHEAP";
+        if (priceTier === "moderate") return price === "MODERATE";
+        if (priceTier === "premium") return price === "PREMIUM" || price === "EXPENSIVE";
+        if (priceTier === "luxury") return price === "LUXURY";
+        return true;
+      });
+    }
+
+    if (rating) {
+      const minRating = parseInt(rating);
+      if (!isNaN(minRating)) {
+        results = results.filter((result) => (result.rating || 0) >= minRating);
+      }
+    }
+
+    if (availability && availability !== "all") {
+      // Simple check for now, can be expanded
+      if (availability === "today" || availability === "week" || availability === "month") {
+        results = results.filter((result) => result.availability === "Available");
+      }
+    }
+
+    if (capacityMin || capacityMax) {
+      const min = capacityMin ? parseInt(capacityMin) : 0;
+      const max = capacityMax ? parseInt(capacityMax) : Infinity;
+
+      if (!isNaN(min) && !isNaN(max)) {
+        results = results.filter(
+          (result) =>
+            (result.capacity || 0) >= min && (result.capacity || 0) <= max
+        );
+      }
+    }
+
+    if (amenities) {
+      const amenitiesList = amenities.split(",");
+      if (amenitiesList.length > 0) {
+        results = results.filter((result) =>
+          amenitiesList.every((amenity) =>
+            result.amenities?.some((a: string) =>
+              a.toLowerCase().includes(amenity.toLowerCase())
+            )
+          )
+        );
+      }
     }
 
     // Sort results
@@ -133,6 +193,15 @@ export async function GET(request: NextRequest) {
           break;
         case "reviews":
           results.sort((a, b) => (b.reviews || 0) - (a.reviews || 0));
+          break;
+        case "price_low":
+          // Rough sorting based on enum
+          const priceOrder = { BUDGET: 1, MODERATE: 2, PREMIUM: 3, LUXURY: 4 };
+          results.sort((a, b) => (priceOrder[a.priceEnum as keyof typeof priceOrder] || 2) - (priceOrder[b.priceEnum as keyof typeof priceOrder] || 2));
+          break;
+        case "price_high":
+          const priceOrderHigh = { BUDGET: 1, MODERATE: 2, PREMIUM: 3, LUXURY: 4 };
+          results.sort((a, b) => (priceOrderHigh[b.priceEnum as keyof typeof priceOrderHigh] || 2) - (priceOrderHigh[a.priceEnum as keyof typeof priceOrderHigh] || 2));
           break;
         default:
           // Default to relevance/name

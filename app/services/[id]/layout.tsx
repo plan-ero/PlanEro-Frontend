@@ -7,15 +7,16 @@ async function getServiceData(id: string) {
   return {
     id,
     name: `Service ${id}`,
-    description: "Professional event service with competitive pricing and excellent quality.",
+    description:
+      "Professional event service with competitive pricing and excellent quality.",
     images: ["/service-placeholder.jpg"],
     category: "Catering",
     price: 5000,
     vendor: {
       id: "vendor-1",
       name: "Professional Caterers",
-      location: "Mumbai, India"
-    }
+      location: "Mumbai, India",
+    },
   };
 }
 
@@ -25,10 +26,10 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  
+
   // Get service data for metadata
   const service = await getServiceData(id);
-  
+
   return {
     title: `${service.name} - Event Services`,
     description: service.description,
@@ -40,22 +41,25 @@ interface ServiceLayoutProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function ServiceDetailLayout({ children, params }: ServiceLayoutProps) {
+export default async function ServiceDetailLayout({
+  children,
+  params,
+}: ServiceLayoutProps) {
   const { id } = await params;
   const service = await getServiceData(id);
-  
+
   const breadcrumbs = [
-    { name: 'Home', url: '/' },
-    { name: 'Services', url: '/services' },
-    { name: service.name, url: `/services/${id}` }
+    { name: "Home", url: "/" },
+    { name: "Services", url: "/services" },
+    { name: service.name, url: `/services/${id}` },
   ];
 
   return (
     <>
-      <SEOComponent 
-        pageType="service-detail" 
-        data={{ service }} 
-        breadcrumbs={breadcrumbs} 
+      <SEOComponent
+        pageType="service-detail"
+        data={{ service }}
+        breadcrumbs={breadcrumbs}
       />
       {children}
     </>

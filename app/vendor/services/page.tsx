@@ -13,6 +13,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,6 +33,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -63,12 +65,22 @@ import {
   Upload,
   X,
   Image as ImageIcon,
+  MoreVertical,
+  Briefcase,
+  Check
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { StarRating } from "@/components/ui/star-rating";
 import MultiImageUpload from "@/components/multi-image-upload";
 import toast from "react-hot-toast";
 import { getPriceDisplay, PriceEnum } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Service Types Enum based on backend
 enum ServiceType {
@@ -435,152 +447,309 @@ export default function VendorServices() {
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-6xl">
+    <div className="container mx-auto py-8 max-w-7xl px-4">
       <div className="space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-8 rounded-3xl border border-primary/10">
           <div>
-            <h1 className="text-3xl font-bold">Services</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+              My Services
+            </h1>
+            <p className="text-muted-foreground mt-2">
               Manage the services you offer to customers
             </p>
           </div>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={openAddDialog}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Service
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingService ? "Edit Service" : "Add New Service"}
-                </DialogTitle>
-                <DialogDescription>
-                  {editingService
-                    ? "Update your service details"
-                    : "Add a new service to your offerings"}
-                </DialogDescription>
-              </DialogHeader>
+          <Button onClick={openAddDialog} size="lg" className="rounded-full shadow-lg hover:shadow-xl transition-all">
+            <Plus className="h-5 w-5 mr-2" />
+            Add New Service
+          </Button>
+        </div>
 
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Service Name *</Label>
-                    <Input
-                      id="name"
-                      placeholder="e.g., Wedding Photography"
-                      {...form.register("name")}
-                      className={
-                        form.formState.errors.name ? "border-red-500" : ""
-                      }
-                    />
-                    {form.formState.errors.name && (
-                      <p className="text-sm text-red-500">
-                        {form.formState.errors.name.message}
-                      </p>
-                    )}
+        {/* Services Grid */}
+        <AnimatePresence>
+          {services.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <Card className="border-dashed border-2 bg-muted/30">
+                <CardContent className="pt-6 text-center py-20">
+                  <div className="mx-auto w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                    <Briefcase className="h-10 w-10 text-primary" />
                   </div>
+                  <h3 className="text-xl font-semibold mb-2">No Services Added Yet</h3>
+                  <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+                    Start by adding your first service to showcase what you offer to potential clients.
+                  </p>
+                  <Button onClick={openAddDialog} size="lg">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Your First Service
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {services.map((service, index) => {
+                // Fallback to 'PHOTOGRAPHER' if serviceType is missing or invalid
+                const typeKey =
+                  service.serviceType && serviceTypeIcons[service.serviceType]
+                    ? service.serviceType
+                    : ServiceType.PHOTOGRAPHER;
+                const IconComponent = serviceTypeIcons[typeKey] || Tag;
 
-                  <div className="space-y-2">
-                    <Label htmlFor="serviceType">Service Type *</Label>
-                    <Select
-                      value={form.watch("serviceType")}
-                      onValueChange={(value) =>
-                        form.setValue("serviceType", value as ServiceType)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select service type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.values(ServiceType).map((type) => {
-                          const IconComponent = serviceTypeIcons[type];
-                          return (
-                            <SelectItem key={type} value={type}>
-                              <div className="flex items-center gap-2">
-                                <IconComponent className="h-4 w-4" />
-                                {type.replace(/_/g, " ")}
-                              </div>
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                // Get event type icon and fallback
+                const eventTypeKey =
+                  service.eventType && eventTypeIcons[service.eventType]
+                    ? service.eventType
+                    : EventType.WEDDING;
+                const EventIconComponent = eventTypeIcons[eventTypeKey] || Tag;
 
-                  <div className="space-y-2">
-                    <Label htmlFor="eventType">Event Type *</Label>
-                    <Select
-                      value={form.watch("eventType")}
-                      onValueChange={(value) =>
-                        form.setValue("eventType", value as EventType)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select event type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.values(EventType).map((type) => {
-                          const IconComponent = eventTypeIcons[type];
-                          return (
-                            <SelectItem key={type} value={type}>
-                              <div className="flex items-center gap-2">
-                                <IconComponent className="h-4 w-4" />
-                                {type.replace(/_/g, " ")}
-                              </div>
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                // Get price tier icon and fallback
+                const priceKey =
+                  service.priceEnum && priceEnumIcons[service.priceEnum]
+                    ? service.priceEnum
+                    : PriceEnum.MODERATE;
+                const PriceIconComponent = priceEnumIcons[priceKey] || DollarSign;
 
-                  <div className="space-y-2">
-                    <Label htmlFor="priceEnum">Price Tier *</Label>
-                    <Select
-                      value={form.watch("priceEnum")}
-                      onValueChange={(value) =>
-                        form.setValue("priceEnum", value as PriceEnum)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select price tier" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.values(PriceEnum).map((tier) => {
-                          const IconComponent = priceEnumIcons[tier];
-                          return (
-                            <SelectItem key={tier} value={tier}>
-                              <div className="flex items-center gap-2">
-                                <IconComponent className="h-4 w-4" />
-                                {tier.replace(/_/g, " ")}
-                              </div>
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                return (
+                  <motion.div
+                    key={service.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Card className="group hover:shadow-xl transition-all duration-300 border-border/50 overflow-hidden h-full flex flex-col">
+                      {/* Service Image Preview */}
+                      <div className="h-48 bg-muted relative overflow-hidden">
+                        {service.images && service.images.length > 0 ? (
+                          <img
+                            src={service.images[0]}
+                            alt={service.name}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-muted/50">
+                            <IconComponent className="h-12 w-12 text-muted-foreground/30" />
+                          </div>
+                        )}
+                        <div className="absolute top-3 right-3 flex gap-2">
+                          <Badge
+                            variant={service.availability ? "default" : "secondary"}
+                            className={`${service.availability
+                                ? "bg-green-500/90 hover:bg-green-600/90 text-white"
+                                : "bg-gray-500/90 hover:bg-gray-600/90 text-white"
+                              } backdrop-blur-sm shadow-sm`}
+                          >
+                            {service.availability ? "Active" : "Inactive"}
+                          </Badge>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent text-white">
+                          <h3 className="font-bold text-lg truncate">{service.name}</h3>
+                          <div className="flex items-center gap-2 text-sm text-white/80">
+                            <IconComponent className="h-3.5 w-3.5" />
+                            <span>{typeKey.replace(/_/g, " ")}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <CardContent className="flex-1 p-6 space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Event Type</span>
+                            <div className="flex items-center gap-2 text-sm font-medium">
+                              <EventIconComponent className="h-4 w-4 text-primary" />
+                              <span className="truncate">{eventTypeKey.replace(/_/g, " ")}</span>
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Price Tier</span>
+                            <div className="flex items-center gap-2 text-sm font-medium">
+                              <PriceIconComponent className="h-4 w-4 text-primary" />
+                              <span>{priceKey.replace(/_/g, " ")}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {service.totalRating !== undefined && service.numberOfRatings !== undefined && (
+                          <div className="flex items-center gap-2 pt-2 border-t border-border/50">
+                            <div className="flex items-center gap-1 bg-yellow-50 text-yellow-700 px-2 py-1 rounded-md text-sm font-bold">
+                              <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
+                              {service.totalRating.toFixed(1)}
+                            </div>
+                            <span className="text-xs text-muted-foreground">
+                              ({service.numberOfRatings} reviews)
+                            </span>
+                          </div>
+                        )}
+                      </CardContent>
+
+                      <CardFooter className="p-4 bg-muted/30 border-t border-border/50 flex justify-between items-center gap-2">
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            checked={service.availability}
+                            onCheckedChange={() => toggleAvailability(service)}
+                            className="scale-75 data-[state=checked]:bg-green-500"
+                          />
+                          <span className="text-xs text-muted-foreground font-medium">
+                            {service.availability ? "On" : "Off"}
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openEditDialog(service)}
+                            className="h-8 w-8 p-0 rounded-full hover:bg-primary/10 hover:text-primary"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteService(service.id)}
+                            className="h-8 w-8 p-0 rounded-full hover:bg-red-100 hover:text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* Add/Edit Dialog */}
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+                {editingService ? <Edit className="h-6 w-6 text-primary" /> : <Plus className="h-6 w-6 text-primary" />}
+                {editingService ? "Edit Service" : "Add New Service"}
+              </DialogTitle>
+              <DialogDescription>
+                {editingService
+                  ? "Update your service details and pricing"
+                  : "Fill in the details to add a new service to your portfolio"}
+              </DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Service Name *</Label>
+                  <Input
+                    id="name"
+                    placeholder="e.g., Premium Wedding Photography"
+                    {...form.register("name")}
+                    className={form.formState.errors.name ? "border-red-500" : ""}
+                  />
+                  {form.formState.errors.name && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.name.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="metadata">Additional Details</Label>
-                  <Textarea
-                    id="metadata"
-                    placeholder="Include packages, duration, special features, etc."
-                    {...form.register("metadata")}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Add any specific details about this service that customers
-                    should know
-                  </p>
+                  <Label htmlFor="serviceType">Service Type *</Label>
+                  <Select
+                    value={form.watch("serviceType")}
+                    onValueChange={(value) =>
+                      form.setValue("serviceType", value as ServiceType)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select service type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(ServiceType).map((type) => {
+                        const IconComponent = serviceTypeIcons[type];
+                        return (
+                          <SelectItem key={type} value={type}>
+                            <div className="flex items-center gap-2">
+                              <IconComponent className="h-4 w-4" />
+                              {type.replace(/_/g, " ")}
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="eventType">Event Type *</Label>
+                  <Select
+                    value={form.watch("eventType")}
+                    onValueChange={(value) =>
+                      form.setValue("eventType", value as EventType)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select event type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(EventType).map((type) => {
+                        const IconComponent = eventTypeIcons[type];
+                        return (
+                          <SelectItem key={type} value={type}>
+                            <div className="flex items-center gap-2">
+                              <IconComponent className="h-4 w-4" />
+                              {type.replace(/_/g, " ")}
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="priceEnum">Price Tier *</Label>
+                  <Select
+                    value={form.watch("priceEnum")}
+                    onValueChange={(value) =>
+                      form.setValue("priceEnum", value as PriceEnum)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select price tier" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(PriceEnum).map((tier) => {
+                        const IconComponent = priceEnumIcons[tier];
+                        return (
+                          <SelectItem key={tier} value={tier}>
+                            <div className="flex items-center gap-2">
+                              <IconComponent className="h-4 w-4" />
+                              {tier.replace(/_/g, " ")}
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="metadata">Additional Details</Label>
+                <Textarea
+                  id="metadata"
+                  placeholder="Include packages, duration, special features, equipment used, etc."
+                  className="min-h-[100px]"
+                  {...form.register("metadata")}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Provide specific details that help clients understand what's included.
+                </p>
+              </div>
+
+              <div className="space-y-2">
                 <MultiImageUpload
                   label="Service Images (Max 5)"
                   currentImages={form.watch("images") || []}
@@ -589,252 +758,49 @@ export default function VendorServices() {
                   folder="service-images"
                   className="space-y-2"
                 />
-
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="space-y-1">
-                    <Label htmlFor="availability">Service Available</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Toggle availability of this service
-                    </p>
-                  </div>
-                  <Switch
-                    id="availability"
-                    checked={form.watch("availability")}
-                    onCheckedChange={(checked) =>
-                      form.setValue("availability", checked)
-                    }
-                  />
-                </div>
-
-                <Separator />
-
-                <div className="flex justify-end gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setDialogOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={saving}>
-                    {saving ? (
-                      <LoadingSpinner size="sm" className="mr-2" />
-                    ) : null}
-                    {editingService ? "Update Service" : "Add Service"}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        {/* Services Grid */}
-        {services.length === 0 ? (
-          <Card>
-            <CardContent className="pt-6 text-center py-12">
-              <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                <Tag className="h-8 w-8 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">No Services Added</h3>
-              <p className="text-muted-foreground mb-4">
-                Start by adding your first service to showcase what you offer
-              </p>
-              <Button onClick={openAddDialog}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Your First Service
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => {
-              // Fallback to 'PHOTOGRAPHER' if serviceType is missing or invalid
-              const typeKey =
-                service.serviceType && serviceTypeIcons[service.serviceType]
-                  ? service.serviceType
-                  : ServiceType.PHOTOGRAPHER;
-              const IconComponent = serviceTypeIcons[typeKey] || Tag;
 
-              // Get event type icon and fallback
-              const eventTypeKey =
-                service.eventType && eventTypeIcons[service.eventType]
-                  ? service.eventType
-                  : EventType.WEDDING;
-              const EventIconComponent = eventTypeIcons[eventTypeKey] || Tag;
+              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border/50">
+                <div className="space-y-1">
+                  <Label htmlFor="availability" className="text-base">Available for Booking</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Turn this off to temporarily hide this service from search results
+                  </p>
+                </div>
+                <Switch
+                  id="availability"
+                  checked={form.watch("availability")}
+                  onCheckedChange={(checked) =>
+                    form.setValue("availability", checked)
+                  }
+                />
+              </div>
 
-              // Get price tier icon and fallback
-              const priceKey =
-                service.priceEnum && priceEnumIcons[service.priceEnum]
-                  ? service.priceEnum
-                  : PriceEnum.MODERATE;
-              const PriceIconComponent = priceEnumIcons[priceKey] || DollarSign;
-
-              return (
-                <Card
-                  key={service.id}
-                  className="group hover:shadow-lg transition-all duration-200 border-0 shadow-md"
+              <DialogFooter className="pt-4 border-t border-border/50">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setDialogOpen(false)}
                 >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl">
-                          <IconComponent className="h-6 w-6 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <CardTitle className="text-xl font-semibold text-gray-900">
-                            {service.name}
-                          </CardTitle>
-                          <div className="mt-2 space-y-1.5">
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                              <span className="font-medium">Service:</span>
-                              <span>{typeKey.replace(/_/g, " ")}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <EventIconComponent className="h-3.5 w-3.5 text-gray-500" />
-                              <span className="font-medium">Event:</span>
-                              <span>{eventTypeKey.replace(/_/g, " ")}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <PriceIconComponent className="h-3.5 w-3.5 text-gray-500" />
-                              <span className="font-medium">Tier:</span>
-                              <Badge
-                                variant="outline"
-                                className="text-xs px-2 py-0.5 bg-gray-50"
-                              >
-                                {priceKey.replace(/_/g, " ")}
-                              </Badge>
-                            </div>
-                            {service.totalRating !== undefined &&
-                              service.numberOfRatings !== undefined && (
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                  <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" />
-                                  <span className="font-medium">Rating:</span>
-                                  <StarRating
-                                    rating={service.totalRating || 0}
-                                    readonly
-                                    size="sm"
-                                  />
-                                  <span className="text-xs text-gray-500">
-                                    ({service.numberOfRatings} reviews)
-                                  </span>
-                                </div>
-                              )}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-end gap-2">
-                        <Badge
-                          variant={
-                            service.availability ? "default" : "secondary"
-                          }
-                          className={
-                            service.availability
-                              ? "bg-green-100 text-green-800 border-green-200"
-                              : ""
-                          }
-                        >
-                          {service.availability ? "Available" : "Unavailable"}
-                        </Badge>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4 pt-0">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-green-100 rounded-lg">
-                          <DollarSign className="h-4 w-4 text-green-600" />
-                        </div>
-                        <div>
-                          <span className="text-lg font-bold text-gray-900">
-                            {getPriceDisplay(service.priceEnum)}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">
-                          Available:
-                        </span>
-                        <Switch
-                          checked={service.availability}
-                          onCheckedChange={() => toggleAvailability(service)}
-                          className="data-[state=checked]:bg-green-500"
-                        />
-                      </div>
-                    </div>
-
-                    {service.images && service.images.length > 0 && (
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                          <ImageIcon className="h-4 w-4" />
-                          Service Images ({service.images.length})
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          {service.images.slice(0, 4).map((imageUrl, index) => (
-                            <div key={index} className="relative group">
-                              <img
-                                src={imageUrl}
-                                alt={`${service.name} image ${index + 1}`}
-                                className="w-full h-20 object-cover rounded-lg border border-gray-200"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.style.display = "none";
-                                }}
-                              />
-                              {index === 3 &&
-                                service.images &&
-                                service.images.length > 4 && (
-                                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
-                                    <span className="text-white text-sm font-medium">
-                                      +{service.images.length - 3} more
-                                    </span>
-                                  </div>
-                                )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {service.metadata && (
-                      <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-                        <p className="text-sm text-blue-800 leading-relaxed">
-                          {service.metadata}
-                        </p>
-                      </div>
-                    )}
-
-                    <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                      <div className="text-xs text-gray-400">
-                        Service ID: {service.id}
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700"
-                          onClick={() => openEditDialog(service)}
-                        >
-                          <Edit className="h-3 w-3 mr-1.5" />
-                          Edit
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="hover:bg-red-50 hover:border-red-200 hover:text-red-700"
-                          onClick={() => deleteService(service.id)}
-                        >
-                          <Trash2 className="h-3 w-3 mr-1.5" />
-                          Delete
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        )}
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={saving} className="min-w-[120px]">
+                  {saving ? (
+                    <>
+                      <LoadingSpinner size="sm" className="mr-2" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="mr-2 h-4 w-4" />
+                      {editingService ? "Update Service" : "Add Service"}
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

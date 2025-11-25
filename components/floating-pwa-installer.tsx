@@ -15,20 +15,21 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function FloatingPWAInstaller() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
     // Check if user already dismissed the prompt
-    const dismissed = localStorage.getItem('pwa-prompt-dismissed');
+    const dismissed = localStorage.getItem("pwa-prompt-dismissed");
     if (dismissed) {
       setIsDismissed(true);
       return;
     }
 
     // Check if app is already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (window.matchMedia("(display-mode: standalone)").matches) {
       return;
     }
 
@@ -45,12 +46,18 @@ export function FloatingPWAInstaller() {
       setDeferredPrompt(null);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt as EventListener);
-    window.addEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener(
+      "beforeinstallprompt",
+      handleBeforeInstallPrompt as EventListener,
+    );
+    window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt as EventListener);
-      window.removeEventListener('appinstalled', handleAppInstalled);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt as EventListener,
+      );
+      window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
 
@@ -59,8 +66,8 @@ export function FloatingPWAInstaller() {
 
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
+
+    if (outcome === "accepted") {
       setIsVisible(false);
       setDeferredPrompt(null);
     }
@@ -69,7 +76,7 @@ export function FloatingPWAInstaller() {
   const handleDismiss = () => {
     setIsVisible(false);
     setIsDismissed(true);
-    localStorage.setItem('pwa-prompt-dismissed', 'true');
+    localStorage.setItem("pwa-prompt-dismissed", "true");
   };
 
   if (!isVisible || isDismissed) {
@@ -93,18 +100,20 @@ export function FloatingPWAInstaller() {
           >
             <X className="w-4 h-4" />
           </button>
-          
+
           <div className="flex items-start space-x-3 pr-6">
             <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
               <Smartphone className="w-5 h-5" />
             </div>
-            
+
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-sm mb-1">Install PlanEro App</h3>
+              <h3 className="font-semibold text-sm mb-1">
+                Install PlanEro App
+              </h3>
               <p className="text-xs text-blue-100 mb-3">
                 Get faster access and work offline
               </p>
-              
+
               <div className="flex space-x-2">
                 <Button
                   onClick={handleInstallClick}
@@ -114,7 +123,7 @@ export function FloatingPWAInstaller() {
                   <Download className="w-3 h-3 mr-1" />
                   Install
                 </Button>
-                
+
                 <Button
                   onClick={handleDismiss}
                   variant="ghost"

@@ -20,12 +20,16 @@ export function VenuesSEO({ venues = [], totalCount }: VenuesSEOProps) {
   if (!isBot) return null;
 
   return (
-    <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }} aria-hidden="true">
+    <div
+      style={{ position: "absolute", left: "-9999px", top: "-9999px" }}
+      aria-hidden="true"
+    >
       <header>
         <h1>Event Venues - PlanEro</h1>
         <p>
-          Discover {totalCount ? `${totalCount}+` : 'beautiful'} event venues for your special occasions. 
-          Wedding halls, banquet halls, outdoor spaces, and more.
+          Discover {totalCount ? `${totalCount}+` : "beautiful"} event venues
+          for your special occasions. Wedding halls, banquet halls, outdoor
+          spaces, and more.
         </p>
       </header>
 
@@ -33,9 +37,10 @@ export function VenuesSEO({ venues = [], totalCount }: VenuesSEOProps) {
         <section>
           <h2>About Our Venues</h2>
           <p>
-            Browse our curated selection of event venues perfect for weddings, corporate events, 
-            parties, and celebrations. Each venue is verified and features detailed information 
-            about capacity, amenities, and availability.
+            Browse our curated selection of event venues perfect for weddings,
+            corporate events, parties, and celebrations. Each venue is verified
+            and features detailed information about capacity, amenities, and
+            availability.
           </p>
         </section>
 
@@ -62,7 +67,9 @@ export function VenuesSEO({ venues = [], totalCount }: VenuesSEOProps) {
                     <h3>{venue.name}</h3>
                     <address>{venue.location}</address>
                     {venue.description && <p>{venue.description}</p>}
-                    {venue.capacity && <p>Capacity: Up to {venue.capacity} guests</p>}
+                    {venue.capacity && (
+                      <p>Capacity: Up to {venue.capacity} guests</p>
+                    )}
                     {venue.amenities && venue.amenities.length > 0 && (
                       <>
                         <h4>Amenities:</h4>
@@ -74,7 +81,7 @@ export function VenuesSEO({ venues = [], totalCount }: VenuesSEOProps) {
                       </>
                     )}
                     {venue.eventTypes && venue.eventTypes.length > 0 && (
-                      <p>Suitable for: {venue.eventTypes.join(', ')}</p>
+                      <p>Suitable for: {venue.eventTypes.join(", ")}</p>
                     )}
                   </article>
                 </li>

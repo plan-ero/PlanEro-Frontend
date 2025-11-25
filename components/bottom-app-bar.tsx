@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { TransitionLink } from "@/components/transition-link";
 import { usePathname } from "next/navigation";
 import { Home, Users, Gift, Search, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -12,11 +12,12 @@ export function BottomAppBar() {
 
   useEffect(() => {
     setIsMounted(true);
-    
+
     // Check if app is installed (PWA mode)
-    if (typeof window !== 'undefined') {
-      const standalone = window.matchMedia('(display-mode: standalone)').matches ||
-                        (navigator as any).standalone === true;
+    if (typeof window !== "undefined") {
+      const standalone =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        (navigator as any).standalone === true;
       setIsInstalled(standalone);
     }
   }, []);
@@ -48,18 +49,19 @@ export function BottomAppBar() {
       <div className="max-w-4xl mx-auto px-2 flex items-center justify-between h-14">
         {tabs.map((tab) => {
           const Icon = tab.icon;
-          const active = pathname === tab.href || (tab.href !== "/" && pathname?.startsWith(tab.href));
+          const active =
+            pathname === tab.href ||
+            (tab.href !== "/" && pathname?.startsWith(tab.href));
           return (
-            <Link
+            <TransitionLink
               key={tab.href}
               href={tab.href}
-              className={`flex-1 flex flex-col items-center justify-center py-2 text-xs ${
-                active ? "text-primary" : "text-muted-foreground"
-              }`}
+              className={`flex-1 flex flex-col items-center justify-center py-2 text-xs ${active ? "text-primary" : "text-muted-foreground"
+                }`}
             >
               <Icon className="h-5 w-5 mb-1" />
               <span className="truncate">{tab.label}</span>
-            </Link>
+            </TransitionLink>
           );
         })}
       </div>

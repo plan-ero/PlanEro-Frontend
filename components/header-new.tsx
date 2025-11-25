@@ -3,7 +3,6 @@
 import type React from "react";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { TransitionLink } from "@/components/transition-link";
 import { useRouter } from "next/navigation";
 import {
@@ -69,11 +68,10 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        isScrolled
+      className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled
           ? "bg-background/95 backdrop-blur-md shadow-lg border-b border-border/50"
           : "bg-background/80 backdrop-blur-sm border-b border-border/30"
-      }`}
+        }`}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 lg:h-18">
@@ -99,13 +97,13 @@ export function Header() {
           {/* Additional Links */}
           <nav className="hidden md:flex items-center space-x-1 ml-2">
             {[{ href: "/about", label: "About" }].map((item) => (
-              <Link
+              <TransitionLink
                 key={item.href}
                 href={item.href}
                 className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-all duration-200"
               >
                 {item.label}
-              </Link>
+              </TransitionLink>
             ))}
           </nav>
 
@@ -118,9 +116,8 @@ export function Header() {
               transition={{ duration: 0.2 }}
             >
               <div
-                className={`relative transition-all duration-300 ${
-                  isSearchFocused ? "shadow-lg" : "shadow-sm"
-                }`}
+                className={`relative transition-all duration-300 ${isSearchFocused ? "shadow-lg" : "shadow-sm"
+                  }`}
               >
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 transition-colors" />
                 <Input
@@ -289,7 +286,10 @@ export function Header() {
 
       {/* Mobile Menu Sheet */}
       <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-        <SheetContent side="left" className="w-full sm:max-w-md p-0 overflow-y-auto">
+        <SheetContent
+          side="left"
+          className="w-full sm:max-w-md p-0 overflow-y-auto"
+        >
           <SheetHeader className="px-6 py-4 border-b border-border bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
             <SheetTitle className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -309,17 +309,17 @@ export function Header() {
 
               {/* Additional Mobile Links */}
               <div className="px-4 py-4 border-t border-border">
-                <Link
+                <TransitionLink
                   href="/about"
                   className="block py-3 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   About
-                </Link>
+                </TransitionLink>
               </div>
 
-            {/* Mobile Actions */}
-            <div className="px-4 flex flex-col space-y-4 py-4 border-t border-border/50">
+              {/* Mobile Actions */}
+              <div className="px-4 flex flex-col space-y-4 py-4 border-t border-border/50">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-muted-foreground">
                     Settings

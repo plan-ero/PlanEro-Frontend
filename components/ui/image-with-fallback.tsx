@@ -56,9 +56,13 @@ export function ImageWithFallback({
 
   if (hasError && showPlaceholder) {
     return (
-      <div 
+      <div
         className={`bg-muted flex items-center justify-center ${className}`}
-        style={fill ? { position: 'absolute', inset: 0 } : { width, height, ...style }}
+        style={
+          fill
+            ? { position: "absolute", inset: 0 }
+            : { width, height, ...style }
+        }
       >
         <ImageIcon className="h-8 w-8 text-muted-foreground" />
       </div>
@@ -68,7 +72,7 @@ export function ImageWithFallback({
   return (
     <>
       {isLoading && showPlaceholder && (
-        <div 
+        <div
           className={`absolute inset-0 bg-muted animate-pulse flex items-center justify-center ${className}`}
         >
           <ImageIcon className="h-8 w-8 text-muted-foreground" />

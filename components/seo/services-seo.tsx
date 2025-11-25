@@ -15,18 +15,29 @@ interface ServicesSEOProps {
   category?: string;
 }
 
-export function ServicesSEO({ services = [], totalCount, category }: ServicesSEOProps) {
+export function ServicesSEO({
+  services = [],
+  totalCount,
+  category,
+}: ServicesSEOProps) {
   const isBot = useIsBot();
 
   if (!isBot) return null;
 
   return (
-    <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }} aria-hidden="true">
+    <div
+      style={{ position: "absolute", left: "-9999px", top: "-9999px" }}
+      aria-hidden="true"
+    >
       <header>
-        <h1>{category ? `${category} Services` : 'Event Services'} - PlanEro</h1>
+        <h1>
+          {category ? `${category} Services` : "Event Services"} - PlanEro
+        </h1>
         <p>
-          Find professional event services for your special occasions. {totalCount ? `${totalCount}+` : 'Browse'} 
-          verified service providers including venues, catering, photography, entertainment, and more.
+          Find professional event services for your special occasions.{" "}
+          {totalCount ? `${totalCount}+` : "Browse"}
+          verified service providers including venues, catering, photography,
+          entertainment, and more.
         </p>
       </header>
 
@@ -34,9 +45,10 @@ export function ServicesSEO({ services = [], totalCount, category }: ServicesSEO
         <section>
           <h2>About Our Services</h2>
           <p>
-            PlanEro offers a comprehensive directory of event services for all types of occasions. 
-            Whether you need a venue, catering, photography, entertainment, or decoration services, 
-            find verified and reviewed professionals ready to make your event unforgettable.
+            PlanEro offers a comprehensive directory of event services for all
+            types of occasions. Whether you need a venue, catering, photography,
+            entertainment, or decoration services, find verified and reviewed
+            professionals ready to make your event unforgettable.
           </p>
         </section>
 
@@ -56,7 +68,7 @@ export function ServicesSEO({ services = [], totalCount, category }: ServicesSEO
 
         {services.length > 0 && (
           <section>
-            <h2>{category ? `${category} Services` : 'Available Services'}</h2>
+            <h2>{category ? `${category} Services` : "Available Services"}</h2>
             <ul>
               {services.map((service, index) => (
                 <li key={index}>
@@ -64,10 +76,12 @@ export function ServicesSEO({ services = [], totalCount, category }: ServicesSEO
                     <h3>{service.name}</h3>
                     <p>Service Type: {service.serviceType}</p>
                     {service.description && <p>{service.description}</p>}
-                    {service.location && <address>Location: {service.location}</address>}
+                    {service.location && (
+                      <address>Location: {service.location}</address>
+                    )}
                     {service.price && <p>Price: {service.price}</p>}
                     {service.eventTypes && service.eventTypes.length > 0 && (
-                      <p>Suitable for: {service.eventTypes.join(', ')}</p>
+                      <p>Suitable for: {service.eventTypes.join(", ")}</p>
                     )}
                   </article>
                 </li>

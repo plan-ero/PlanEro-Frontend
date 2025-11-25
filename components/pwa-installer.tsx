@@ -2,11 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { RefreshCw, Download } from "lucide-react";
 
 export function PWAInstaller() {
-  const [swRegistration, setSwRegistration] = useState<ServiceWorkerRegistration | null>(null);
+  const [swRegistration, setSwRegistration] =
+    useState<ServiceWorkerRegistration | null>(null);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -20,7 +27,7 @@ export function PWAInstaller() {
     try {
       const registration = await navigator.serviceWorker.register("/sw.js", {
         scope: "/",
-        updateViaCache: "none" // Always check for updates
+        updateViaCache: "none", // Always check for updates
       });
 
       setSwRegistration(registration);
@@ -34,7 +41,10 @@ export function PWAInstaller() {
         const newWorker = registration.installing;
         if (newWorker) {
           newWorker.addEventListener("statechange", () => {
-            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+            if (
+              newWorker.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
               console.log("[PWA] New service worker available");
               setUpdateAvailable(true);
             }
@@ -55,11 +65,13 @@ export function PWAInstaller() {
       });
 
       // Check for updates every 30 minutes
-      setInterval(() => {
-        console.log("[PWA] Checking for service worker updates");
-        registration.update();
-      }, 30 * 60 * 1000);
-
+      setInterval(
+        () => {
+          console.log("[PWA] Checking for service worker updates");
+          registration.update();
+        },
+        30 * 60 * 1000,
+      );
     } catch (error) {
       console.error("[PWA] Service Worker registration failed:", error);
     }
@@ -69,17 +81,16 @@ export function PWAInstaller() {
     if (!swRegistration || !swRegistration.waiting) return;
 
     setIsUpdating(true);
-    
+
     try {
       // Tell the waiting service worker to skip waiting
       swRegistration.waiting.postMessage({ type: "SKIP_WAITING" });
-      
+
       // The controllerchange event will trigger a page reload
       setTimeout(() => {
         setIsUpdating(false);
         setUpdateAvailable(false);
       }, 2000);
-      
     } catch (error) {
       console.error("[PWA] Update failed:", error);
       setIsUpdating(false);
@@ -99,11 +110,12 @@ export function PWAInstaller() {
           </CardHeader>
           <CardContent className="pt-0">
             <CardDescription className="text-xs mb-3">
-              A new version of Planero is ready. Update now for the latest features and improvements.
+              A new version of Planero is ready. Update now for the latest
+              features and improvements.
             </CardDescription>
             <div className="flex gap-2">
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 onClick={handleUpdate}
                 disabled={isUpdating}
                 className="flex-1"
@@ -120,8 +132,8 @@ export function PWAInstaller() {
                   </>
                 )}
               </Button>
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 variant="outline"
                 onClick={() => setUpdateAvailable(false)}
                 disabled={isUpdating}

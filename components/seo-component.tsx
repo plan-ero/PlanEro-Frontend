@@ -1,21 +1,34 @@
-'use client';
+"use client";
 
-import { StaticStructuredData } from './structured-data';
-import { 
-  generateWebsiteSchema, 
+import { StaticStructuredData } from "./structured-data";
+import {
+  generateWebsiteSchema,
   generateOrganizationSchema,
   generateVenueSchema,
   generateServiceSchema,
-  generateBreadcrumbSchema
-} from '../lib/seo';
+  generateBreadcrumbSchema,
+} from "../lib/seo";
 
 interface SEOComponentProps {
-  pageType?: 'home' | 'venues' | 'vendors' | 'services' | 'search' | 'about' | 'venue-detail' | 'vendor-detail' | 'service-detail';
+  pageType?:
+    | "home"
+    | "venues"
+    | "vendors"
+    | "services"
+    | "search"
+    | "about"
+    | "venue-detail"
+    | "vendor-detail"
+    | "service-detail";
   data?: any;
-  breadcrumbs?: Array<{name: string, url: string}>;
+  breadcrumbs?: Array<{ name: string; url: string }>;
 }
 
-export function SEOComponent({ pageType = 'home', data, breadcrumbs }: SEOComponentProps) {
+export function SEOComponent({
+  pageType = "home",
+  data,
+  breadcrumbs,
+}: SEOComponentProps) {
   const schemas = [];
 
   // Always include website and organization schemas
@@ -24,18 +37,18 @@ export function SEOComponent({ pageType = 'home', data, breadcrumbs }: SEOCompon
 
   // Add page-specific schemas
   switch (pageType) {
-    case 'venue-detail':
+    case "venue-detail":
       if (data?.venue) {
         schemas.push(generateVenueSchema(data.venue));
       }
       break;
-    
-    case 'service-detail':
+
+    case "service-detail":
       if (data?.service) {
         schemas.push(generateServiceSchema(data.service));
       }
       break;
-    
+
     default:
       // No additional schemas for list pages
       break;

@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { TransitionLink } from "@/components/transition-link";
 import { useRef } from "react";
 import {
   Camera,
@@ -171,7 +171,7 @@ export function VendorTeamSection() {
   };
 
   return (
-    <section className="py-20 bg-background">
+    <section className="py-10 sm:py-16 md:py-20 bg-background">
       <div className="container mx-auto px-4">
         <motion.div
           {...getMotionProps(shouldReduceMotion, {
@@ -214,10 +214,10 @@ export function VendorTeamSection() {
           <div className="relative flex-1 overflow-hidden">
             <div
               ref={scrollContainerRef}
-                className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
-              style={{ 
+              className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
+              style={{
                 overscrollBehavior: "contain auto",
-                touchAction: "pan-x pan-y"
+                touchAction: "pan-x pan-y",
               }}
             >
               <div className="flex gap-6 px-4">
@@ -235,7 +235,7 @@ export function VendorTeamSection() {
                       className="flex-shrink-0 w-80"
                     >
                       <Card className="group/card hover:shadow-2xl transition-all duration-500 h-full shadow-lg overflow-hidden border border-border/50 hover:border-primary/50 cursor-pointer">
-                        <Link href={vendor.href}>
+                        <TransitionLink href={vendor.href}>
                           {/* Image Card - Prominent Image Display */}
                           <div className="relative h-64 overflow-hidden">
                             <div
@@ -277,7 +277,7 @@ export function VendorTeamSection() {
                               <ArrowRight className="h-4 w-4 ml-2 group-hover/card:translate-x-1 transition-transform duration-300" />
                             </Button>
                           </CardContent>
-                        </Link>
+                        </TransitionLink>
                       </Card>
                     </motion.div>
                   );
@@ -311,23 +311,15 @@ export function VendorTeamSection() {
             asChild
             className="px-8 py-4 text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
-            <Link href="/vendors">
+            <TransitionLink href="/vendors">
               Browse All Vendors
               <ArrowRight className="h-5 w-5 ml-2" />
-            </Link>
+            </TransitionLink>
           </Button>
         </motion.div>
       </div>
 
-      <style jsx global>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
+
     </section>
   );
 }

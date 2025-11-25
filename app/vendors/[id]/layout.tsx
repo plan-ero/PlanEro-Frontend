@@ -7,11 +7,12 @@ async function getVendorData(id: string) {
   return {
     id,
     name: `Vendor ${id}`,
-    description: "Professional event vendor providing quality services with years of experience.",
+    description:
+      "Professional event vendor providing quality services with years of experience.",
     location: "Mumbai, India",
     images: ["/vendor-placeholder.jpg"],
     category: "Photography",
-    rating: 4.8
+    rating: 4.8,
   };
 }
 
@@ -21,10 +22,10 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  
+
   // Get vendor data for metadata
   const vendor = await getVendorData(id);
-  
+
   return {
     title: `${vendor.name} - Event Vendors`,
     description: vendor.description,
@@ -36,22 +37,25 @@ interface VendorLayoutProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function VendorDetailLayout({ children, params }: VendorLayoutProps) {
+export default async function VendorDetailLayout({
+  children,
+  params,
+}: VendorLayoutProps) {
   const { id } = await params;
   const vendor = await getVendorData(id);
-  
+
   const breadcrumbs = [
-    { name: 'Home', url: '/' },
-    { name: 'Vendors', url: '/vendors' },
-    { name: vendor.name, url: `/vendors/${id}` }
+    { name: "Home", url: "/" },
+    { name: "Vendors", url: "/vendors" },
+    { name: vendor.name, url: `/vendors/${id}` },
   ];
 
   return (
     <>
-      <SEOComponent 
-        pageType="vendor-detail" 
-        data={{ vendor }} 
-        breadcrumbs={breadcrumbs} 
+      <SEOComponent
+        pageType="vendor-detail"
+        data={{ vendor }}
+        breadcrumbs={breadcrumbs}
       />
       {children}
     </>

@@ -10,10 +10,12 @@ import { HomeSEO } from "@/components/seo/home-seo";
 
 export const metadata: Metadata = {
   title: "Find Your Perfect Venue - Event Planning Made Easy",
-  description: "Discover unique venues, vendors, and services for your special event. From dreamy weddings to epic parties — find spaces designed to impress.",
+  description:
+    "Discover unique venues, vendors, and services for your special event. From dreamy weddings to epic parties — find spaces designed to impress.",
   openGraph: {
     title: "Find Your Perfect Venue - Event Planning Made Easy",
-    description: "Discover unique venues, vendors, and services for your special event.",
+    description:
+      "Discover unique venues, vendors, and services for your special event.",
   },
 };
 

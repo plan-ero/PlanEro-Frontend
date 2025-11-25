@@ -107,10 +107,10 @@ const serviceTypeIcons: { [key: string]: any } = {
   VENUE: Building2,
 };
 
-// Main form schema - ONLY REQUIRED FIELDS
+// Main form schema - Comprehensive onboarding fields
 const quickOnboardingSchema = z
   .object({
-    // User credentials
+    // === Basic Information (Common for all) ===
     name: z
       .string()
       .min(1, "Full name is required")
@@ -132,8 +132,6 @@ const quickOnboardingSchema = z
         "Password must contain at least one lowercase letter, one uppercase letter, and one digit",
       ),
     confirmPassword: z.string().min(1, "Please confirm your password"),
-
-    // Vendor info (required only)
     businessName: z
       .string()
       .min(2, "Business name must be at least 2 characters"),
@@ -142,11 +140,55 @@ const quickOnboardingSchema = z
       .string()
       .min(1, "Bio is required")
       .max(1000, "Bio must be less than 1000 characters"),
+    phone: z.string().optional(),
+    website: z.string().url().optional().or(z.literal("")),
 
-    // Service types selection
+    // Vendor type selection
+    vendorType: z.enum(["venue", "vendor"]),
     selectedServiceTypes: z
       .array(z.nativeEnum(ServiceType))
       .min(1, "Select at least one service type"),
+
+    // === Venue-specific Details (if vendorType === "venue") ===
+    capacity: z.number().optional(),
+    venuePricePerEvent: z.number().optional(),
+    amenities: z.array(z.string()).optional(),
+    accessibility: z.string().optional(),
+    venueDescription: z.string().optional(),
+    parkingAvailable: z.boolean().optional(),
+    cateringAvailable: z.boolean().optional(),
+    outdoorSpace: z.boolean().optional(),
+
+    // === Service Vendor Details (if vendorType === "vendor") ===
+    yearsOfExperience: z.number().optional(),
+    portfolio: z.array(z.string()).optional(), // URLs
+    certifications: z.array(z.string()).optional(),
+    teamSize: z.number().optional(),
+    servicesOffered: z.array(z.string()).optional(),
+    workingHours: z.string().optional(),
+
+    // === Legal & Payment (Common) ===
+    businessRegistrationNumber: z.string().optional(),
+    taxId: z.string().optional(),
+    insuranceDetails: z.string().optional(),
+    paymentMethods: z.array(z.string()).optional(),
+    cancellationPolicy: z.string().optional(),
+    refundPolicy: z.string().optional(),
+    termsAndConditions: z.string().optional(),
+
+    // === Optional Add-ons (Common) ===
+    socialMediaLinks: z
+      .object({
+        facebook: z.string().optional(),
+        instagram: z.string().optional(),
+        twitter: z.string().optional(),
+        linkedin: z.string().optional(),
+      })
+      .optional(),
+    videoLinks: z.array(z.string()).optional(),
+    awards: z.array(z.string()).optional(),
+    languages: z.array(z.string()).optional(),
+    emergencyContact: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -168,14 +210,14 @@ export default function QuickOnboarding() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
-  const [profilePicture, setProfilePicture] = useState<string>(""); // Add profile picture state
+  const [profilePicture, setProfilePicture] = useState<string>("");
   const [selectedServiceTypes, setSelectedServiceTypes] = useState<
     ServiceType[]
   >([]);
   const [servicesConfig, setServicesConfig] = useState<{
     [key: string]: ServiceConfig;
   }>({});
-  const [allowSubmit, setAllowSubmit] = useState(false); // Add flag to control submission
+  const [allowSubmit, setAllowSubmit] = useState(false);
 
   const form = useForm<QuickOnboardingForm>({
     resolver: zodResolver(quickOnboardingSchema),
@@ -188,12 +230,47 @@ export default function QuickOnboarding() {
       businessName: "",
       location: "",
       bio: "",
+      phone: "",
+      website: "",
+      vendorType: "vendor",
       selectedServiceTypes: [],
+      capacity: undefined,
+      venuePricePerEvent: undefined,
+      amenities: [],
+      accessibility: "",
+      venueDescription: "",
+      parkingAvailable: false,
+      cateringAvailable: false,
+      outdoorSpace: false,
+      yearsOfExperience: undefined,
+      portfolio: [],
+      certifications: [],
+      teamSize: undefined,
+      servicesOffered: [],
+      workingHours: "",
+      businessRegistrationNumber: "",
+      taxId: "",
+      insuranceDetails: "",
+      paymentMethods: [],
+      cancellationPolicy: "",
+      refundPolicy: "",
+      termsAndConditions: "",
+      socialMediaLinks: {
+        facebook: "",
+        instagram: "",
+        twitter: "",
+        linkedin: "",
+      },
+      videoLinks: [],
+      awards: [],
+      languages: [],
+      emergencyContact: "",
     },
-    mode: "onChange", // Validate on change to prevent automatic submission
+    mode: "onChange",
   });
 
-  const totalSteps = 4;
+  const vendorType = form.watch("vendorType");
+  const totalSteps = vendorType === "venue" ? 7 : 7; // Same steps for both
   const progress = (step / totalSteps) * 100;
 
   // Handle service type selection
@@ -239,7 +316,7 @@ export default function QuickOnboarding() {
   // Validate current step
   const validateStep = async () => {
     switch (step) {
-      case 1:
+      case 1: // Account credentials
         const userFields = [
           "name",
           "email",
@@ -251,20 +328,23 @@ export default function QuickOnboarding() {
           userFields as Array<keyof QuickOnboardingForm>,
         );
 
-      case 2:
-        const vendorFields = ["businessName", "location", "bio"];
+      case 2: // Basic info + vendor type selection
+        const basicFields = ["businessName", "location", "bio", "vendorType"];
         return await form.trigger(
-          vendorFields as Array<keyof QuickOnboardingForm>,
+          basicFields as Array<keyof QuickOnboardingForm>,
         );
 
-      case 3:
+      case 3: // Venue or Vendor specific details
+        return true; // All fields optional in this step
+
+      case 4: // Service types selection
         if (selectedServiceTypes.length === 0) {
           toast.error("Please select at least one service type");
           return false;
         }
         return true;
 
-      case 4:
+      case 5: // Service configuration
         for (const serviceType of selectedServiceTypes) {
           const config = servicesConfig[serviceType];
           if (!config || !config.name || config.cost <= 0) {
@@ -275,6 +355,12 @@ export default function QuickOnboarding() {
           }
         }
         return true;
+
+      case 6: // Legal & Payment
+        return true; // All fields optional
+
+      case 7: // Optional add-ons
+        return true; // All fields optional
 
       default:
         return true;
@@ -373,8 +459,57 @@ export default function QuickOnboarding() {
         eventType: servicesConfig[serviceType].eventType,
         priceEnum: servicesConfig[serviceType].priceEnum,
         cost: servicesConfig[serviceType].cost,
-        images: servicesConfig[serviceType].images || [], // Include service images
+        images: servicesConfig[serviceType].images || [],
       }));
+
+      // Prepare comprehensive metadata for vendor
+      const vendorMetadata = {
+        vendorType: data.vendorType,
+        phone: data.phone,
+        website: data.website,
+        // Venue-specific
+        ...(data.vendorType === "venue" && {
+          venueDetails: {
+            capacity: data.capacity,
+            venuePricePerEvent: data.venuePricePerEvent,
+            amenities: data.amenities,
+            accessibility: data.accessibility,
+            venueDescription: data.venueDescription,
+            parkingAvailable: data.parkingAvailable,
+            cateringAvailable: data.cateringAvailable,
+            outdoorSpace: data.outdoorSpace,
+          },
+        }),
+        // Service vendor specific
+        ...(data.vendorType === "vendor" && {
+          serviceVendorDetails: {
+            yearsOfExperience: data.yearsOfExperience,
+            portfolio: data.portfolio,
+            certifications: data.certifications,
+            teamSize: data.teamSize,
+            servicesOffered: data.servicesOffered,
+            workingHours: data.workingHours,
+          },
+        }),
+        // Legal & Payment
+        legalAndPayment: {
+          businessRegistrationNumber: data.businessRegistrationNumber,
+          taxId: data.taxId,
+          insuranceDetails: data.insuranceDetails,
+          paymentMethods: data.paymentMethods,
+          cancellationPolicy: data.cancellationPolicy,
+          refundPolicy: data.refundPolicy,
+          termsAndConditions: data.termsAndConditions,
+        },
+        // Optional add-ons
+        additionalInfo: {
+          socialMediaLinks: data.socialMediaLinks,
+          videoLinks: data.videoLinks,
+          awards: data.awards,
+          languages: data.languages,
+          emergencyContact: data.emergencyContact,
+        },
+      };
 
       // Single atomic API call
       const response = await fetch("/api/vendors/quick-onboarding", {
@@ -388,7 +523,8 @@ export default function QuickOnboarding() {
           businessName: data.businessName,
           location: data.location,
           bio: data.bio,
-          profilePicture: profilePicture || undefined, // Include profile picture
+          profilePicture: profilePicture || undefined,
+          metadata: JSON.stringify(vendorMetadata),
           services: services,
         }),
       });
@@ -569,7 +705,7 @@ export default function QuickOnboarding() {
             </Card>
           )}
 
-          {/* Step 2: Business Information */}
+          {/* Step 2: Basic Business Information */}
           {step === 2 && (
             <Card>
               <CardHeader>
@@ -580,6 +716,24 @@ export default function QuickOnboarding() {
                 <CardDescription>Essential business details</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="vendorType">Business Type *</Label>
+                  <Select
+                    value={form.watch("vendorType")}
+                    onValueChange={(value) =>
+                      form.setValue("vendorType", value as "venue" | "vendor")
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="venue">Venue</SelectItem>
+                      <SelectItem value="vendor">Service Vendor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div>
                   <Label htmlFor="businessName">Business Name *</Label>
                   <Input
@@ -609,6 +763,24 @@ export default function QuickOnboarding() {
                 </div>
 
                 <div>
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    {...form.register("phone")}
+                    placeholder="+1 (555) 123-4567"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="website">Website</Label>
+                  <Input
+                    id="website"
+                    {...form.register("website")}
+                    placeholder="https://example.com"
+                  />
+                </div>
+
+                <div>
                   <Label htmlFor="bio">Business Bio *</Label>
                   <Textarea
                     id="bio"
@@ -628,7 +800,7 @@ export default function QuickOnboarding() {
 
                 <div>
                   <ImageUpload
-                    label="Profile Picture (Optional)"
+                    label="Profile Picture"
                     currentImageUrl={profilePicture}
                     onImageUploaded={(url) => setProfilePicture(url)}
                     onImageDeleted={() => setProfilePicture("")}
@@ -636,20 +808,156 @@ export default function QuickOnboarding() {
                     className="mt-4"
                   />
                 </div>
-
-                <Alert>
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    Additional details like phone number and website can be
-                    added later from your dashboard.
-                  </AlertDescription>
-                </Alert>
               </CardContent>
             </Card>
           )}
 
-          {/* Step 3: Service Type Selection */}
-          {step === 3 && (
+          {/* Step 3: Venue or Vendor Specific Details */}
+          {step === 3 && vendorType === "venue" && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-6 w-6 text-purple-600" />
+                  <CardTitle>Venue Details</CardTitle>
+                </div>
+                <CardDescription>Venue-specific information</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="capacity">Capacity (guests)</Label>
+                    <Input
+                      id="capacity"
+                      type="number"
+                      {...form.register("capacity", { valueAsNumber: true })}
+                      placeholder="100"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="venuePricePerEvent">
+                      Price Per Event (₹)
+                    </Label>
+                    <Input
+                      id="venuePricePerEvent"
+                      type="number"
+                      {...form.register("venuePricePerEvent", {
+                        valueAsNumber: true,
+                      })}
+                      placeholder="50000"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="venueDescription">Venue Description</Label>
+                  <Textarea
+                    id="venueDescription"
+                    {...form.register("venueDescription")}
+                    placeholder="Describe your venue..."
+                    rows={4}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="accessibility">Accessibility Features</Label>
+                  <Input
+                    id="accessibility"
+                    {...form.register("accessibility")}
+                    placeholder="Wheelchair ramps, elevators, etc."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Facilities</Label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="parkingAvailable"
+                      {...form.register("parkingAvailable")}
+                      className="rounded"
+                    />
+                    <Label htmlFor="parkingAvailable" className="font-normal">
+                      Parking Available
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="cateringAvailable"
+                      {...form.register("cateringAvailable")}
+                      className="rounded"
+                    />
+                    <Label htmlFor="cateringAvailable" className="font-normal">
+                      Catering Available
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="outdoorSpace"
+                      {...form.register("outdoorSpace")}
+                      className="rounded"
+                    />
+                    <Label htmlFor="outdoorSpace" className="font-normal">
+                      Outdoor Space
+                    </Label>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {step === 3 && vendorType === "vendor" && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Package className="h-6 w-6 text-purple-600" />
+                  <CardTitle>Service Vendor Details</CardTitle>
+                </div>
+                <CardDescription>Service-specific information</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="yearsOfExperience">
+                      Years of Experience
+                    </Label>
+                    <Input
+                      id="yearsOfExperience"
+                      type="number"
+                      {...form.register("yearsOfExperience", {
+                        valueAsNumber: true,
+                      })}
+                      placeholder="5"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="teamSize">Team Size</Label>
+                    <Input
+                      id="teamSize"
+                      type="number"
+                      {...form.register("teamSize", { valueAsNumber: true })}
+                      placeholder="10"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="workingHours">Working Hours</Label>
+                  <Input
+                    id="workingHours"
+                    {...form.register("workingHours")}
+                    placeholder="9 AM - 6 PM, Mon-Sat"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Step 4: Service Type Selection */}
+          {step === 4 && (
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-2">
@@ -711,8 +1019,8 @@ export default function QuickOnboarding() {
             </Card>
           )}
 
-          {/* Step 4: Service Configuration */}
-          {step === 4 && (
+          {/* Step 5: Service Configuration */}
+          {step === 5 && (
             <div className="space-y-6">
               {selectedServiceTypes.map((serviceType, index) => {
                 const config = servicesConfig[serviceType];
@@ -833,6 +1141,151 @@ export default function QuickOnboarding() {
                 );
               })}
             </div>
+          )}
+
+          {/* Step 6: Legal & Payment */}
+          {step === 6 && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-6 w-6 text-purple-600" />
+                  <CardTitle>Legal & Payment Information</CardTitle>
+                </div>
+                <CardDescription>
+                  Business registration and payment details (all optional)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="businessRegistrationNumber">
+                      Business Registration Number
+                    </Label>
+                    <Input
+                      id="businessRegistrationNumber"
+                      {...form.register("businessRegistrationNumber")}
+                      placeholder="REG123456"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="taxId">Tax ID / GST Number</Label>
+                    <Input
+                      id="taxId"
+                      {...form.register("taxId")}
+                      placeholder="GST123456"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="insuranceDetails">Insurance Details</Label>
+                  <Textarea
+                    id="insuranceDetails"
+                    {...form.register("insuranceDetails")}
+                    placeholder="Insurance provider, policy number, coverage..."
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="cancellationPolicy">
+                    Cancellation Policy
+                  </Label>
+                  <Textarea
+                    id="cancellationPolicy"
+                    {...form.register("cancellationPolicy")}
+                    placeholder="Describe your cancellation policy..."
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="refundPolicy">Refund Policy</Label>
+                  <Textarea
+                    id="refundPolicy"
+                    {...form.register("refundPolicy")}
+                    placeholder="Describe your refund policy..."
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="termsAndConditions">
+                    Terms and Conditions
+                  </Label>
+                  <Textarea
+                    id="termsAndConditions"
+                    {...form.register("termsAndConditions")}
+                    placeholder="Your terms and conditions..."
+                    rows={4}
+                  />
+                </div>
+
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    These details help build trust with customers. You can add
+                    or update them later from your dashboard.
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Step 7: Optional Add-ons */}
+          {step === 7 && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-6 w-6 text-purple-600" />
+                  <CardTitle>Additional Information</CardTitle>
+                </div>
+                <CardDescription>
+                  Social media, awards, and other details (all optional)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <Label>Social Media Links</Label>
+                  <div className="space-y-2">
+                    <Input
+                      {...form.register("socialMediaLinks.facebook")}
+                      placeholder="Facebook URL"
+                    />
+                    <Input
+                      {...form.register("socialMediaLinks.instagram")}
+                      placeholder="Instagram URL"
+                    />
+                    <Input
+                      {...form.register("socialMediaLinks.twitter")}
+                      placeholder="Twitter URL"
+                    />
+                    <Input
+                      {...form.register("socialMediaLinks.linkedin")}
+                      placeholder="LinkedIn URL"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="emergencyContact">Emergency Contact</Label>
+                  <Input
+                    id="emergencyContact"
+                    {...form.register("emergencyContact")}
+                    placeholder="+1 (555) 987-6543"
+                  />
+                </div>
+
+                <Alert>
+                  <CheckCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    You're almost done! Review and submit your information in
+                    the next step.
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
           )}
 
           {/* Navigation Buttons */}

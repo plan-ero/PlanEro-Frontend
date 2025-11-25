@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -11,14 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -34,8 +25,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Github, Mail, Building2, User, Crown } from "lucide-react";
+import { Github, Mail, Building2, User, Crown, ArrowRight, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
 // Validation schema that matches backend requirements
 const signupSchema = z
@@ -125,8 +117,6 @@ export default function SignUpPage() {
         return;
       }
 
-      const registerData = await registerResponse.json();
-
       // After successful registration, sign in the user
       const result = await signIn("credentials", {
         username: data.username,
@@ -165,15 +155,22 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-          <CardDescription>
-            Join PlanEro to start planning your perfect event
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+    <div className="min-h-screen grid lg:grid-cols-2">
+      {/* Left Side - Form */}
+      <div className="flex items-center justify-center p-8 bg-background overflow-y-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md space-y-6 py-8"
+        >
+          <div className="space-y-2 text-center lg:text-left">
+            <h1 className="text-3xl font-bold tracking-tight font-display">Create Account</h1>
+            <p className="text-muted-foreground">
+              Join PlanEro to start planning your perfect event
+            </p>
+          </div>
+
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
@@ -190,6 +187,7 @@ export default function SignUpPage() {
                         {...field}
                         type="text"
                         placeholder="Enter your full name"
+                        className="h-11"
                       />
                     </FormControl>
                     <FormMessage />
@@ -208,6 +206,7 @@ export default function SignUpPage() {
                         {...field}
                         type="email"
                         placeholder="Enter your email"
+                        className="h-11"
                       />
                     </FormControl>
                     <FormMessage />
@@ -225,7 +224,8 @@ export default function SignUpPage() {
                       <Input
                         {...field}
                         type="text"
-                        placeholder="Choose a username (letters, numbers, _ only)"
+                        placeholder="Choose a username"
+                        className="h-11"
                       />
                     </FormControl>
                     <FormMessage />
@@ -233,41 +233,45 @@ export default function SignUpPage() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="password"
-                        placeholder="Must contain uppercase, lowercase, and digit"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="password"
+                          placeholder="Create password"
+                          className="h-11"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="password"
-                        placeholder="Confirm your password"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirm Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="password"
+                          placeholder="Confirm password"
+                          className="h-11"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}
@@ -277,14 +281,16 @@ export default function SignUpPage() {
                     <FormLabel>Account Type</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="h-14">
                           <SelectValue placeholder="Select account type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="USER">
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4" />
+                          <div className="flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                              <User className="h-4 w-4" />
+                            </div>
                             <div>
                               <p className="font-medium">Event Host</p>
                               <p className="text-xs text-muted-foreground">
@@ -294,8 +300,10 @@ export default function SignUpPage() {
                           </div>
                         </SelectItem>
                         <SelectItem value="VENDOR">
-                          <div className="flex items-center gap-2">
-                            <Building2 className="h-4 w-4" />
+                          <div className="flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                              <Building2 className="h-4 w-4" />
+                            </div>
                             <div>
                               <p className="font-medium">Vendor</p>
                               <p className="text-xs text-muted-foreground">
@@ -311,8 +319,18 @@ export default function SignUpPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Creating Account..." : "Create Account"}
+              <Button type="submit" className="w-full h-11 mt-2" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    Create Account
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
               </Button>
             </form>
           </Form>
@@ -329,11 +347,11 @@ export default function SignUpPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" onClick={handleGoogleSignIn}>
+            <Button variant="outline" onClick={handleGoogleSignIn} className="h-11">
               <Mail className="mr-2 h-4 w-4" />
               Google
             </Button>
-            <Button variant="outline" onClick={handleGitHubSignIn}>
+            <Button variant="outline" onClick={handleGitHubSignIn} className="h-11">
               <Github className="mr-2 h-4 w-4" />
               GitHub
             </Button>
@@ -341,25 +359,46 @@ export default function SignUpPage() {
 
           <div className="text-center text-sm">
             Already have an account?{" "}
-            <Link href="/auth/signin" className="text-primary hover:underline">
+            <Link href="/auth/signin" className="font-medium text-primary hover:underline">
               Sign in
             </Link>
           </div>
 
-          <div className="text-center text-sm border-t pt-4">
-            <p className="text-muted-foreground mb-2">
-              Vendor looking for quick setup?
-            </p>
-            <Link
-              href="/vendor/quick-onboarding"
-              className="text-purple-600 hover:underline font-medium flex items-center justify-center gap-2"
-            >
-              <Crown className="h-4 w-4" />
-              Try Quick Onboarding
-            </Link>
+          <div className="pt-4 border-t">
+            <div className="bg-muted/50 rounded-lg p-4 text-center">
+              <p className="text-sm text-muted-foreground mb-3">
+                Vendor looking for quick setup?
+              </p>
+              <Link
+                href="/vendor/quick-onboarding"
+                className="inline-flex items-center justify-center text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
+              >
+                <Crown className="mr-2 h-4 w-4" />
+                Try Quick Onboarding
+              </Link>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </motion.div>
+      </div>
+
+      {/* Right Side - Image */}
+      <div className="hidden lg:block relative bg-muted">
+        <div className="absolute inset-0 bg-zinc-900/20 z-10" />
+        <img
+          src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069&auto=format&fit=crop"
+          alt="Event Celebration"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute bottom-0 left-0 right-0 p-12 z-20 text-white bg-gradient-to-t from-black/80 to-transparent">
+          <blockquote className="space-y-2">
+            <p className="text-lg font-medium leading-relaxed">
+              "The best decision we made for our corporate event. PlanEro simplified everything from venue selection to catering."
+            </p>
+            <footer className="text-sm opacity-80">— David Chen, Event Director</footer>
+          </blockquote>
+        </div>
+      </div>
     </div>
   );
 }
+

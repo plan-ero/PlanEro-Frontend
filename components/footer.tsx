@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { TransitionLink } from "@/components/transition-link";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 
 export function Footer() {
@@ -12,30 +12,30 @@ export function Footer() {
               Find unique venues, vendors, and services for your special event.
             </p>
             <div className="flex space-x-4">
-              <Link
+              <TransitionLink
                 href="#"
                 className="text-muted-foreground hover:text-primary"
               >
                 <Facebook className="h-5 w-5" />
-              </Link>
-              <Link
+              </TransitionLink>
+              <TransitionLink
                 href="#"
                 className="text-muted-foreground hover:text-primary"
               >
                 <Twitter className="h-5 w-5" />
-              </Link>
-              <Link
+              </TransitionLink>
+              <TransitionLink
                 href="#"
                 className="text-muted-foreground hover:text-primary"
               >
                 <Instagram className="h-5 w-5" />
-              </Link>
-              <Link
+              </TransitionLink>
+              <TransitionLink
                 href="#"
                 className="text-muted-foreground hover:text-primary"
               >
                 <Linkedin className="h-5 w-5" />
-              </Link>
+              </TransitionLink>
             </div>
           </div>
 
@@ -43,36 +43,36 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Venues</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link
+                <TransitionLink
                   href="/venues/wedding"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Wedding Venues
-                </Link>
+                </TransitionLink>
               </li>
               <li>
-                <Link
+                <TransitionLink
                   href="/venues/corporate"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Corporate Events
-                </Link>
+                </TransitionLink>
               </li>
               <li>
-                <Link
+                <TransitionLink
                   href="/venues/birthday"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Birthday Parties
-                </Link>
+                </TransitionLink>
               </li>
               <li>
-                <Link
+                <TransitionLink
                   href="/venues/baby-shower"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Baby Showers
-                </Link>
+                </TransitionLink>
               </li>
             </ul>
           </div>
@@ -81,36 +81,36 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Services</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link
+                <TransitionLink
                   href="/services/photographers"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Photographers
-                </Link>
+                </TransitionLink>
               </li>
               <li>
-                <Link
+                <TransitionLink
                   href="/services/caterers"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Caterers
-                </Link>
+                </TransitionLink>
               </li>
               <li>
-                <Link
+                <TransitionLink
                   href="/services/musicians"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Musicians
-                </Link>
+                </TransitionLink>
               </li>
               <li>
-                <Link
+                <TransitionLink
                   href="/services/florists"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Florists
-                </Link>
+                </TransitionLink>
               </li>
             </ul>
           </div>
@@ -119,44 +119,44 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Company</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link
+                <TransitionLink
                   href="/about"
                   className="text-muted-foreground hover:text-primary"
                 >
                   About Us
-                </Link>
+                </TransitionLink>
               </li>
               <li>
-                <Link
+                <TransitionLink
                   href="/pwa"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Get Mobile App
-                </Link>
+                </TransitionLink>
               </li>
               <li>
-                <Link
+                <TransitionLink
                   href="/contact"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Contact
-                </Link>
+                </TransitionLink>
               </li>
               <li>
-                <Link
+                <TransitionLink
                   href="/privacy"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Privacy Policy
-                </Link>
+                </TransitionLink>
               </li>
               <li>
-                <Link
+                <TransitionLink
                   href="/terms-and-conditions"
                   className="text-muted-foreground hover:text-primary"
                 >
                   Terms and Conditions
-                </Link>
+                </TransitionLink>
               </li>
             </ul>
           </div>

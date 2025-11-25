@@ -11,10 +11,11 @@ export function useReducedMotion() {
     setShouldReduceMotion(mediaQuery.matches);
 
     // Check if mobile device (disable animations on mobile for performance)
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    ) || window.innerWidth < 768;
-    
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      ) || window.innerWidth < 768;
+
     if (isMobile) {
       setShouldReduceMotion(true);
     }
@@ -31,7 +32,10 @@ export function useReducedMotion() {
 }
 
 // Helper to conditionally apply motion props - returns props that make element visible immediately
-export function getMotionProps(shouldReduceMotion: boolean, animationProps: any) {
+export function getMotionProps(
+  shouldReduceMotion: boolean,
+  animationProps: any,
+) {
   if (shouldReduceMotion) {
     // Return props that make the element immediately visible without animation
     return {

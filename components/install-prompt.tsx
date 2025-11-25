@@ -21,16 +21,20 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function InstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    
+
     // Check if already installed
-    if (typeof window !== 'undefined' && window.matchMedia('(display-mode: standalone)').matches) {
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(display-mode: standalone)").matches
+    ) {
       setIsInstalled(true);
       return;
     }
@@ -41,17 +45,20 @@ export function InstallPrompt() {
       setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     // Listen for app installation
-    window.addEventListener('appinstalled', () => {
+    window.addEventListener("appinstalled", () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
     });
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', () => setIsInstalled(true));
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt,
+      );
+      window.removeEventListener("appinstalled", () => setIsInstalled(true));
     };
   }, []);
 
@@ -63,62 +70,67 @@ export function InstallPrompt() {
 
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
+
+    if (outcome === "accepted") {
       setDeferredPrompt(null);
     }
   };
 
   const getInstallInstructions = () => {
     // Defensive userAgent parsing to avoid SSR/runtime issues
-    const uaRaw = typeof navigator !== 'undefined' && navigator && typeof navigator.userAgent === 'string' ? navigator.userAgent : '';
+    const uaRaw =
+      typeof navigator !== "undefined" &&
+      navigator &&
+      typeof navigator.userAgent === "string"
+        ? navigator.userAgent
+        : "";
     const userAgent = uaRaw.toLowerCase();
 
-    if (userAgent.includes('chrome') && !userAgent.includes('edg')) {
+    if (userAgent.includes("chrome") && !userAgent.includes("edg")) {
       return {
-        browser: 'Chrome',
+        browser: "Chrome",
         steps: [
-          'Click the three dots menu (⋮) in the top right',
+          "Click the three dots menu (⋮) in the top right",
           'Select "Install Planero" or "Add to Home screen"',
-          'Click "Install" in the popup'
-        ]
+          'Click "Install" in the popup',
+        ],
       };
-    } else if (userAgent.includes('firefox')) {
+    } else if (userAgent.includes("firefox")) {
       return {
-        browser: 'Firefox',
+        browser: "Firefox",
         steps: [
-          'Click the address bar',
-          'Look for the install icon (📱) next to the URL',
-          'Click "Install" when prompted'
-        ]
+          "Click the address bar",
+          "Look for the install icon (📱) next to the URL",
+          'Click "Install" when prompted',
+        ],
       };
-    } else if (userAgent.includes('safari')) {
+    } else if (userAgent.includes("safari")) {
       return {
-        browser: 'Safari',
+        browser: "Safari",
         steps: [
-          'Tap the Share button (⬆️) at the bottom',
+          "Tap the Share button (⬆️) at the bottom",
           'Scroll down and tap "Add to Home Screen"',
-          'Tap "Add" in the top right'
-        ]
+          'Tap "Add" in the top right',
+        ],
       };
-    } else if (userAgent.includes('edg')) {
+    } else if (userAgent.includes("edg")) {
       return {
-        browser: 'Edge',
+        browser: "Edge",
         steps: [
-          'Click the three dots menu (...) in the top right',
+          "Click the three dots menu (...) in the top right",
           'Select "Apps" → "Install this site as an app"',
-          'Click "Install" in the popup'
-        ]
+          'Click "Install" in the popup',
+        ],
       };
     }
-    
+
     return {
-      browser: 'Your Browser',
+      browser: "Your Browser",
       steps: [
         'Look for an install or "Add to Home Screen" option',
-        'This is usually found in the browser menu',
-        'Follow the prompts to install the app'
-      ]
+        "This is usually found in the browser menu",
+        "Follow the prompts to install the app",
+      ],
     };
   };
 
@@ -158,7 +170,8 @@ export function InstallPrompt() {
               </Button>
             </div>
             <DialogDescription>
-              Install Planero as an app for quick access and a native experience.
+              Install Planero as an app for quick access and a native
+              experience.
             </DialogDescription>
           </DialogHeader>
 
@@ -187,7 +200,8 @@ export function InstallPrompt() {
 
             <div className="pt-4 border-t">
               <p className="text-xs text-muted-foreground">
-                Installing the app gives you faster access, offline support, and push notifications for new venues and events.
+                Installing the app gives you faster access, offline support, and
+                push notifications for new venues and events.
               </p>
             </div>
           </div>

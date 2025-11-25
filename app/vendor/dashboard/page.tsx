@@ -24,9 +24,16 @@ import {
   AlertCircle,
   TrendingUp,
   Calendar,
+  ArrowRight,
+  BarChart3,
+  Sparkles,
+  MessageSquare,
+  Briefcase
 } from "lucide-react";
 import Link from "next/link";
 import { LoadingSpinner } from "@/components/loading-spinner";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface VendorStats {
   totalViews: number;
@@ -96,7 +103,7 @@ export default function VendorDashboard() {
       setStats({
         totalViews: Math.floor(Math.random() * 1000) + 100,
         totalInquiries: Math.floor(Math.random() * 50) + 10,
-        servicesCount: 0,
+        servicesCount: 0, // This would ideally come from an API
         profileCompleteness: calculateProfileCompleteness(vendorData),
         isApproved: vendorData.approved,
         isPublished: vendorData.published,
@@ -141,18 +148,18 @@ export default function VendorDashboard() {
 
   if (error) {
     return (
-      <div className="p-6">
-        <Card className="border-destructive">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2 text-destructive">
-              <AlertCircle className="h-5 w-5" />
-              <span className="font-medium">Error</span>
+      <div className="p-6 flex items-center justify-center min-h-[60vh]">
+        <Card className="border-destructive max-w-md w-full">
+          <CardContent className="p-6 text-center">
+            <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4 text-destructive">
+              <AlertCircle className="h-6 w-6" />
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">{error}</p>
+            <h3 className="font-semibold text-lg mb-2">Something went wrong</h3>
+            <p className="text-sm text-muted-foreground mb-6">{error}</p>
             <Button
               onClick={fetchVendorData}
               variant="outline"
-              className="mt-4"
+              className="w-full"
             >
               Try Again
             </Button>
@@ -164,47 +171,89 @@ export default function VendorDashboard() {
 
   if (!vendor || !stats) {
     return (
-      <div className="p-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <Building2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-medium mb-2">
-                Complete Your Vendor Profile
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                Start by setting up your vendor profile to showcase your
-                services.
-              </p>
-              <Button asChild>
-                <Link href="/vendor/onboarding">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Setup Profile
-                </Link>
-              </Button>
+      <div className="p-6 flex items-center justify-center min-h-[60vh]">
+        <Card className="max-w-md w-full border-dashed">
+          <CardContent className="p-8 text-center">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 text-primary">
+              <Building2 className="h-8 w-8" />
             </div>
+            <h3 className="text-xl font-bold mb-2">
+              Complete Your Vendor Profile
+            </h3>
+            <p className="text-muted-foreground mb-6">
+              Start by setting up your vendor profile to showcase your
+              services to thousands of potential customers.
+            </p>
+            <Button asChild size="lg" className="w-full rounded-full">
+              <Link href="/vendor/onboarding">
+                <Plus className="h-4 w-4 mr-2" />
+                Setup Profile
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </div>
     );
   }
 
+  const statCards = [
+    {
+      title: "Total Views",
+      value: stats.totalViews,
+      description: "Profile page views",
+      icon: Eye,
+      color: "text-blue-600",
+      bg: "bg-blue-100",
+      gradient: "from-blue-500/10 to-blue-500/5"
+    },
+    {
+      title: "Inquiries",
+      value: stats.totalInquiries,
+      description: "Customer inquiries",
+      icon: MessageSquare,
+      color: "text-purple-600",
+      bg: "bg-purple-100",
+      gradient: "from-purple-500/10 to-purple-500/5"
+    },
+    {
+      title: "Services",
+      value: stats.servicesCount,
+      description: "Active services",
+      icon: Briefcase,
+      color: "text-amber-600",
+      bg: "bg-amber-100",
+      gradient: "from-amber-500/10 to-amber-500/5"
+    },
+    {
+      title: "Completeness",
+      value: `${stats.profileCompleteness}%`,
+      description: "Profile status",
+      icon: TrendingUp,
+      color: "text-green-600",
+      bg: "bg-green-100",
+      gradient: "from-green-500/10 to-green-500/5"
+    }
+  ];
+
   return (
     <div className="p-6 space-y-8 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-xl border">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-8 rounded-3xl border border-primary/10">
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Dashboard
+          <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
+            Vendor Dashboard
           </h1>
-          <p className="text-muted-foreground mt-1">
-            Welcome back, {vendor.businessName}
+          <p className="text-muted-foreground mt-2 text-lg">
+            Welcome back, <span className="font-semibold text-foreground">{vendor.businessName}</span>
           </p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-3">
           <Badge
             variant={stats.isApproved ? "default" : "secondary"}
-            className="text-sm px-3 py-1 rounded-full"
+            className={cn(
+              "text-sm px-4 py-1.5 rounded-full font-medium transition-all",
+              stats.isApproved ? "bg-green-500 hover:bg-green-600" : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+            )}
           >
             {stats.isApproved ? (
               <>
@@ -213,238 +262,227 @@ export default function VendorDashboard() {
               </>
             ) : (
               <>
-                <AlertCircle className="h-3 w-3 mr-1" />
+                <AlertCircle className="h-3.5 w-3.5 mr-1.5" />
                 Pending Approval
               </>
             )}
           </Badge>
-          <Badge variant={stats.isPublished ? "default" : "outline"}>
-            {stats.isPublished ? "Published" : "Draft"}
+          <Badge
+            variant={stats.isPublished ? "default" : "outline"}
+            className="text-sm px-4 py-1.5 rounded-full font-medium"
+          >
+            {stats.isPublished ? "Published" : "Draft Mode"}
           </Badge>
         </div>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Hidden: Total Views and Inquiries (hardcoded statistics) */}
-        {/* <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Views</CardTitle>
-            <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/30">
-              <Eye className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{stats.totalViews}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Profile page views
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/20 dark:to-purple-900/20">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Inquiries</CardTitle>
-            <div className="p-2 rounded-full bg-purple-100 dark:bg-purple-900/30">
-              <Users className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{stats.totalInquiries}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Customer inquiries
-            </p>
-          </CardContent>
-        </Card> */}
-
-        <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950/20 dark:to-amber-900/20">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Services</CardTitle>
-            <div className="p-2 rounded-full bg-amber-100 dark:bg-amber-900/30">
-              <Building2 className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.servicesCount}</div>
-            <p className="text-xs text-muted-foreground">Active services</p>
-          </CardContent>
-        </Card>
-
-        <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Profile</CardTitle>
-            <div className="p-2 rounded-full bg-green-100 dark:bg-green-900/30">
-              <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">
-              {stats.profileCompleteness}%
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">Completeness</p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {statCards.map((stat, index) => (
+          <motion.div
+            key={stat.title}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <Card className="border-none shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group relative h-full">
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-50 group-hover:opacity-100 transition-opacity`} />
+              <CardContent className="p-6 flex items-center space-x-4 relative z-10">
+                <div className={`p-3 rounded-2xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
+                  <stat.icon className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {stat.title}
+                  </p>
+                  <h3 className="text-2xl font-bold tracking-tight">{stat.value}</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">{stat.description}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
 
-      {/* Profile Completion */}
+      {/* Profile Completion Alert */}
       {stats.profileCompleteness < 100 && (
-        <Card className="border border-primary/20 bg-gradient-to-r from-primary/5 to-transparent overflow-hidden">
-          <CardHeader>
-            <CardTitle className="flex items-center text-primary">
-              <Settings className="h-5 w-5 mr-2" />
-              Complete Your Profile
-            </CardTitle>
-            <CardDescription>
-              A complete profile helps customers find and trust your services.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Profile Completion</span>
-                  <span className="font-medium">
-                    {stats.profileCompleteness}%
-                  </span>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Card className="border border-primary/20 bg-gradient-to-r from-primary/5 to-transparent overflow-hidden shadow-sm">
+            <CardContent className="p-6 flex flex-col md:flex-row items-center gap-6">
+              <div className="p-3 rounded-full bg-primary/10 text-primary shrink-0">
+                <Settings className="h-6 w-6" />
+              </div>
+              <div className="flex-1 space-y-2 w-full">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-semibold text-lg">Complete Your Profile</h3>
+                  <span className="font-bold text-primary">{stats.profileCompleteness}%</span>
                 </div>
+                <p className="text-muted-foreground text-sm">
+                  A complete profile helps customers find and trust your services. You're almost there!
+                </p>
                 <Progress
                   value={stats.profileCompleteness}
-                  className="h-2 bg-primary/20"
+                  className="h-2 bg-primary/10"
                 />
               </div>
-              <Button asChild className="bg-primary hover:bg-primary/90">
-                <Link href="/vendor/profile">Complete Profile</Link>
+              <Button asChild className="shrink-0 rounded-full px-6 shadow-md hover:shadow-lg transition-all">
+                <Link href="/vendor/profile">
+                  Complete Profile <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </motion.div>
       )}
 
       {/* Quick Actions */}
-      <h2 className="text-2xl font-semibold mb-4 mt-2">Quick Actions</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="relative overflow-hidden border border-muted hover:border-primary/50 transition-all group">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <CardHeader>
-            <div className="flex items-center space-x-4">
-              <div className="p-3 rounded-full bg-primary/10 text-primary">
-                <Building2 className="h-6 w-6" />
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight mb-6 flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-primary" />
+          Quick Actions
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Card className="relative overflow-hidden border-none shadow-md hover:shadow-xl transition-all group cursor-pointer ring-1 ring-border/50">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <CardHeader className="relative z-10">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 rounded-2xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-300">
+                  <Building2 className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Manage Profile</CardTitle>
+                  <CardDescription>
+                    Update your business information
+                  </CardDescription>
+                </div>
               </div>
-              <div>
-                <CardTitle>Manage Profile</CardTitle>
-                <CardDescription className="mt-1">
-                  Update your business information
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Button
-              asChild
-              variant="outline"
-              className="w-full border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-all group-hover:border-primary"
-            >
-              <Link href="/vendor/profile">Edit Profile</Link>
-            </Button>
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <Button
+                asChild
+                variant="outline"
+                className="w-full rounded-full group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all"
+              >
+                <Link href="/vendor/profile">Edit Profile</Link>
+              </Button>
+            </CardContent>
+          </Card>
 
-        <Card className="relative overflow-hidden border border-muted hover:border-secondary/50 transition-all group">
-          <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <CardHeader>
-            <div className="flex items-center space-x-4">
-              <div className="p-3 rounded-full bg-secondary/10 text-secondary">
-                <Plus className="h-6 w-6" />
+          <Card className="relative overflow-hidden border-none shadow-md hover:shadow-xl transition-all group cursor-pointer ring-1 ring-border/50">
+            <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <CardHeader className="relative z-10">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 rounded-2xl bg-secondary/10 text-secondary group-hover:scale-110 transition-transform duration-300">
+                  <Plus className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Add Services</CardTitle>
+                  <CardDescription>
+                    Create and manage your offerings
+                  </CardDescription>
+                </div>
               </div>
-              <div>
-                <CardTitle>Add Services</CardTitle>
-                <CardDescription className="mt-1">
-                  Create and manage your offerings
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Button
-              asChild
-              variant="outline"
-              className="w-full border-secondary/20 text-secondary hover:bg-secondary hover:text-secondary-foreground transition-all group-hover:border-secondary"
-            >
-              <Link href="/vendor/services">Manage Services</Link>
-            </Button>
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <Button
+                asChild
+                variant="outline"
+                className="w-full rounded-full group-hover:bg-secondary group-hover:text-secondary-foreground group-hover:border-secondary transition-all"
+              >
+                <Link href="/vendor/services">Manage Services</Link>
+              </Button>
+            </CardContent>
+          </Card>
 
-        <Card className="relative overflow-hidden border border-muted hover:border-blue-500/50 transition-all group">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <CardHeader>
-            <div className="flex items-center space-x-4">
-              <div className="p-3 rounded-full bg-blue-500/10 text-blue-500">
-                <Calendar className="h-6 w-6" />
+          <Card className="relative overflow-hidden border-none shadow-md hover:shadow-xl transition-all group cursor-pointer ring-1 ring-border/50">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <CardHeader className="relative z-10">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-500 group-hover:scale-110 transition-transform duration-300">
+                  <BarChart3 className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">View Analytics</CardTitle>
+                  <CardDescription>
+                    Track performance and insights
+                  </CardDescription>
+                </div>
               </div>
-              <div>
-                <CardTitle>View Analytics</CardTitle>
-                <CardDescription className="mt-1">
-                  Track performance and insights
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Button
-              asChild
-              variant="outline"
-              className="w-full border-blue-500/20 text-blue-500 hover:bg-blue-500 hover:text-white transition-all group-hover:border-blue-500"
-            >
-              <Link href="/vendor/analytics">View Analytics</Link>
-            </Button>
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <Button
+                asChild
+                variant="outline"
+                className="w-full rounded-full group-hover:bg-blue-500 group-hover:text-white group-hover:border-blue-500 transition-all"
+              >
+                <Link href="/vendor/analytics">View Analytics</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Status Messages */}
-      {!stats.isApproved && (
-        <Card className="border-amber-200 bg-gradient-to-r from-amber-50 to-amber-100/50 dark:border-amber-800/50 dark:from-amber-900/10 dark:to-amber-800/5 overflow-hidden">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 rounded-full bg-amber-100 dark:bg-amber-700/30">
-                <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-              </div>
-              <div>
-                <p className="font-medium text-yellow-800 dark:text-yellow-200">
-                  Profile Under Review
-                </p>
-                <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                  Your vendor profile is being reviewed by our team. You'll be
-                  notified once it's approved.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {!stats.isPublished && stats.isApproved && (
-        <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                <div>
-                  <p className="font-medium text-blue-800 dark:text-blue-200">
-                    Ready to Publish
-                  </p>
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
-                    Your profile is approved! Publish it to start receiving
-                    customer inquiries.
-                  </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {!stats.isApproved && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Card className="border-amber-200 bg-amber-50/50 dark:border-amber-800/50 dark:bg-amber-900/10 overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex items-start space-x-4">
+                  <div className="p-2 rounded-full bg-amber-100 dark:bg-amber-700/30 shrink-0">
+                    <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-amber-900 dark:text-amber-200 mb-1">
+                      Profile Under Review
+                    </h4>
+                    <p className="text-sm text-amber-800/80 dark:text-amber-300/80 leading-relaxed">
+                      Your vendor profile is currently being reviewed by our team. We'll notify you via email once it's approved and ready to go live.
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <Button size="sm">Publish Profile</Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {!stats.isPublished && stats.isApproved && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-800 dark:bg-blue-900/10">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-start space-x-4">
+                    <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/30 shrink-0">
+                      <Sparkles className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-blue-900 dark:text-blue-200 mb-1">
+                        Ready to Publish
+                      </h4>
+                      <p className="text-sm text-blue-800/80 dark:text-blue-300/80 leading-relaxed">
+                        Your profile is approved! Publish it now to start appearing in search results.
+                      </p>
+                    </div>
+                  </div>
+                  <Button size="sm" className="rounded-full shadow-md hover:shadow-lg transition-all shrink-0">Publish</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 }

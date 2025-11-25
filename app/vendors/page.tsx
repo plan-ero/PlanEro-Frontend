@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
-import { TransitionLink } from "@/components/transition-link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,9 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -27,12 +23,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { LoadingSpinner } from "@/components/loading-spinner";
 import { StarRating } from "@/components/ui/star-rating";
 import { VendorCardSkeleton, GridSkeleton } from "@/components/ui/skeleton";
 import { InquiryDialog } from "@/components/inquiry-dialog";
 import { VendorsSEO } from "@/components/seo/vendors-seo";
-import { MapPin, Globe, Phone, Star, Search, Filter, Mail } from "lucide-react";
+import { MapPin, Phone, Search, Filter, Mail, ArrowRight, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { TransitionLink } from "@/components/transition-link";
 
 interface Vendor {
   id: number;
@@ -183,12 +180,7 @@ function VendorsContent() {
         params.append("location", locationParam);
       }
 
-      console.log(
-        "Frontend: Fetching vendors with params:",
-        Object.fromEntries(params),
-      );
       const response = await fetch(`/api/vendors?${params.toString()}`);
-      console.log("Frontend: API response status:", response.status);
 
       if (!response.ok) {
         throw new Error(
@@ -197,11 +189,6 @@ function VendorsContent() {
       }
 
       const data: VendorsResponse = await response.json();
-      console.log("Frontend: API Response:", data);
-      console.log("Frontend: Vendors array:", data.vendors);
-      console.log("Frontend: Number of vendors:", data.vendors?.length || 0);
-
-      // Ensure vendors is always an array
       const vendorsArray = Array.isArray(data.vendors) ? data.vendors : [];
       setVendors(vendorsArray);
       setTotalPages(data.pagination?.pages || 1);
@@ -234,7 +221,7 @@ function VendorsContent() {
   if (loading && vendors.length === 0) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="bg-gradient-to-r from-primary/10 to-primary/5 py-16">
+        <div className="bg-muted/30 py-20 border-b">
           <div className="container mx-auto px-4">
             <div className="h-12 w-64 bg-muted animate-pulse rounded-md mb-4" />
             <div className="h-6 w-96 bg-muted animate-pulse rounded-md" />
@@ -254,70 +241,67 @@ function VendorsContent() {
 
   return (
     <div className="min-h-screen bg-background">
-      <VendorsSEO 
-        vendors={vendors.slice(0, 10).map(v => ({
+      <VendorsSEO
+        vendors={vendors.slice(0, 10).map((v) => ({
           businessName: v.businessName,
           location: v.location,
           bio: v.bio,
           phoneNumber: v.phoneNumber,
-          email: v.email
-        }))} 
-        totalCount={totalVendors} 
+          email: v.email,
+        }))}
+        totalCount={totalVendors}
       />
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary/10 to-primary/5 py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-              Discover Amazing Vendors
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Find the perfect vendors for your special events. From
-              photographers to caterers, discover trusted professionals in your
-              area.
-            </p>
+      {/* Hero Section */}
+      <div className="relative bg-muted/30 py-24 border-b overflow-hidden">
+        <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/20 border-none px-4 py-1.5 text-sm">
+                <Sparkles className="h-3.5 w-3.5 mr-2 inline-block" />
+                Premium Vendors
+              </Badge>
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 font-display tracking-tight text-foreground">
+                Discover Amazing Vendors
+              </h1>
+              <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                Find the perfect professionals for your special events. From
+                photographers to caterers, connect with the best in the industry.
+              </p>
+            </motion.div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Debug Info - Remove this after debugging */}
-        {process.env.NODE_ENV === "development" && (
-          <div className="mb-4 p-4 bg-muted rounded-lg">
-            <h3 className="font-semibold mb-2">Debug Info:</h3>
-            <p>Vendors count: {vendors.length}</p>
-            <p>Total from API: {totalVendors}</p>
-            <p>Current page: {currentPage}</p>
-            <p>Loading: {loading ? "true" : "false"}</p>
-            <p>Error: {error || "none"}</p>
-            <details className="mt-2">
-              <summary className="cursor-pointer">Raw vendor data</summary>
-              <pre className="text-xs mt-2 overflow-auto max-h-40">
-                {JSON.stringify(vendors.slice(0, 2), null, 2)}
-              </pre>
-            </details>
-          </div>
-        )}
+      <div className="container mx-auto px-4 py-12">
         {/* Search and Filters */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="mb-10">
+          <div className="flex flex-col md:flex-row gap-4 mb-6 p-2 bg-card rounded-xl border shadow-sm">
             <form onSubmit={handleSearch} className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <div className="relative group">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 group-focus-within:text-primary transition-colors" />
                 <Input
                   type="text"
                   placeholder="Search vendors by name, service, or specialty..."
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  className="pl-10 h-12"
+                  className="pl-10 h-12 border-none shadow-none focus-visible:ring-0 bg-transparent"
                 />
               </div>
             </form>
 
+            <div className="h-px md:h-12 w-full md:w-px bg-border" />
+
             <Select value={locationFilter} onValueChange={handleLocationChange}>
-              <SelectTrigger className="w-full md:w-48 h-12">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Filter by location" />
+              <SelectTrigger className="w-full md:w-48 h-12 border-none shadow-none focus:ring-0 bg-transparent">
+                <div className="flex items-center text-muted-foreground">
+                  <MapPin className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Location" />
+                </div>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Locations</SelectItem>
@@ -329,14 +313,14 @@ function VendorsContent() {
               </SelectContent>
             </Select>
 
-            <Button type="submit" onClick={handleSearch} className="h-12 px-8">
+            <Button type="submit" onClick={handleSearch} className="h-12 px-8 rounded-lg shadow-sm">
               Search
             </Button>
           </div>
 
           {/* Results count */}
-          <div className="flex items-center justify-between">
-            <p className="text-muted-foreground">
+          <div className="flex items-center justify-between px-2">
+            <p className="text-muted-foreground font-medium">
               {totalVendors > 0
                 ? `Showing ${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, totalVendors)} of ${totalVendors} vendors`
                 : "No vendors found"}
@@ -363,177 +347,167 @@ function VendorsContent() {
         {!error && (
           <>
             {vendors.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-                {vendors.map((vendor) => (
-                  <Card
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+                {vendors.map((vendor, index) => (
+                  <motion.div
                     key={vendor?.id || Math.random()}
-                    className="group overflow-hidden hover:shadow-xl transition-all duration-300"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
                   >
-                    {/* Full-width Image at top */}
-                    <div className="relative w-full h-48 bg-gradient-to-br from-primary/20 to-primary/5 overflow-hidden">
-                      <Avatar className="w-full h-full rounded-none">
-                        <AvatarImage
-                          src={
-                            vendor?.profilePictureUrl ||
-                            "/placeholder-user.jpg"
-                          }
-                          alt={
-                            vendor?.businessName || vendor?.email || "Vendor"
-                          }
-                          className="object-cover w-full h-full"
-                          style={{
-                            viewTransitionName: `vendor-avatar-${vendor?.id}`,
-                          }}
-                        />
-                        <AvatarFallback className="text-4xl rounded-none w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
-                          {getInitials(
-                            vendor?.businessName ||
+                    <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 h-full border-none shadow-sm ring-1 ring-border/50 flex flex-col">
+                      {/* Full-width Image at top */}
+                      <div className="relative w-full h-48 bg-muted overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
+                        <Avatar className="w-full h-full rounded-none">
+                          <AvatarImage
+                            src={
+                              vendor?.profilePictureUrl || "/placeholder-user.jpg"
+                            }
+                            alt={
+                              vendor?.businessName || vendor?.email || "Vendor"
+                            }
+                            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                            style={{
+                              viewTransitionName: `vendor-avatar-${vendor?.id}`,
+                            }}
+                          />
+                          <AvatarFallback className="text-4xl rounded-none w-full h-full flex items-center justify-center bg-muted text-muted-foreground">
+                            {getInitials(
+                              vendor?.businessName ||
                               vendor?.email ||
                               "Unknown Vendor",
-                          )}
-                        </AvatarFallback>
-                      </Avatar>
-                      {/* Status Badge */}
-                      {vendor?.approved && vendor?.published && (
-                        <Badge className="absolute top-3 right-3 bg-green-500">
-                          Verified
-                        </Badge>
-                      )}
-                    </div>
+                            )}
+                          </AvatarFallback>
+                        </Avatar>
 
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-xl group-hover:text-primary transition-colors line-clamp-2">
-                        {vendor?.businessName ||
-                          vendor?.email ||
-                          "Unnamed Vendor"}
-                      </CardTitle>
-                      <div className="flex items-center text-sm text-muted-foreground mt-1">
-                        <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                        <span className="truncate">
-                          {vendor?.location || "Location not specified"}
-                        </span>
+                        {/* Status Badge */}
+                        {vendor?.approved && vendor?.published && (
+                          <Badge className="absolute top-3 right-3 bg-white/90 text-foreground backdrop-blur-sm shadow-sm z-20 border-none">
+                            Verified
+                          </Badge>
+                        )}
+
+                        <div className="absolute bottom-3 left-3 z-20 text-white">
+                          <h3 className="font-bold text-lg leading-tight mb-1 drop-shadow-md">
+                            {vendor?.businessName || vendor?.email || "Unnamed Vendor"}
+                          </h3>
+                          <div className="flex items-center text-xs text-white/90">
+                            <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
+                            <span className="truncate max-w-[180px]">
+                              {vendor?.location || "Location not specified"}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    </CardHeader>
 
-                    <CardContent className="pt-0 space-y-4">
-                      {vendor?.bio && vendor.bio.trim() && (
-                        <p className="text-sm text-muted-foreground line-clamp-3">
-                          {vendor.bio}
-                        </p>
-                      )}
+                      <CardContent className="p-5 flex-1 flex flex-col">
+                        {vendor?.bio && vendor.bio.trim() && (
+                          <div className="text-sm text-muted-foreground line-clamp-2 mb-4 flex-1">
+                            {vendor.bio}
+                          </div>
+                        )}
 
-                      {/* Rating */}
-                      {vendor?.totalRating !== undefined &&
-                      vendor?.numberOfRatings !== undefined ? (
-                        <div className="flex items-center gap-2">
-                          <StarRating
-                            rating={vendor.totalRating || 0}
-                            readonly
-                            size="sm"
-                          />
-                          <span className="text-xs text-muted-foreground">
-                            ({vendor.numberOfRatings} reviews)
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="text-xs text-muted-foreground">
-                          No reviews yet
-                        </div>
-                      )}
-
-                      {/* View Profile in same row on larger devices */}
-                      <div className="hidden md:flex gap-2 pt-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="flex-shrink-0"
-                          disabled={!vendor?.phoneNumber || !vendor.phoneNumber.trim()}
-                          asChild={vendor?.phoneNumber && vendor.phoneNumber.trim()}
-                        >
-                          {vendor?.phoneNumber && vendor.phoneNumber.trim() ? (
-                            <a href={`tel:${vendor.phoneNumber}`} title="Call vendor">
-                              <Phone className="h-4 w-4" />
-                            </a>
+                        {/* Rating */}
+                        <div className="flex items-center justify-between mb-4">
+                          {vendor?.totalRating !== undefined &&
+                            vendor?.numberOfRatings !== undefined ? (
+                            <div className="flex items-center gap-1.5 bg-yellow-50 px-2 py-1 rounded-md border border-yellow-100">
+                              <StarRating
+                                rating={vendor.totalRating || 0}
+                                readonly
+                                size="sm"
+                              />
+                              <span className="text-xs font-medium text-yellow-700">
+                                ({vendor.numberOfRatings})
+                              </span>
+                            </div>
                           ) : (
-                            <Phone className="h-4 w-4" />
+                            <div className="text-xs text-muted-foreground italic">
+                              No reviews yet
+                            </div>
                           )}
-                        </Button>
+                        </div>
 
-                        <InquiryDialog
-                          serviceId={vendor?.id?.toString() || ""}
-                          serviceName={vendor?.businessName || "Vendor"}
-                          serviceType="VENDOR"
-                        >
-                          <Button
-                            size="sm"
-                            className="flex-1 bg-primary hover:bg-primary/90"
+                        {/* Actions */}
+                        <div className="flex gap-2 mt-auto pt-2 border-t">
+                          <InquiryDialog
+                            serviceId={vendor?.id?.toString() || ""}
+                            serviceName={vendor?.businessName || "Vendor"}
+                            serviceType="VENDOR"
                           >
-                            <Mail className="h-4 w-4 mr-1" />
-                            Inquire
-                          </Button>
-                        </InquiryDialog>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex-1"
+                            >
+                              <Mail className="h-3.5 w-3.5 mr-1.5" />
+                              Inquire
+                            </Button>
+                          </InquiryDialog>
 
-                        <TransitionLink
-                          href={`/vendors/${vendor?.id}`}
-                          className="flex-1"
-                        >
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full"
+                          <TransitionLink
+                            href={`/vendors/${vendor?.id}`}
+                            className="flex-1"
                           >
-                            View Profile
-                          </Button>
-                        </TransitionLink>
-                      </div>
-                    </CardContent>
-                  </Card>
+                            <Button
+                              size="sm"
+                              className="w-full bg-primary hover:bg-primary/90"
+                            >
+                              Profile
+                              <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                            </Button>
+                          </TransitionLink>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 ))}
               </div>
             ) : (
               !loading && (
-                <div className="text-center py-12">
+                <div className="text-center py-20 bg-muted/30 rounded-xl border border-dashed">
                   <div className="max-w-md mx-auto">
-                    <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Search className="h-8 w-8 text-muted-foreground" />
+                    <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                      <Search className="h-10 w-10 text-muted-foreground" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">
+                    <h3 className="text-xl font-bold mb-2">
                       No vendors found
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground mb-6">
                       Try adjusting your search criteria or browse all available
                       vendors.
                     </p>
-                    <Button
-                      onClick={() => {
-                        setSearchInput("");
-                        handleLocationChange("all");
-                        handleCategoryChange("all");
-                        handlePageChange(1);
-                      }}
-                    >
-                      Clear Filters
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={async () => {
-                        try {
-                          const response = await fetch(
-                            "/api/vendors?showAll=true",
-                          );
-                          const data = await response.json();
-                          console.log("Show all API call result:", data);
-                          alert(
-                            `Show all API call: ${data.vendors?.length || 0} vendors found`,
-                          );
-                        } catch (err) {
-                          console.error("Show all API call failed:", err);
-                          alert("Show all API call failed");
-                        }
-                      }}
-                    >
-                      Show All Vendors
-                    </Button>
+                    <div className="flex gap-3 justify-center">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setSearchInput("");
+                          handleLocationChange("all");
+                          handleCategoryChange("all");
+                          handlePageChange(1);
+                        }}
+                      >
+                        Clear Filters
+                      </Button>
+                      <Button
+                        onClick={async () => {
+                          try {
+                            const response = await fetch(
+                              "/api/vendors?showAll=true",
+                            );
+                            const data = await response.json();
+                            console.log("Show all API call result:", data);
+                            // Refresh logic here if needed
+                            window.location.reload();
+                          } catch (err) {
+                            console.error("Show all API call failed:", err);
+                          }
+                        }}
+                      >
+                        Show All Vendors
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )
@@ -541,7 +515,7 @@ function VendorsContent() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center">
+              <div className="flex justify-center mt-8">
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>

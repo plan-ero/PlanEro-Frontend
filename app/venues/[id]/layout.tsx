@@ -7,12 +7,13 @@ async function getVenueData(id: string) {
   return {
     id,
     name: `Venue ${id}`,
-    description: "Beautiful event venue with modern amenities and stunning views.",
+    description:
+      "Beautiful event venue with modern amenities and stunning views.",
     location: "Mumbai, India",
     images: ["/venue-placeholder.jpg"],
     capacity: 200,
     priceRange: "$$",
-    category: "Wedding Venue"
+    category: "Wedding Venue",
   };
 }
 
@@ -23,7 +24,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const venue = await getVenueData(id);
-  
+
   return {
     title: venue.name,
     description: venue.description,
@@ -35,22 +36,25 @@ interface VenueLayoutProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function VenueDetailLayout({ children, params }: VenueLayoutProps) {
+export default async function VenueDetailLayout({
+  children,
+  params,
+}: VenueLayoutProps) {
   const { id } = await params;
   const venue = await getVenueData(id);
-  
+
   const breadcrumbs = [
-    { name: 'Home', url: '/' },
-    { name: 'Venues', url: '/venues' },
-    { name: venue.name, url: `/venues/${id}` }
+    { name: "Home", url: "/" },
+    { name: "Venues", url: "/venues" },
+    { name: venue.name, url: `/venues/${id}` },
   ];
 
   return (
     <>
-      <SEOComponent 
-        pageType="venue-detail" 
-        data={{ venue }} 
-        breadcrumbs={breadcrumbs} 
+      <SEOComponent
+        pageType="venue-detail"
+        data={{ venue }}
+        breadcrumbs={breadcrumbs}
       />
       {children}
     </>

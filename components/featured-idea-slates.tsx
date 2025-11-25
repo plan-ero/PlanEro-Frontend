@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
+import { TransitionLink } from "@/components/transition-link";
 import { Heart, Users, Calendar, ArrowRight } from "lucide-react";
 import { useReducedMotion, getMotionProps } from "@/hooks/use-reduced-motion";
 
@@ -72,7 +72,7 @@ const featuredSlates: IdeaSlate[] = [
 
 export function FeaturedIdeaSlates() {
   const shouldReduceMotion = useReducedMotion();
-  
+
   return (
     <section className="py-16 px-4 bg-gradient-to-br from-muted/30 to-background">
       <div className="max-w-7xl mx-auto">
@@ -96,11 +96,11 @@ export function FeaturedIdeaSlates() {
 
         {/* Mobile: Horizontal scroller of slates (looks like other cards) */}
         <div className="md:hidden mb-6">
-          <div 
-            className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth" 
-            style={{ 
+          <div
+            className="overflow-x-auto scrollbar-hide pb-4 scroll-smooth"
+            style={{
               overscrollBehavior: "contain auto",
-              touchAction: "pan-x pan-y"
+              touchAction: "pan-x pan-y",
             }}
           >
             <div className="flex gap-6 px-4">
@@ -115,8 +115,8 @@ export function FeaturedIdeaSlates() {
                   })}
                   className="flex-shrink-0 w-80"
                 >
-              <Card className="group overflow-hidden border-0 bg-card/50 backdrop-blur-sm h-full">
-                <CardContent className="p-0 h-full flex flex-col">
+                  <Card className="group overflow-hidden border-0 bg-card/50 backdrop-blur-sm h-full">
+                    <CardContent className="p-0 h-full flex flex-col">
                       <div className="relative">
                         <div className="absolute top-4 left-4 z-10">
                           <div className="flex items-center gap-2 bg-background/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-sm">
@@ -128,7 +128,10 @@ export function FeaturedIdeaSlates() {
                         </div>
                         <div className="grid grid-cols-2 gap-1 aspect-square">
                           {slate.images.slice(0, 4).map((image, imgIndex) => (
-                            <div key={imgIndex} className="relative overflow-hidden bg-muted">
+                            <div
+                              key={imgIndex}
+                              className="relative overflow-hidden bg-muted"
+                            >
                               <Image
                                 src={image}
                                 alt={`${slate.title} image ${imgIndex + 1}`}
@@ -244,10 +247,10 @@ export function FeaturedIdeaSlates() {
             size="lg"
             className="group bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 px-8"
           >
-            <Link href="/ideas">
+            <TransitionLink href="/ideas">
               View All Featured Ideas
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </TransitionLink>
           </Button>
         </motion.div>
       </div>

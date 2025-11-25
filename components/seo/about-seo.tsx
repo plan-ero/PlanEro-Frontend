@@ -8,30 +8,37 @@ interface AboutSEOProps {
   mission?: string;
 }
 
-export function AboutSEO({ 
-  companyName = "PlanEro", 
+export function AboutSEO({
+  companyName = "PlanEro",
   foundedYear = 2019,
-  mission 
+  mission,
 }: AboutSEOProps) {
   const isBot = useIsBot();
 
   if (!isBot) return null;
 
   return (
-    <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }} aria-hidden="true">
+    <div
+      style={{ position: "absolute", left: "-9999px", top: "-9999px" }}
+      aria-hidden="true"
+    >
       <header>
         <h1>About {companyName}</h1>
-        <p>Learn about our mission to revolutionize event planning and connect people with perfect venues, vendors, and services.</p>
+        <p>
+          Learn about our mission to revolutionize event planning and connect
+          people with perfect venues, vendors, and services.
+        </p>
       </header>
 
       <main>
         <section>
           <h2>Our Story</h2>
           <p>
-            Founded in {foundedYear}, {companyName} started with a simple mission: to make event planning 
-            accessible, enjoyable, and stress-free for everyone. What began as a small team of passionate 
-            event enthusiasts has grown into a comprehensive platform connecting event hosts with the best 
-            vendors and venues.
+            Founded in {foundedYear}, {companyName} started with a simple
+            mission: to make event planning accessible, enjoyable, and
+            stress-free for everyone. What began as a small team of passionate
+            event enthusiasts has grown into a comprehensive platform connecting
+            event hosts with the best vendors and venues.
           </p>
         </section>
 
@@ -45,9 +52,10 @@ export function AboutSEO({
         <section>
           <h2>What We Do</h2>
           <p>
-            {companyName} brings together everything you need in one place—from stunning venues to 
-            talented vendors, all vetted for quality. Our platform empowers you to discover, compare, 
-            and book with confidence.
+            {companyName} brings together everything you need in one place—from
+            stunning venues to talented vendors, all vetted for quality. Our
+            platform empowers you to discover, compare, and book with
+            confidence.
           </p>
         </section>
 
@@ -79,14 +87,18 @@ export function AboutSEO({
         <section>
           <h2>Our Team</h2>
           <p>
-            Our founders and team bring together expertise in event planning, technology, and creative 
-            design to provide the best possible experience for our clients and vendors.
+            Our founders and team bring together expertise in event planning,
+            technology, and creative design to provide the best possible
+            experience for our clients and vendors.
           </p>
         </section>
 
         <section>
           <h2>Contact Information</h2>
-          <p>Get in touch with us to learn more about our services or to start planning your event.</p>
+          <p>
+            Get in touch with us to learn more about our services or to start
+            planning your event.
+          </p>
         </section>
       </main>
     </div>

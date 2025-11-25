@@ -1,12 +1,12 @@
-import { MetadataRoute } from 'next';
-import { siteConfig } from '@/lib/seo';
+import { MetadataRoute } from "next";
+import { siteConfig } from "@/lib/seo";
 
 // Mock data - replace with actual data fetching from your API
 async function getVenues() {
   // This would normally fetch from your API
   return Array.from({ length: 100 }, (_, i) => ({
     id: `venue-${i + 1}`,
-    lastModified: new Date('2024-01-15'),
+    lastModified: new Date("2024-01-15"),
   }));
 }
 
@@ -14,7 +14,7 @@ async function getVendors() {
   // This would normally fetch from your API
   return Array.from({ length: 50 }, (_, i) => ({
     id: `vendor-${i + 1}`,
-    lastModified: new Date('2024-01-15'),
+    lastModified: new Date("2024-01-15"),
   }));
 }
 
@@ -22,7 +22,7 @@ async function getServices() {
   // This would normally fetch from your API
   return Array.from({ length: 200 }, (_, i) => ({
     id: `service-${i + 1}`,
-    lastModified: new Date('2024-01-15'),
+    lastModified: new Date("2024-01-15"),
   }));
 }
 
@@ -38,55 +38,55 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {
       url: siteConfig.url,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: "daily",
       priority: 1,
     },
     {
       url: `${siteConfig.url}/venues`,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: "daily",
       priority: 0.9,
     },
     {
       url: `${siteConfig.url}/vendors`,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: "daily",
       priority: 0.9,
     },
     {
       url: `${siteConfig.url}/services`,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: "daily",
       priority: 0.9,
     },
     {
       url: `${siteConfig.url}/search`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: "weekly",
       priority: 0.8,
     },
     {
       url: `${siteConfig.url}/about`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: "monthly",
       priority: 0.7,
     },
     {
       url: `${siteConfig.url}/auth/signin`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: "monthly",
       priority: 0.6,
     },
     {
       url: `${siteConfig.url}/auth/signup`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: "monthly",
       priority: 0.6,
     },
     {
       url: `${siteConfig.url}/terms-and-conditions`,
       lastModified: new Date(),
-      changeFrequency: 'yearly',
+      changeFrequency: "yearly",
       priority: 0.3,
     },
   ];
@@ -95,7 +95,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const venuePages: MetadataRoute.Sitemap = venues.map((venue) => ({
     url: `${siteConfig.url}/venues/${venue.id}`,
     lastModified: venue.lastModified,
-    changeFrequency: 'weekly' as const,
+    changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
 
@@ -103,7 +103,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const vendorPages: MetadataRoute.Sitemap = vendors.map((vendor) => ({
     url: `${siteConfig.url}/vendors/${vendor.id}`,
     lastModified: vendor.lastModified,
-    changeFrequency: 'weekly' as const,
+    changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
 
@@ -111,7 +111,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const servicePages: MetadataRoute.Sitemap = services.map((service) => ({
     url: `${siteConfig.url}/services/${service.id}`,
     lastModified: service.lastModified,
-    changeFrequency: 'weekly' as const,
+    changeFrequency: "weekly" as const,
     priority: 0.7,
   }));
 

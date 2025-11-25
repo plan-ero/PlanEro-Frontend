@@ -14,7 +14,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { TransitionLink } from "@/components/transition-link";
 import { useReducedMotion, getMotionProps } from "@/hooks/use-reduced-motion";
 
 const services = [
@@ -88,7 +88,7 @@ const services = [
 
 export function ServicesSection() {
   const shouldReduceMotion = useReducedMotion();
-  
+
   return (
     <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -178,10 +178,10 @@ export function ServicesSection() {
                       asChild
                       className="w-full bg-transparent border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 py-3 font-semibold hover:backdrop-blur-xl"
                     >
-                      <Link href={service.href}>
+                      <TransitionLink href={service.href}>
                         Browse {service.name}
                         <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                      </Link>
+                      </TransitionLink>
                     </Button>
                   </CardContent>
                 </Card>
@@ -204,10 +204,10 @@ export function ServicesSection() {
             asChild
             className="px-8 py-4 text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
-            <Link href="/services">
+            <TransitionLink href="/services">
               View All Services
               <ArrowRight className="h-5 w-5 ml-2" />
-            </Link>
+            </TransitionLink>
           </Button>
         </motion.div>
       </div>

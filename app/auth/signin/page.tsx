@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -9,15 +8,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Github, Mail, Crown } from "lucide-react";
+import { Github, Mail, Crown, ArrowRight, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
 export default function SignInPage() {
   const [username, setUsername] = useState("");
@@ -40,9 +33,6 @@ export default function SignInPage() {
         toast.error("Invalid credentials");
       } else {
         toast.success("Welcome back!");
-
-        // Redirect based on user role
-        // The role will be available in the session after successful sign-in
         const response = await fetch("/api/users/profile");
         if (response.ok) {
           const profile = await response.json();
@@ -72,36 +62,67 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-          <CardDescription>Sign in to your PlanEro account</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
+    <div className="min-h-screen grid lg:grid-cols-2">
+      {/* Left Side - Form */}
+      <div className="flex items-center justify-center p-8 bg-background">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md space-y-8"
+        >
+          <div className="space-y-2 text-center lg:text-left">
+            <h1 className="text-3xl font-bold tracking-tight font-display">Welcome Back</h1>
+            <p className="text-muted-foreground">
+              Enter your credentials to access your account
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
                 type="text"
+                placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                className="h-11"
               />
             </div>
-            <div>
-              <Label htmlFor="password">Password</Label>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-sm font-medium text-primary hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <Input
                 id="password"
                 type="password"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="h-11"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing In..." : "Sign In"}
+            <Button type="submit" className="w-full h-11" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing In...
+                </>
+              ) : (
+                <>
+                  Sign In
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
             </Button>
           </form>
 
@@ -117,11 +138,11 @@ export default function SignInPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" onClick={handleGoogleSignIn}>
+            <Button variant="outline" onClick={handleGoogleSignIn} className="h-11">
               <Mail className="mr-2 h-4 w-4" />
               Google
             </Button>
-            <Button variant="outline" onClick={handleGitHubSignIn}>
+            <Button variant="outline" onClick={handleGitHubSignIn} className="h-11">
               <Github className="mr-2 h-4 w-4" />
               GitHub
             </Button>
@@ -129,25 +150,46 @@ export default function SignInPage() {
 
           <div className="text-center text-sm">
             Don't have an account?{" "}
-            <Link href="/auth/signup" className="text-primary hover:underline">
+            <Link href="/auth/signup" className="font-medium text-primary hover:underline">
               Sign up
             </Link>
           </div>
 
-          <div className="text-center text-sm border-t pt-4">
-            <p className="text-muted-foreground mb-2">
-              New vendor? Get started quickly!
-            </p>
-            <Link
-              href="/vendor/quick-onboarding"
-              className="text-purple-600 hover:underline font-medium flex items-center justify-center gap-2"
-            >
-              <Crown className="h-4 w-4" />
-              Quick Vendor Onboarding
-            </Link>
+          <div className="pt-6 border-t">
+            <div className="bg-muted/50 rounded-lg p-4 text-center">
+              <p className="text-sm text-muted-foreground mb-3">
+                Are you a vendor looking to grow?
+              </p>
+              <Link
+                href="/vendor/quick-onboarding"
+                className="inline-flex items-center justify-center text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
+              >
+                <Crown className="mr-2 h-4 w-4" />
+                Start Quick Onboarding
+              </Link>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </motion.div>
+      </div>
+
+      {/* Right Side - Image */}
+      <div className="hidden lg:block relative bg-muted">
+        <div className="absolute inset-0 bg-zinc-900/20 z-10" />
+        <img
+          src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2098&auto=format&fit=crop"
+          alt="Event Atmosphere"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute bottom-0 left-0 right-0 p-12 z-20 text-white bg-gradient-to-t from-black/80 to-transparent">
+          <blockquote className="space-y-2">
+            <p className="text-lg font-medium leading-relaxed">
+              "PlanEro helped us find the perfect venue for our wedding. The process was seamless and the vendors were amazing."
+            </p>
+            <footer className="text-sm opacity-80">— Sofia & Marcus</footer>
+          </blockquote>
+        </div>
+      </div>
     </div>
   );
 }
+

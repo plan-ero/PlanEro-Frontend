@@ -3,7 +3,8 @@ import { SEOComponent } from "@/components/seo-component";
 
 export const metadata: Metadata = {
   title: "Search",
-  description: "Search for venues, vendors, and services for your special event.",
+  description:
+    "Search for venues, vendors, and services for your special event.",
 };
 
 export default function SearchLayout({
@@ -12,8 +13,8 @@ export default function SearchLayout({
   children: React.ReactNode;
 }) {
   const breadcrumbs = [
-    { name: 'Home', url: '/' },
-    { name: 'Search', url: '/search' }
+    { name: "Home", url: "/" },
+    { name: "Search", url: "/search" },
   ];
 
   return (
