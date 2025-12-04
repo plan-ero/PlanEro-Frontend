@@ -16,7 +16,7 @@ import { useCart } from "@/hooks/use-cart";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useAuth } from "@/hooks/use-auth";
 import toast from "react-hot-toast";
-import Link from "next/link";
+import { TransitionLink as Link } from "@/components/transition-link";
 import { getPriceDisplay } from "@/lib/utils";
 
 // Mock venues data organized by category
@@ -293,9 +293,8 @@ export default function CategoryPage() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={`absolute top-3 right-3 bg-white/90 hover:bg-white ${
-                      isFavorite(venue.id) ? "text-red-500" : "text-gray-600"
-                    }`}
+                    className={`absolute top-3 right-3 bg-white/90 hover:bg-white ${isFavorite(venue.id) ? "text-red-500" : "text-gray-600"
+                      }`}
                     onClick={() => handleToggleFavorite(venue)}
                   >
                     <Heart

@@ -10,7 +10,7 @@ import { useCart } from "@/hooks/use-cart";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import Link from "next/link";
+import { TransitionLink as Link } from "@/components/transition-link";
 
 export default function FavoritesPage() {
   const { favorites, removeFromFavorites } = useFavorites();
@@ -18,12 +18,14 @@ export default function FavoritesPage() {
   const { user } = useAuth();
 
   const handleAddToCart = (item: (typeof favorites)[0]) => {
+    if (item.type === "vendor") return;
+
     addItem({
       id: item.id,
       name: item.name,
       price: item.price,
       image: item.image,
-      type: item.type,
+      type: item.type as "venue" | "service",
       quantity: 1,
     });
     toast.success("Added to cart!");
@@ -117,23 +119,40 @@ export default function FavoritesPage() {
                 </Link>
                 <div className="flex items-center justify-between mt-4">
                   <div>
-                    <span className="text-lg font-bold">
-                      {item.price
-                        ? `₹${item.price.toLocaleString()}`
-                        : "Price on request"}
-                    </span>
-                    <span className="text-sm text-muted-foreground ml-1">
-                      / event
-                    </span>
+                    {item.type !== "vendor" && (
+                      <>
+                        <span className="text-lg font-bold">
+                          {item.price
+                            ? `₹${item.price.toLocaleString()}`
+                            : "Price on request"}
+                        </span>
+                        <span className="text-sm text-muted-foreground ml-1">
+                          / event
+                        </span>
+                      </>
+                    )}
                   </div>
-                  <Button
-                    size="sm"
-                    onClick={() => handleAddToCart(item)}
-                    className="flex items-center gap-2"
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                    Add to Cart
-                  </Button>
+                  {item.type !== "vendor" && (
+                    <Button
+                      size="sm"
+                      onClick={() => handleAddToCart(item)}
+                      className="flex items-center gap-2"
+                    >
+                      <ShoppingCart className="h-4 w-4" />
+                      Add to Cart
+                    </Button>
+                  )}
+                  {item.type === "vendor" && (
+                    <Button
+                      size="sm"
+                      asChild
+                      className="flex items-center gap-2"
+                    >
+                      <Link href={`/vendors/${item.id}`}>
+                        View Profile
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>

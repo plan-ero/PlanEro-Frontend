@@ -19,7 +19,7 @@ import { AboutSEO } from "@/components/seo/about-seo";
 
 const founders = [
   {
-    name: "Zaid",
+    name: "Mohd Zaid",
     role: "Co-Founder",
     image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop",
     bio: "Visionary leader passionate about simplifying the event planning landscape through technology.",

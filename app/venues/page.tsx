@@ -394,7 +394,7 @@ function VenuesContent() {
                       }}
                     />
                     <div className="absolute top-3 left-3 z-20">
-                      <Badge className="bg-white/90 text-foreground backdrop-blur-sm shadow-sm border-none">
+                      <Badge className="bg-primary/50 text-foreground backdrop-blur-sm shadow-sm border-none">
                         {venue.eventType}
                       </Badge>
                     </div>
@@ -402,8 +402,8 @@ function VenuesContent() {
                       variant="ghost"
                       size="icon"
                       className={`absolute top-3 right-3 z-20 rounded-full backdrop-blur-sm transition-colors ${isFavorite(venue.id)
-                          ? "bg-white text-red-500 hover:bg-white/90"
-                          : "bg-black/20 text-white hover:bg-white hover:text-red-500"
+                        ? "bg-white text-red-500 hover:bg-white/90"
+                        : "bg-black/20 text-white hover:bg-white hover:text-red-500"
                         }`}
                       onClick={() => handleToggleFavorite(venue)}
                     >

@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
-import Link from "next/link";
+import { TransitionLink as Link } from "@/components/transition-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
 const heroImages = [
   {
@@ -66,49 +67,61 @@ export function HeroSection() {
   return (
     <section className="relative -mt-16">
       {/* Rotating Background Images with Simple Fade Effect */}
-      <div className="relative h-[500px] bg-black">
-        <div className="absolute inset-0">
-          <Image
-            src={heroImages[currentImageIndex].src}
-            alt={heroImages[currentImageIndex].alt}
-            fill
-            priority={currentImageIndex === 0}
-            quality={90}
-            className="object-cover brightness-110 contrast-105 transition-opacity duration-1000"
-            sizes="100vw"
-          />
-        </div>
-
-        {/* Light overlay for better text contrast */}
-        <div className="absolute inset-0 bg-white/30"></div>
+      {/* Rotating Background Images with Cross-Fade Effect */}
+      <div className="relative h-[500px] bg-black overflow-hidden">
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={currentImageIndex}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5 }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={heroImages[currentImageIndex].src}
+              alt={heroImages[currentImageIndex].alt}
+              fill
+              priority={currentImageIndex === 0}
+              quality={90}
+              className="object-cover brightness-110 contrast-105"
+              sizes="100vw"
+            />
+            {/* Light overlay for better text contrast */}
+            <div className="absolute inset-0 bg-white/30" />
+          </motion.div>
+        </AnimatePresence>
 
         {/* Text Overlay on Image */}
         <div
-          className="absolute inset-0 flex items-center justify-center cursor-pointer group"
+          className="absolute inset-0 flex items-center justify-center cursor-pointer group z-10"
           onClick={() => handleNavigation(heroImages[currentImageIndex].link)}
         >
-          <div className="text-center group-hover:scale-105 transition-transform duration-300">
-            {/* Dynamic Top Text */}
-            <p
-              key={`top-${currentImageIndex}`}
-              className="text-xs sm:text-sm tracking-[0.3em] text-gray-800 mb-2 font-medium uppercase drop-shadow-sm transition-opacity duration-500"
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentImageIndex}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="text-center group-hover:scale-105 transition-transform duration-300"
             >
-              {heroImages[currentImageIndex].topText}
-            </p>
+              {/* Dynamic Top Text */}
+              <p className="text-xs sm:text-sm tracking-[0.3em] text-gray-800 mb-2 font-medium uppercase drop-shadow-sm">
+                {heroImages[currentImageIndex].topText}
+              </p>
 
-            {/* Dynamic Main Heading */}
-            <h1
-              key={`main-${currentImageIndex}`}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-gray-900 drop-shadow-sm transition-opacity duration-500"
-            >
-              {heroImages[currentImageIndex].mainText}
-            </h1>
+              {/* Dynamic Main Heading */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-gray-900 drop-shadow-sm">
+                {heroImages[currentImageIndex].mainText}
+              </h1>
 
-            {/* Click indicator */}
-            <p className="text-xs text-gray-700 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              Click to explore
-            </p>
-          </div>
+              {/* Click indicator */}
+              <p className="text-xs text-gray-700 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Click to explore
+              </p>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
 

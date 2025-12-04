@@ -35,7 +35,8 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Minus,
-  Activity
+  Activity,
+  Briefcase
 } from "lucide-react";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { motion } from "framer-motion";
@@ -525,9 +526,9 @@ export default function VendorAnalytics() {
                     >
                       <div className="flex items-center gap-4">
                         <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${index === 0 ? "bg-yellow-100 text-yellow-700" :
-                            index === 1 ? "bg-gray-100 text-gray-700" :
-                              index === 2 ? "bg-orange-100 text-orange-700" :
-                                "bg-muted text-muted-foreground"
+                          index === 1 ? "bg-gray-100 text-gray-700" :
+                            index === 2 ? "bg-orange-100 text-orange-700" :
+                              "bg-muted text-muted-foreground"
                           }`}>
                           {index + 1}
                         </div>
@@ -606,15 +607,15 @@ export default function VendorAnalytics() {
                     <div key={activity.id} className="relative pl-8">
                       <div className="absolute -left-2.5 top-1 h-5 w-5 rounded-full border-2 border-background bg-muted flex items-center justify-center">
                         <div className={`h-2.5 w-2.5 rounded-full ${activity.type === 'inquiry' ? 'bg-blue-500' :
-                            activity.type === 'booking' ? 'bg-green-500' :
-                              'bg-gray-400'
+                          activity.type === 'booking' ? 'bg-green-500' :
+                            'bg-gray-400'
                           }`} />
                       </div>
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4 bg-muted/30 rounded-xl border border-border/50">
                         <div className="flex items-start gap-3">
                           <div className={`p-2 rounded-lg mt-0.5 ${activity.type === 'inquiry' ? 'bg-blue-100 text-blue-600' :
-                              activity.type === 'booking' ? 'bg-green-100 text-green-600' :
-                                'bg-gray-100 text-gray-600'
+                            activity.type === 'booking' ? 'bg-green-100 text-green-600' :
+                              'bg-gray-100 text-gray-600'
                             }`}>
                             {getActivityIcon(activity.type)}
                           </div>

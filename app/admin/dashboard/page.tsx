@@ -24,7 +24,7 @@ import {
   UserCheck,
   UserX,
 } from "lucide-react";
-import Link from "next/link";
+import { TransitionLink as Link } from "@/components/transition-link";
 
 // Mock data - replace with actual API calls
 const dashboardStats = {

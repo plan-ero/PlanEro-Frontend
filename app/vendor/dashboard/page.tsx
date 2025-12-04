@@ -30,7 +30,7 @@ import {
   MessageSquare,
   Briefcase
 } from "lucide-react";
-import Link from "next/link";
+import { TransitionLink as Link } from "@/components/transition-link";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";

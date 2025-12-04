@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { TransitionLink as Link } from "@/components/transition-link";
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, clearCart, total } = useCart();

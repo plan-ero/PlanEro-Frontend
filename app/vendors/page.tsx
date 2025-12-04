@@ -383,7 +383,7 @@ function VendorsContent() {
 
                         {/* Status Badge */}
                         {vendor?.approved && vendor?.published && (
-                          <Badge className="absolute top-3 right-3 bg-white/90 text-foreground backdrop-blur-sm shadow-sm z-20 border-none">
+                          <Badge className="absolute top-3 right-3 bg-primary/80 text-foreground backdrop-blur-sm shadow-sm z-20 border-none">
                             Verified
                           </Badge>
                         )}

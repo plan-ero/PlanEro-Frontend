@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SearchResultSkeleton, GridSkeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
+import { TransitionLink as Link } from "@/components/transition-link";
 import { getPriceDisplay } from "@/lib/utils";
 import {
   Select,

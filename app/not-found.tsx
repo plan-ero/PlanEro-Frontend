@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { TransitionLink as Link } from "@/components/transition-link";
 import { Button } from "@/components/ui/button";
 import { Home, Search } from "lucide-react";
 

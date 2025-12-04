@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import Link from "next/link";
+import { TransitionLink as Link } from "@/components/transition-link";
 import { motion } from "framer-motion";
 import {
   DropdownMenu,

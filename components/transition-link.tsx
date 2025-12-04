@@ -37,9 +37,27 @@ export const TransitionLink = forwardRef<HTMLAnchorElement, TransitionLinkProps>
       // Start the view transition
       document.startViewTransition(async () => {
         router.push(href);
-        // Wait for a short delay to allow the router to update the DOM
-        // This is a common pattern to ensure the new content is ready
-        await sleep(200);
+
+        // Wait for the URL to change to ensure the new page content is loaded
+        // This prevents the transition from finishing before the new page is ready
+        const currentPath = window.location.pathname;
+        const targetUrl = new URL(href, window.location.href);
+        const targetPath = targetUrl.pathname;
+
+        // If navigating to the same page, just wait a bit for React to handle it
+        if (currentPath === targetPath) {
+          await sleep(200);
+          return;
+        }
+
+        // Poll for URL change with a timeout safety
+        const startTime = Date.now();
+        while (window.location.pathname === currentPath && Date.now() - startTime < 2000) {
+          await sleep(10);
+        }
+
+        // Small buffer to allow React to paint the new content
+        await sleep(50);
       });
     };
 

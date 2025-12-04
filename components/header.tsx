@@ -78,9 +78,10 @@ export function Header() {
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled
-          ? "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b shadow-sm"
-          : "bg-background border-b"
+        ? "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b shadow-sm"
+        : "bg-background border-b"
         }`}
+      style={{ viewTransitionName: "site-header" }}
     >
       <div className="container mx-auto px-2 sm:px-3 md:px-4">
         <div className="flex h-12 sm:h-14 md:h-16 items-center justify-between">
@@ -293,7 +294,7 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="hidden md:flex items-center space-x-2">
+              <div className="hidden lg:flex items-center space-x-2">
                 <Button variant="ghost" size="sm" onClick={() => signIn()}>
                   <LogIn className="h-4 w-4 mr-2" />
                   Sign In
@@ -310,7 +311,7 @@ export function Header() {
             {/* Mobile Menu */}
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="md:hidden">
+                <Button variant="ghost" size="sm" className="lg:hidden">
                   <Menu className="h-4 w-4" />
                 </Button>
               </SheetTrigger>

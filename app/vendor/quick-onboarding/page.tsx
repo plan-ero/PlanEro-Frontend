@@ -46,7 +46,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import Link from "next/link";
+import { TransitionLink as Link } from "@/components/transition-link";
 import ImageUpload from "@/components/image-upload";
 import MultiImageUpload from "@/components/multi-image-upload";
 
@@ -979,19 +979,17 @@ export default function QuickOnboarding() {
                       <div
                         key={serviceType}
                         onClick={() => handleServiceTypeToggle(serviceType)}
-                        className={`flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                          isSelected
+                        className={`flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${isSelected
                             ? "border-purple-600 bg-purple-50 dark:bg-purple-900/20"
                             : "border-gray-200 dark:border-gray-700 hover:border-purple-300"
-                        }`}
+                          }`}
                       >
                         {/* Custom checkbox visual */}
                         <div
-                          className={`h-4 w-4 shrink-0 rounded-sm border flex items-center justify-center transition-colors ${
-                            isSelected
+                          className={`h-4 w-4 shrink-0 rounded-sm border flex items-center justify-center transition-colors ${isSelected
                               ? "bg-purple-600 border-purple-600"
                               : "border-gray-300 dark:border-gray-600"
-                          }`}
+                            }`}
                         >
                           {isSelected && (
                             <Check className="h-3 w-3 text-white" />
