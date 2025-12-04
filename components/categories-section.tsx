@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { TransitionLink } from "@/components/transition-link";
@@ -18,6 +17,8 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { SectionHeader } from "@/components/ui/section-header";
+import { FeatureCard } from "@/components/ui/feature-card";
 
 const categories = [
   {
@@ -122,7 +123,7 @@ export function CategoriesSection() {
   };
 
   return (
-    <section className="py-10 sm:py-16 md:py-20 bg-background">
+    <section className="py-8 sm:py-12 md:py-20 bg-background">
       <div className="container mx-auto px-4">
         <motion.div
           {...getMotionProps(shouldReduceMotion, {
@@ -131,22 +132,12 @@ export function CategoriesSection() {
             transition: { duration: 0.8 },
             viewport: { once: true },
           })}
-          className="text-center mb-12"
         >
-          <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2 mb-6">
-            <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-            <span className="text-primary font-medium text-sm">
-              EVENT CATEGORIES
-            </span>
-          </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            Find Your Perfect Venue
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Discover venues tailored to your event type. From intimate garden
-            settings to grand banquet halls, find the perfect backdrop for your
-            special occasion.
-          </p>
+          <SectionHeader
+            badge="EVENT CATEGORIES"
+            title="Find Your Perfect Venue"
+            description="Discover venues tailored to your event type. From intimate garden settings to grand banquet halls, find the perfect backdrop for your special occasion."
+          />
         </motion.div>
 
         {/* Horizontal Scrolling Container with Buttons */}
@@ -171,68 +162,28 @@ export function CategoriesSection() {
                 touchAction: "pan-x pan-y",
               }}
             >
-              <div className="flex gap-6 px-4">
-                {categories.map((category, index) => {
-                  const IconComponent = category.icon;
-                  return (
-                    <motion.div
-                      key={category.id}
-                      {...getMotionProps(shouldReduceMotion, {
-                        initial: { opacity: 0, x: 50 },
-                        whileInView: { opacity: 1, x: 0 },
-                        transition: { duration: 0.6, delay: index * 0.1 },
-                        viewport: { once: true },
-                      })}
-                      className="flex-shrink-0 w-80"
-                    >
-                      <Card className="group/card hover:shadow-2xl transition-all duration-500 h-full shadow-lg overflow-hidden border border-border/50 hover:border-primary/50 cursor-pointer">
-                        <TransitionLink href={category.href}>
-                          {/* Image Card - Prominent Image Display */}
-                          <div className="relative h-64 overflow-hidden">
-                            <div
-                              className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 group-hover/card:scale-110"
-                              style={{
-                                backgroundImage: `url(${category.image})`,
-                              }}
-                            />
-                            {/* Subtle gradient overlay for text readability */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-
-                            {/* Icon Badge on Image */}
-                            <div className="absolute top-4 left-4 w-12 h-12 bg-card/90 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover/card:scale-110 transition-all duration-300">
-                              <IconComponent className="h-6 w-6 text-primary" />
-                            </div>
-
-                            {/* Count Badge */}
-                            <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg">
-                              <p className="text-xs font-semibold text-foreground">
-                                {category.count}
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Content Below Image */}
-                          <CardContent className="p-6 bg-card">
-                            <h3 className="text-xl font-bold mb-2 group-hover/card:text-primary transition-colors duration-300">
-                              {category.name}
-                            </h3>
-                            <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                              {category.description}
-                            </p>
-
-                            <Button
-                              variant="outline"
-                              className="hidden md:flex w-full bg-transparent border-2 group-hover/card:bg-primary group-hover/card:text-primary-foreground group-hover/card:border-primary transition-all duration-300"
-                            >
-                              Explore {category.name}
-                              <ArrowRight className="h-4 w-4 ml-2 group-hover/card:translate-x-1 transition-transform duration-300" />
-                            </Button>
-                          </CardContent>
-                        </TransitionLink>
-                      </Card>
-                    </motion.div>
-                  );
-                })}
+              <div className="flex gap-4 sm:gap-6 px-4">
+                {categories.map((category, index) => (
+                  <motion.div
+                    key={category.id}
+                    {...getMotionProps(shouldReduceMotion, {
+                      initial: { opacity: 0, x: 50 },
+                      whileInView: { opacity: 1, x: 0 },
+                      transition: { duration: 0.6, delay: index * 0.1 },
+                      viewport: { once: true },
+                    })}
+                    className="flex-shrink-0 w-72 sm:w-80"
+                  >
+                    <FeatureCard
+                      title={category.name}
+                      description={category.description}
+                      icon={category.icon}
+                      image={category.image}
+                      href={category.href}
+                      count={category.count}
+                    />
+                  </motion.div>
+                ))}
               </div>
             </div>
           </div>
@@ -249,7 +200,7 @@ export function CategoriesSection() {
         </div>
 
         <motion.div
-          className="text-center mt-12"
+          className="text-center mt-8 sm:mt-12"
           {...getMotionProps(shouldReduceMotion, {
             initial: { opacity: 0 },
             whileInView: { opacity: 1 },
@@ -260,7 +211,7 @@ export function CategoriesSection() {
           <Button
             size="lg"
             asChild
-            className="px-8 py-4 text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
+            className="px-8 py-4 text-base sm:text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
             <TransitionLink href="/venues">
               View All Venues
@@ -269,8 +220,6 @@ export function CategoriesSection() {
           </Button>
         </motion.div>
       </div>
-
-
     </section>
   );
 }

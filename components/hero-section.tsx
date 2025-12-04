@@ -68,7 +68,7 @@ export function HeroSection() {
     <section className="relative -mt-16">
       {/* Rotating Background Images with Simple Fade Effect */}
       {/* Rotating Background Images with Cross-Fade Effect */}
-      <div className="relative h-[500px] bg-black overflow-hidden">
+      <div className="relative h-[400px] sm:h-[500px] md:h-[600px] bg-black overflow-hidden">
         <AnimatePresence mode="popLayout">
           <motion.div
             key={currentImageIndex}
@@ -87,14 +87,14 @@ export function HeroSection() {
               className="object-cover brightness-110 contrast-105"
               sizes="100vw"
             />
-            {/* Light overlay for better text contrast */}
-            <div className="absolute inset-0 bg-white/30" />
+            {/* Gradient overlay for better text contrast and premium feel */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
           </motion.div>
         </AnimatePresence>
 
         {/* Text Overlay on Image */}
         <div
-          className="absolute inset-0 flex items-center justify-center cursor-pointer group z-10"
+          className="absolute inset-0 flex items-center justify-center cursor-pointer group z-10 px-4"
           onClick={() => handleNavigation(heroImages[currentImageIndex].link)}
         >
           <AnimatePresence mode="wait">
@@ -104,20 +104,20 @@ export function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="text-center group-hover:scale-105 transition-transform duration-300"
+              className="text-center group-hover:scale-105 transition-transform duration-300 max-w-4xl mx-auto"
             >
               {/* Dynamic Top Text */}
-              <p className="text-xs sm:text-sm tracking-[0.3em] text-gray-800 mb-2 font-medium uppercase drop-shadow-sm">
+              <p className="text-[10px] sm:text-xs md:text-sm tracking-[0.3em] text-white/90 mb-2 sm:mb-4 font-medium uppercase drop-shadow-md">
                 {heroImages[currentImageIndex].topText}
               </p>
 
               {/* Dynamic Main Heading */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-gray-900 drop-shadow-sm">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-white drop-shadow-lg mb-2">
                 {heroImages[currentImageIndex].mainText}
               </h1>
 
               {/* Click indicator */}
-              <p className="text-xs text-gray-700 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <p className="text-xs text-white/80 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 Click to explore
               </p>
             </motion.div>
@@ -126,13 +126,13 @@ export function HeroSection() {
       </div>
 
       {/* Modal Card - Positioned at boundary */}
-      <div className="relative -mt-24 z-10 w-full px-4 sm:px-6 lg:px-8">
+      <div className="relative -mt-16 sm:-mt-24 z-10 w-full px-4 sm:px-6 lg:px-8">
         <div className="max-w-lg mx-auto animate-in slide-in-from-bottom-4 duration-700 delay-500">
-          <div className="bg-card border border-border text-center rounded-lg shadow-2xl p-6 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3">
+          <div className="bg-card/95 backdrop-blur-md border border-border/50 text-center rounded-xl shadow-2xl p-5 sm:p-8">
+            <h2 className="text-lg sm:text-2xl font-bold text-foreground mb-2 sm:mb-3">
               Plan Your Dream Event
             </h2>
-            <p className="text-sm sm:text-base text-muted-foreground mb-6 leading-relaxed">
+            <p className="text-xs sm:text-base text-muted-foreground mb-4 sm:mb-6 leading-relaxed">
               Weddings, galas, birthdays, and more. Find venues, vendors, and
               ideas you can't find anywhere else.
             </p>
@@ -140,7 +140,7 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button
                 size="default"
-                className="px-6 py-5 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all hover:scale-105"
+                className="w-full sm:w-auto px-6 py-5 text-sm sm:text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground transition-all hover:scale-105 shadow-lg shadow-primary/20"
                 onClick={() => handleNavigation("/search")}
               >
                 START PLANNING
@@ -148,7 +148,7 @@ export function HeroSection() {
               <Button
                 size="default"
                 variant="outline"
-                className="px-6 py-5 text-base font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105"
+                className="w-full sm:w-auto px-6 py-5 text-sm sm:text-base font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105"
                 onClick={() => handleNavigation("/vendor/quick-onboarding")}
               >
                 JOIN AS VENDOR

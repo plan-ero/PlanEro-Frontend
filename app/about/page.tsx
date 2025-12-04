@@ -47,7 +47,7 @@ export default function AboutPage() {
       <AboutSEO companyName="Planero" foundedYear={2024} mission={mission} />
 
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-primary/10 to-secondary/10 overflow-hidden">
+      <section className="relative py-12 md:py-20 bg-gradient-to-br from-primary/5 to-secondary/5 overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10">
           <motion.div
@@ -56,178 +56,125 @@ export default function AboutPage() {
             transition={{ duration: 0.6 }}
             className="text-center max-w-4xl mx-auto"
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">
               About <span className="text-primary">Planero</span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-              We're here to take the "overwhelming" out of planning, so you can get back to the "exciting."
+            <p className="text-lg md:text-xl text-muted-foreground mb-4 leading-relaxed font-light">
+              Where planning feels as fun as scrolling Instagram — but actually gets things done.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Our Mission */}
-      <section className="py-20">
+      {/* The Real Talk Section */}
+      <section className="py-12 md:py-16">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <div className="flex items-center justify-center mb-4">
-              <Target className="h-10 w-10 text-primary mr-3" />
-              <h2 className="text-3xl font-bold">Our Mission</h2>
-            </div>
-            <p className="text-xl text-muted-foreground leading-relaxed">
-              {mission}
-            </p>
-          </motion.div>
+          <div className="max-w-4xl mx-auto space-y-16">
 
-          <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-            {/* For Clients */}
+            {/* The Problem */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="bg-card rounded-2xl p-8 shadow-lg border border-border/50"
-            >
-              <div className="flex items-center mb-6">
-                <div className="p-3 rounded-full bg-primary/10 text-primary mr-4">
-                  <Users className="h-6 w-6" />
-                </div>
-                <h3 className="text-2xl font-bold">For Those Planning an Event</h3>
-              </div>
-              <p className="text-muted-foreground mb-6">
-                Planning a celebration, wedding, or corporate event? Planero is your single source of inspiration and connection.
-              </p>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <Search className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
-                  <div>
-                    <span className="font-semibold text-foreground">Discover:</span>
-                    <span className="text-muted-foreground ml-1">Browse stunning portfolios and real event galleries.</span>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <Handshake className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
-                  <div>
-                    <span className="font-semibold text-foreground">Connect:</span>
-                    <span className="text-muted-foreground ml-1">Find and contact top-rated venues, caterers, photographers, florists, and more.</span>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
-                  <div>
-                    <span className="font-semibold text-foreground">Plan:</span>
-                    <span className="text-muted-foreground ml-1">Build your dream team with confidence, knowing every professional on our platform is vetted for quality.</span>
-                  </div>
-                </li>
-              </ul>
-            </motion.div>
-
-            {/* For Vendors */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="bg-card rounded-2xl p-8 shadow-lg border border-border/50"
-            >
-              <div className="flex items-center mb-6">
-                <div className="p-3 rounded-full bg-secondary/10 text-secondary mr-4">
-                  <Briefcase className="h-6 w-6" />
-                </div>
-                <h3 className="text-2xl font-bold">For Our Vendor & Venue Partners</h3>
-              </div>
-              <p className="text-muted-foreground mb-6">
-                Planero is your partner in growth. We showcase your incredible work to a highly engaged audience of clients who are actively planning their next event.
-              </p>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <Sparkles className="h-5 w-5 text-secondary mr-3 mt-1 flex-shrink-0" />
-                  <div>
-                    <span className="font-semibold text-foreground">Showcase Your Work:</span>
-                    <span className="text-muted-foreground ml-1">Create a beautiful, content-rich profile that acts as your digital portfolio.</span>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <Rocket className="h-5 w-5 text-secondary mr-3 mt-1 flex-shrink-0" />
-                  <div>
-                    <span className="font-semibold text-foreground">Get Discovered:</span>
-                    <span className="text-muted-foreground ml-1">Be seen by qualified, pre-vetted clients.</span>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <Users className="h-5 w-5 text-secondary mr-3 mt-1 flex-shrink-0" />
-                  <div>
-                    <span className="font-semibold text-foreground">Build Your Network:</span>
-                    <span className="text-muted-foreground ml-1">Connect with clients and other top-tier professionals in the industry.</span>
-                  </div>
-                </li>
-              </ul>
-              <div className="mt-6 pt-4 border-t border-border/50 text-center font-medium text-secondary">
-                Join us in making every event a masterpiece.
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Our Story */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="relative order-2 md:order-1"
+              className="text-center space-y-4"
             >
-              <div className="relative h-[500px] rounded-2xl overflow-hidden shadow-2xl">
+              <h2 className="text-3xl md:text-4xl font-bold">Let’s be honest...</h2>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Planning an event in India feels like a full-time job nobody signed up for.
+                Running around to 12 venues in the heat? DMing 20 vendors only for them to “send rate card tomorrow”?
+              </p>
+              <div className="p-6 bg-destructive/5 rounded-2xl border border-destructive/10 inline-block">
+                <p className="text-xl font-medium text-destructive/80 italic">
+                  Google Sheets, screenshots, mom's opinions… pure chaos.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* The Solution */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="grid md:grid-cols-2 gap-12 items-center"
+            >
+              <div className="relative h-[400px] rounded-3xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
                 <Image
-                  src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2098&auto=format&fit=crop"
-                  alt="Our journey"
+                  src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80"
+                  alt="Celebration"
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <div className="absolute bottom-6 left-6 text-white max-w-xs">
-                  <p className="font-medium text-lg italic">"We knew the joy of the celebration was being lost in the chaos of planning it."</p>
-                </div>
+              </div>
+              <div className="space-y-6">
+                <h3 className="text-3xl font-bold">We felt that.</h3>
+                <p className="text-lg text-muted-foreground">
+                  So we said: there has to be a better way. And boom — <span className="font-bold text-primary">PlanEro was born in 2025.</span>
+                </p>
+                <p className="text-lg text-muted-foreground">
+                  Think of us as your event-planning bestie mixed with cool tech wizardry.
+                  Basically, <span className="font-semibold text-foreground">Pinterest dreams + real-world execution.</span>
+                </p>
               </div>
             </motion.div>
+
+            {/* Features Grid */}
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="order-1 md:order-2 space-y-6"
+              className="bg-card rounded-3xl p-8 md:p-12 shadow-xl border border-border/50"
             >
-              <h2 className="text-3xl font-bold mb-4">Our Story</h2>
-              <p className="text-muted-foreground leading-relaxed">
-                Our story starts with a feeling we all know: the mix of excitement and stress that comes with planning an important event.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                For us, it was the chaos of planning a wedding—juggling caterers, florists, and venues, all while hoping they were reliable. It was the pressure of organizing a flawless corporate event at the office, where every detail mattered. It was even the challenge of finding a trusted pandit and the right vendors for a family ghar puja.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                With every event, we were struck by the same problem. Why was it so hard to find and book great vendors? Why did we have to rely on random word-of-mouth and endless, scattered searches, never quite sure of the quality we’d get?
-              </p>
-              <p className="text-muted-foreground leading-relaxed font-medium text-foreground">
-                That’s why we built Planero.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                We created the platform we wished we had—a single, beautiful, and trusted place where anyone can discover and connect with top-rated venues and event professionals. We're here to take the "overwhelming" out of planning, so you can get back to the "exciting."
-              </p>
-              <p className="text-lg font-semibold text-primary">
-                Your milestone, your vision, made effortless. That’s our promise.
-              </p>
+              <h3 className="text-2xl font-bold mb-8 text-center">With PlanEro, you can:</h3>
+              <div className="grid sm:grid-cols-2 gap-6">
+                {[
+                  { icon: Search, text: "Explore venues in 360°/VR" },
+                  { icon: CheckCircle, text: "Find verified vendors who actually respond" },
+                  { icon: Target, text: "Compare everything in one place" },
+                  { icon: Rocket, text: "Send one single enquiry instead of 500 WhatsApp messages" },
+                  { icon: Handshake, text: "Plan your celebration together — minus the drama" }
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-4 p-4 rounded-xl bg-muted/50 hover:bg-primary/5 transition-colors">
+                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                      <item.icon className="h-5 w-5" />
+                    </div>
+                    <span className="font-medium">{item.text}</span>
+                  </div>
+                ))}
+              </div>
             </motion.div>
+
+            {/* The Vibe */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center space-y-8"
+            >
+              <div className="space-y-4">
+                <h3 className="text-3xl font-bold">Your event isn’t just a day.</h3>
+                <div className="flex flex-col gap-2 text-xl md:text-2xl font-light text-muted-foreground">
+                  <p>It’s an aesthetic.</p>
+                  <p>It’s a vibe.</p>
+                  <p>It’s a core memory loading…</p>
+                </div>
+              </div>
+
+              <p className="text-lg max-w-2xl mx-auto">
+                That’s why we made PlanEro cute, smart, and stress-proof — just like your relationship (hopefully).
+              </p>
+
+              <div className="p-8 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 rounded-3xl">
+                <p className="text-lg md:text-xl leading-relaxed">
+                  Today, couples all over India use PlanEro to bring dream events to life without losing their sanity (or their weekends).
+                  Whether you’re going for <span className="font-semibold text-primary">fairy lights + pastels</span>, <span className="font-semibold text-primary">retro Bollywood</span>, <span className="font-semibold text-primary">beachy minimalism</span>, or full <span className="font-semibold text-primary">big-fat-desi-wedding energy</span> — we’ve got you.
+                </p>
+              </div>
+            </motion.div>
+
           </div>
         </div>
       </section>

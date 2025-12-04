@@ -225,15 +225,28 @@ export default function ServiceDetailPage() {
         throw new Error("Failed to fetch service details");
       }
 
+      // Helper for safe JSON parsing
+      const safeParseJSON = (data: any) => {
+        if (typeof data === 'string') {
+          try {
+            // Only attempt to parse if it looks like a JSON object or array
+            const trimmed = data.trim();
+            if ((trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+              (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+              return JSON.parse(data);
+            }
+          } catch (e) {
+            console.error("Failed to parse metadata JSON", e);
+          }
+        }
+        return data; // Return original if not a string or parse failed
+      };
+
       const serviceData = await serviceResponse.json();
 
-      // Parse metadata if it's a string
-      if (serviceData.metadata && typeof serviceData.metadata === 'string') {
-        try {
-          serviceData.metadata = JSON.parse(serviceData.metadata);
-        } catch (e) {
-          console.error("Failed to parse service metadata", e);
-        }
+      // Parse metadata safely
+      if (serviceData.metadata) {
+        serviceData.metadata = safeParseJSON(serviceData.metadata);
       }
 
       setService(serviceData);
@@ -245,13 +258,9 @@ export default function ServiceDetailPage() {
         );
         if (vendorResponse.ok) {
           const vendorData = await vendorResponse.json();
-          // Parse vendor metadata as well
-          if (vendorData.metadata && typeof vendorData.metadata === 'string') {
-            try {
-              vendorData.metadata = JSON.parse(vendorData.metadata);
-            } catch (e) {
-              console.error("Failed to parse vendor metadata", e);
-            }
+          // Parse vendor metadata safely
+          if (vendorData.metadata) {
+            vendorData.metadata = safeParseJSON(vendorData.metadata);
           }
           setVendor(vendorData);
         }
