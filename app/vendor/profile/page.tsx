@@ -714,8 +714,8 @@ export default function VendorProfile() {
                           disabled={saving}
                           {...profileForm.register("businessName")}
                           className={`pl-9 ${profileForm.formState.errors.businessName
-                              ? "border-red-500 focus-visible:ring-red-500"
-                              : ""
+                            ? "border-red-500 focus-visible:ring-red-500"
+                            : ""
                             }`}
                           placeholder="e.g. Elegant Events Co."
                         />
@@ -736,8 +736,8 @@ export default function VendorProfile() {
                           disabled={saving}
                           {...profileForm.register("location")}
                           className={`pl-9 ${profileForm.formState.errors.location
-                              ? "border-red-500 focus-visible:ring-red-500"
-                              : ""
+                            ? "border-red-500 focus-visible:ring-red-500"
+                            : ""
                             }`}
                           placeholder="e.g. New York, NY"
                         />
@@ -762,8 +762,8 @@ export default function VendorProfile() {
                           disabled={saving}
                           {...profileForm.register("websiteUrl")}
                           className={`pl-9 ${profileForm.formState.errors.websiteUrl
-                              ? "border-red-500 focus-visible:ring-red-500"
-                              : ""
+                            ? "border-red-500 focus-visible:ring-red-500"
+                            : ""
                             }`}
                         />
                       </div>
@@ -785,8 +785,8 @@ export default function VendorProfile() {
                           disabled={saving}
                           {...profileForm.register("phoneNumber")}
                           className={`pl-9 ${profileForm.formState.errors.phoneNumber
-                              ? "border-red-500 focus-visible:ring-red-500"
-                              : ""
+                            ? "border-red-500 focus-visible:ring-red-500"
+                            : ""
                             }`}
                         />
                       </div>
@@ -928,7 +928,7 @@ export default function VendorProfile() {
                     To change your password or update sensitive account information, please contact support.
                   </p>
                   <Button variant="outline" size="sm" asChild>
-                    <a href="mailto:support@planero.com">Contact Support</a>
+                    <a href="mailto:support@planero.in">Contact Support</a>
                   </Button>
                 </div>
               </CardContent>

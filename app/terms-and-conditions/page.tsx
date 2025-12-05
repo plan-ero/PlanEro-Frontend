@@ -181,7 +181,7 @@ export default async function TermsAndConditionsPage() {
               contact us at:
             </p>
             <div className="text-muted-foreground">
-              <p>Email: legal@planero.com</p>
+              <p>Email: legal@planero.in</p>
               <p>Phone: +91 XXX XXX XXXX</p>
               <p>Address: [Your Business Address]</p>
             </div>

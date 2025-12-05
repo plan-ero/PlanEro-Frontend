@@ -5,8 +5,8 @@ export const siteConfig = {
   name: "Planero",
   description:
     "Your ultimate event planning platform - Find venues, vendors, and services for unforgettable events",
-  url: "https://planero.com",
-  ogImage: "https://planero.com/og-image.jpg",
+  url: "https://planero.in",
+  ogImage: "https://planero.in/og-image.jpg",
   twitterCard: "summary_large_image",
   locale: "en_US",
   type: "website",
@@ -379,21 +379,21 @@ function getBaseMetadata(page: string, data?: any): Metadata {
           url: `${siteConfig.url}/venues/${venue?.id || ""}`,
           images: venue?.images?.length
             ? [
-                {
-                  url: venue.images[0],
-                  width: 1200,
-                  height: 630,
-                  alt: `${venue.name} - Event Venue`,
-                },
-              ]
+              {
+                url: venue.images[0],
+                width: 1200,
+                height: 630,
+                alt: `${venue.name} - Event Venue`,
+              },
+            ]
             : [
-                {
-                  url: `${siteConfig.url}/og-venues.jpg`,
-                  width: 1200,
-                  height: 630,
-                  alt: "Event Venue",
-                },
-              ],
+              {
+                url: `${siteConfig.url}/og-venues.jpg`,
+                width: 1200,
+                height: 630,
+                alt: "Event Venue",
+              },
+            ],
           type: "article" as const,
         },
         twitter: {
@@ -435,21 +435,21 @@ function getBaseMetadata(page: string, data?: any): Metadata {
           url: `${siteConfig.url}/vendors/${vendor?.id || ""}`,
           images: vendor?.images?.length
             ? [
-                {
-                  url: vendor.images[0],
-                  width: 1200,
-                  height: 630,
-                  alt: `${vendor.name} - Event Vendor`,
-                },
-              ]
+              {
+                url: vendor.images[0],
+                width: 1200,
+                height: 630,
+                alt: `${vendor.name} - Event Vendor`,
+              },
+            ]
             : [
-                {
-                  url: `${siteConfig.url}/og-vendors.jpg`,
-                  width: 1200,
-                  height: 630,
-                  alt: "Event Vendor",
-                },
-              ],
+              {
+                url: `${siteConfig.url}/og-vendors.jpg`,
+                width: 1200,
+                height: 630,
+                alt: "Event Vendor",
+              },
+            ],
           type: "article" as const,
         },
         twitter: {
@@ -491,21 +491,21 @@ function getBaseMetadata(page: string, data?: any): Metadata {
           url: `${siteConfig.url}/services/${service?.id || ""}`,
           images: service?.images?.length
             ? [
-                {
-                  url: service.images[0],
-                  width: 1200,
-                  height: 630,
-                  alt: `${service.name} - Event Service`,
-                },
-              ]
+              {
+                url: service.images[0],
+                width: 1200,
+                height: 630,
+                alt: `${service.name} - Event Service`,
+              },
+            ]
             : [
-                {
-                  url: `${siteConfig.url}/og-services.jpg`,
-                  width: 1200,
-                  height: 630,
-                  alt: "Event Service",
-                },
-              ],
+              {
+                url: `${siteConfig.url}/og-services.jpg`,
+                width: 1200,
+                height: 630,
+                alt: "Event Service",
+              },
+            ],
           type: "article" as const,
         },
         twitter: {
@@ -607,10 +607,10 @@ export function generateVenueSchema(venue: any) {
     geo:
       venue.latitude && venue.longitude
         ? {
-            "@type": "GeoCoordinates",
-            latitude: venue.latitude,
-            longitude: venue.longitude,
-          }
+          "@type": "GeoCoordinates",
+          latitude: venue.latitude,
+          longitude: venue.longitude,
+        }
         : undefined,
     amenityFeature: venue.amenities?.map((amenity: string) => ({
       "@type": "LocationFeatureSpecification",
@@ -633,20 +633,20 @@ export function generateServiceSchema(service: any) {
       : [`${siteConfig.url}/og-services.jpg`],
     provider: service.vendor
       ? {
-          "@type": "Organization",
-          name: service.vendor.name,
-          url: `${siteConfig.url}/vendors/${service.vendor.id}`,
-        }
+        "@type": "Organization",
+        name: service.vendor.name,
+        url: `${siteConfig.url}/vendors/${service.vendor.id}`,
+      }
       : undefined,
     serviceType: service.category,
     areaServed: service.serviceArea || "Local Area",
     offers: service.price
       ? {
-          "@type": "Offer",
-          price: service.price,
-          priceCurrency: "USD",
-          availability: "https://schema.org/InStock",
-        }
+        "@type": "Offer",
+        price: service.price,
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+      }
       : undefined,
   };
 }

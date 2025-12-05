@@ -1,5 +1,5 @@
 # Planero - Event Planning Platform
-# https://planero.com/robots.txt
+# https://planero.in/robots.txt
 # Updated: 2025-11-10
 
 # ===========================================
@@ -300,16 +300,16 @@ Crawl-delay: 1
 # SITEMAPS
 # ===========================================
 
-Sitemap: https://planero.com/sitemap.xml
-Sitemap: https://planero.com/sitemap-venues.xml
-Sitemap: https://planero.com/sitemap-vendors.xml
-Sitemap: https://planero.com/sitemap-services.xml
+Sitemap: https://planero.in/sitemap.xml
+Sitemap: https://planero.in/sitemap-venues.xml
+Sitemap: https://planero.in/sitemap-vendors.xml
+Sitemap: https://planero.in/sitemap-services.xml
 
 # ===========================================
 # ADDITIONAL INFORMATION
 # ===========================================
 
-# Host: https://planero.com
-# Contact: seo@planero.com
+# Host: https://planero.in
+# Contact: seo@planero.in
 # Last updated: 2025-11-10
 # For questions about this robots.txt file, please contact our team.
