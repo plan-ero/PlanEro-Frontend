@@ -56,9 +56,9 @@ export function StarRating({
               <Star
                 className={cn(
                   sizeClasses[size],
-                  filled && "fill-yellow-400 text-yellow-400",
-                  halfFilled && "fill-yellow-200 text-yellow-400",
-                  !filled && !halfFilled && "text-gray-300",
+                  filled && "fill-primary text-primary",
+                  halfFilled && "fill-primary/50 text-primary",
+                  !filled && !halfFilled && "text-muted-foreground/30",
                 )}
               />
             </button>

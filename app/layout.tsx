@@ -140,11 +140,13 @@ export default function RootLayout({
               <CartProvider>
                 <ViewTransitions>
                   {/* <SmoothScrollProvider> */}
-                  <div className="min-h-screen flex flex-col justify-between">
+                  <div className="min-h-screen flex flex-col">
                     <Header />
-                    <Suspense fallback={<LoadingSpinner />}>
-                      {children}
-                    </Suspense>
+                    <main className="flex-1">
+                      <Suspense fallback={<LoadingSpinner />}>
+                        {children}
+                      </Suspense>
+                    </main>
                     <Footer />
                   </div>
                   {/* Mobile bottom app bar for installed apps / quick nav */}

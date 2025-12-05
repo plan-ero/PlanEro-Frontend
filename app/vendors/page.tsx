@@ -412,13 +412,13 @@ function VendorsContent() {
                         <div className="flex items-center justify-between mb-4">
                           {vendor?.totalRating !== undefined &&
                             vendor?.numberOfRatings !== undefined ? (
-                            <div className="flex items-center gap-1.5 bg-yellow-50 px-2 py-1 rounded-md border border-yellow-100">
+                            <div className="flex items-center gap-1.5 bg-primary/10 px-2 py-1 rounded-md border border-primary/20">
                               <StarRating
                                 rating={vendor.totalRating || 0}
                                 readonly
                                 size="sm"
                               />
-                              <span className="text-xs font-medium text-yellow-700">
+                              <span className="text-xs font-medium text-primary">
                                 ({vendor.numberOfRatings})
                               </span>
                             </div>

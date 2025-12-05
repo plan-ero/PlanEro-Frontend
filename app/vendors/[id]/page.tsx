@@ -322,7 +322,7 @@ export default function VendorDetailPage() {
                   {vendor.location || "Location not specified"}
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <Star className="h-4 w-4 fill-primary text-primary" />
                   <span className="font-semibold">{vendor.totalRating?.toFixed(1) || "New"}</span>
                   <span className="opacity-75">({vendor.numberOfRatings || 0} reviews)</span>
                 </div>
@@ -523,7 +523,7 @@ export default function VendorDetailPage() {
                                   </span>
                                   {service.totalRating !== undefined && (
                                     <div className="flex items-center gap-1 text-xs text-muted-foreground border-l pl-2 ml-1">
-                                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                      <Star className="h-3 w-3 fill-primary text-primary" />
                                       <span>{service.totalRating.toFixed(1)}</span>
                                       <span>({service.numberOfRatings})</span>
                                     </div>

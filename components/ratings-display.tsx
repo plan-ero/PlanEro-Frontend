@@ -164,10 +164,10 @@ export function RatingsDisplay({
               {[5, 4, 3, 2, 1].map((star) => (
                 <div key={star} className="flex items-center gap-2">
                   <span className="text-sm w-2">{star}</span>
-                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                  <div className="flex-1 bg-gray-200 rounded-full h-2">
+                  <Star className="h-3 w-3 fill-primary text-primary" />
+                  <div className="flex-1 bg-muted rounded-full h-2">
                     <div
-                      className="bg-yellow-400 h-2 rounded-full"
+                      className="bg-primary h-2 rounded-full"
                       style={{
                         width:
                           ratings.length > 0
