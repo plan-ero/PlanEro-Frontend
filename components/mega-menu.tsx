@@ -210,7 +210,7 @@ export function MegaMenu({ isMobile = false, onClose }: MegaMenuProps) {
         >
           <TransitionLink
             href={item.href}
-            className="flex items-center py-4 text-sm font-bold uppercase tracking-wider text-foreground/80 hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary"
+            className="flex items-center py-4 text-sm font-bold uppercase tracking-wider text-slate-700 hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary"
           >
             {item.label}
           </TransitionLink>

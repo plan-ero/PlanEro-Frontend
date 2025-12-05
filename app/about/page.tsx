@@ -11,7 +11,8 @@ import {
   Briefcase,
   Search,
   Handshake,
-  Rocket
+  Rocket,
+  User
 } from "lucide-react";
 import { TransitionLink } from "@/components/transition-link";
 import Image from "next/image";
@@ -21,21 +22,21 @@ const founders = [
   {
     name: "Mohd Zaid",
     role: "Co-Founder",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop",
+    image: null,
     bio: "Visionary leader passionate about simplifying the event planning landscape through technology.",
   },
   {
     name: "Mark Andrew",
     role: "Co-Founder",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop",
+    image: null,
     bio: "Strategic thinker dedicated to building strong partnerships and driving platform growth.",
   },
-  {
-    name: "Mann",
-    role: "Co-Founder",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
-    bio: "Creative force ensuring every user interaction is intuitive, beautiful, and inspiring.",
-  },
+  // {
+  //   name: "Mann",
+  //   role: "Co-Founder",
+  //   image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
+  //   bio: "Creative force ensuring every user interaction is intuitive, beautiful, and inspiring.",
+  // },
 ];
 
 export default function AboutPage() {
@@ -195,7 +196,7 @@ export default function AboutPage() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
             {founders.map((founder, index) => (
               <motion.div
                 key={founder.name}
@@ -207,13 +208,19 @@ export default function AboutPage() {
                 <Card className="h-full text-center overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow bg-card">
                   <CardContent className="pt-8 pb-8 px-6">
                     <div className="relative w-40 h-40 mx-auto mb-6 rounded-full overflow-hidden border-4 border-primary/10 shadow-inner">
-                      <Image
-                        src={founder.image}
-                        alt={founder.name}
-                        fill
-                        className="object-cover"
-                        sizes="160px"
-                      />
+                      {founder.image ? (
+                        <Image
+                          src={founder.image}
+                          alt={founder.name}
+                          fill
+                          className="object-cover"
+                          sizes="160px"
+                        />
+                      ) : (
+                        <div className="inset-3 absolute flex items-center justify-center bg-primary/10 rounded-full">
+                          <User className="w-24 h-24 mx-auto" />
+                        </div>
+                      )}
                     </div>
                     <h3 className="font-bold text-2xl mb-2">{founder.name}</h3>
                     <p className="text-sm text-primary font-semibold uppercase tracking-wider mb-4">

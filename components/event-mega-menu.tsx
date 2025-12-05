@@ -183,7 +183,7 @@ export function EventMegaMenu() {
                 >
                     <TransitionLink
                         href={item.href}
-                        className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-3 border-b-2 border-transparent hover:border-foreground"
+                        className="text-sm font-medium text-slate-600 hover:text-black transition-colors py-3 border-b-2 border-transparent hover:border-black"
                     >
                         {item.label}
                     </TransitionLink>
@@ -204,8 +204,8 @@ export function EventMegaMenu() {
                                         <button
                                             key={group.title}
                                             className={`w-full text-left px-6 py-3 text-sm font-medium transition-colors flex items-center justify-between ${activeGroupIndex === index
-                                                    ? "text-foreground bg-muted/30 border-l-2 border-primary"
-                                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/20 border-l-2 border-transparent"
+                                                ? "text-foreground bg-muted/30 border-l-2 border-primary"
+                                                : "text-muted-foreground hover:text-foreground hover:bg-muted/20 border-l-2 border-transparent"
                                                 }`}
                                             onMouseEnter={() => setActiveGroupIndex(index)}
                                         >

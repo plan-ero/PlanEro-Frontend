@@ -93,19 +93,19 @@ export function Header() {
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled
-        ? "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm"
-        : "bg-background"
+        ? "bg-[#DDDDF8]/95 backdrop-blur supports-[backdrop-filter]:bg-[#E6E6FA]/60 shadow-sm"
+        : "bg-[#DDDDF8]"
         }`}
       style={{ viewTransitionName: "site-header" }}
     >
-      <div className="w-full px-4 md:px-6 border-b border-border/40 bg-background z-20 relative">
+      <div className="w-full px-4 md:px-6 border-b border-black/10 bg-[#E6E6FA] z-20 relative">
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Left Side: Logo & Main Nav */}
           <div className="flex items-center gap-6 lg:gap-8">
             {/* Logo */}
             <TransitionLink
               href="/"
-              className="flex items-center font-extrabold text-2xl text-foreground shrink-0"
+              className="flex items-center font-extrabold text-2xl text-black shrink-0"
             >
               <span className="font-medium">Plan</span>
               <span className="text-primary">Ero</span>
@@ -116,13 +116,13 @@ export function Header() {
               <MegaMenu />
               <TransitionLink
                 href="/about"
-                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                className="text-sm font-medium text-slate-700 hover:text-primary transition-colors"
               >
                 About
               </TransitionLink>
               <TransitionLink
                 href="/pwa"
-                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                className="text-sm font-medium text-slate-700 hover:text-primary transition-colors"
               >
                 Get App
               </TransitionLink>
@@ -135,20 +135,20 @@ export function Header() {
             <div className="hidden xl:block w-80">
               <form onSubmit={handleSearch} className="relative group">
                 <div className="relative flex items-center">
-                  <Search className="absolute left-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <Search className="absolute left-3 h-4 w-4 text-slate-500 group-focus-within:text-primary transition-colors" />
                   <Input
                     type="search"
                     placeholder="Search..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-10 h-10 bg-muted/30 border-transparent hover:bg-muted/50 focus:bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all rounded-full"
+                    className="pl-10 pr-10 h-10 bg-white/50 border-transparent hover:bg-white/80 focus:bg-white focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all rounded-full text-black placeholder:text-slate-500"
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon"
                     onClick={handleAdvancedSearch}
-                    className="absolute right-1 h-8 w-8 rounded-full text-muted-foreground hover:text-primary"
+                    className="absolute right-1 h-8 w-8 rounded-full text-slate-500 hover:text-primary"
                   >
                     <Filter className="h-4 w-4" />
                   </Button>
@@ -157,20 +157,20 @@ export function Header() {
             </div>
 
             {/* Favorites */}
-            <Button variant="ghost" size="icon" asChild className="hidden sm:flex hover:text-primary">
+            <Button variant="ghost" size="icon" asChild className="hidden sm:flex hover:text-primary text-slate-700">
               <TransitionLink href="/favorites">
                 <Heart className="h-5 w-5" />
               </TransitionLink>
             </Button>
 
             {/* Cart */}
-            <Button variant="ghost" size="icon" className="relative hidden sm:flex hover:text-primary" asChild>
+            <Button variant="ghost" size="icon" className="relative hidden sm:flex hover:text-primary text-slate-700" asChild>
               <TransitionLink href="/cart">
                 <ShoppingCart className="h-5 w-5" />
                 {items.length > 0 && (
                   <Badge
                     variant="destructive"
-                    className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px] border-2 border-background"
+                    className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px] border-2 border-[#E6E6FA]"
                   >
                     {items.length}
                   </Badge>
@@ -190,7 +190,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="hidden sm:flex hover:text-primary"
+              className="hidden sm:flex hover:text-primary text-slate-700"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
               <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -201,7 +201,7 @@ export function Header() {
             {/* Authentication Buttons */}
             {!session ? (
               <div className="hidden lg:flex items-center gap-3">
-                <Button variant="outline" size="sm" className="font-semibold uppercase tracking-wide text-xs h-9 px-4 rounded-sm" asChild>
+                <Button variant="outline" size="sm" className="font-semibold uppercase tracking-wide text-xs h-9 px-4 rounded-sm border-slate-300 text-slate-700 bg-white hover:bg-primary" asChild>
                   <TransitionLink href="/auth/signup">
                     Sign Up
                   </TransitionLink>
@@ -289,7 +289,7 @@ export function Header() {
             {/* Mobile Menu Trigger */}
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden">
+                <Button variant="ghost" size="icon" className="lg:hidden text-black">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
@@ -480,7 +480,7 @@ export function Header() {
 
       {/* Bottom Row: Event Types (Collapsible on Scroll) */}
       <div
-        className={`hidden lg:block border-b border-border bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/20 transition-all duration-300 ease-in-out ${scrollDirection === "down" ? "h-0 opacity-0 overflow-hidden" : "h-12 opacity-100 overflow-visible"
+        className={`hidden lg:block border-b border-black/10 bg-white/80 backdrop-blur-md transition-all duration-300 ease-in-out ${scrollDirection === "down" ? "h-0 opacity-0 overflow-hidden" : "h-12 opacity-100 overflow-visible"
           }`}
       >
         <div className="w-full px-4 md:px-6 h-full">
@@ -488,7 +488,7 @@ export function Header() {
             <EventMegaMenu />
             <TransitionLink
               href="/auth/signup?role=vendor"
-              className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors whitespace-nowrap"
+              className="text-xs font-semibold uppercase tracking-wider text-slate-600 hover:text-primary transition-colors whitespace-nowrap"
             >
               Are you a venue or vendor?
             </TransitionLink>
