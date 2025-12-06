@@ -20,23 +20,23 @@ import { AboutSEO } from "@/components/seo/about-seo";
 
 const founders = [
   {
-    name: "Mohd Zaid",
-    role: "Co-Founder",
+    name: "Zaid",
+    role: "Founder & Business Development",
     image: null,
     bio: "Visionary leader passionate about simplifying the event planning landscape through technology.",
   },
   {
-    name: "Mark Andrew",
-    role: "Co-Founder",
+    name: "Mann",
+    role: "Growth & Marketing Lead",
     image: null,
     bio: "Strategic thinker dedicated to building strong partnerships and driving platform growth.",
   },
-  // {
-  //   name: "Mann",
-  //   role: "Co-Founder",
-  //   image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
-  //   bio: "Creative force ensuring every user interaction is intuitive, beautiful, and inspiring.",
-  // },
+  {
+    name: "Naveen ul Ameen",
+    role: "CTO",
+    image: null,
+    bio: "Creative force ensuring every user interaction is intuitive, beautiful, and inspiring.",
+  },
 ];
 
 export default function AboutPage() {
@@ -196,7 +196,7 @@ export default function AboutPage() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+          <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
             {founders.map((founder, index) => (
               <motion.div
                 key={founder.name}
@@ -204,6 +204,7 @@ export default function AboutPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
+                className="w-full sm:w-60 md:w-80"
               >
                 <Card className="h-full text-center overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow bg-card">
                   <CardContent className="pt-8 pb-8 px-6">
